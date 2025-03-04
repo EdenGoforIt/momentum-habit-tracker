@@ -1,0 +1,23 @@
+<svg width="200" height="200" viewBox="0 0 200 200"
+	xmlns="http://www.w3.org/2000/svg">
+	<!-- Background Circle -->
+	<circle cx="100" cy="100" r="90" fill="#FFD166" />
+
+	<!-- Face (Head) -->
+	<circle cx="100" cy="90" r="40" fill="white" />
+
+	<!-- Eyes -->
+	<circle cx="85" cy="80" r="6" fill="#333" />
+	<circle cx="115" cy="80" r="6" fill="#333" />
+
+	<!-- Cute Smile -->
+	<path d="M 85 100 Q 100 115, 115 100" stroke="#333" stroke-width="4" fill="none" stroke-linecap="round" />
+
+	<!-- Blush (Optional for Extra Cuteness) -->
+	<circle cx="70" cy="90" r="6" fill="pink" opacity="0.6" />
+	<circle cx="130" cy="90" r="6" fill="pink" opacity="0.6" />
+
+	<!-- Body -->
+	<path d="M 60 170 C 75 130, 125 130, 140 170" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" />
+
+</svg>
