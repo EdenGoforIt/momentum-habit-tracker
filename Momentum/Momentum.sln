@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momentum.Api", "Momentum.Api\Momentum.Api.csproj", "{0EAAF73E-4378-4310-8A17-814FA1DD89E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momentum.Application", "Momentum.Application\Momentum.Application.csproj", "{F89F7836-80C3-475C-A1B8-D5D5BB3C2202}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momentum.Domain", "Momentum.Domain\Momentum.Domain.csproj", "{598969A0-F609-49F4-848D-B77ACC37A998}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momentum.Infrastructure", "Momentum.Infrastructure\Momentum.Infrastructure.csproj", "{3FDC4AF4-A1D4-470E-8064-3F77ECB9ED47}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Momentum.Web", "Momentum.Web", "{39B51AF2-7F8A-43B1-9D56-F73E62FBAEA2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0EAAF73E-4378-4310-8A17-814FA1DD89E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EAAF73E-4378-4310-8A17-814FA1DD89E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EAAF73E-4378-4310-8A17-814FA1DD89E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EAAF73E-4378-4310-8A17-814FA1DD89E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F89F7836-80C3-475C-A1B8-D5D5BB3C2202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F89F7836-80C3-475C-A1B8-D5D5BB3C2202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F89F7836-80C3-475C-A1B8-D5D5BB3C2202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F89F7836-80C3-475C-A1B8-D5D5BB3C2202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{598969A0-F609-49F4-848D-B77ACC37A998}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{598969A0-F609-49F4-848D-B77ACC37A998}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{598969A0-F609-49F4-848D-B77ACC37A998}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{598969A0-F609-49F4-848D-B77ACC37A998}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FDC4AF4-A1D4-470E-8064-3F77ECB9ED47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FDC4AF4-A1D4-470E-8064-3F77ECB9ED47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FDC4AF4-A1D4-470E-8064-3F77ECB9ED47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FDC4AF4-A1D4-470E-8064-3F77ECB9ED47}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
