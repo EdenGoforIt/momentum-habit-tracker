@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+    <!-- Bars -->
+    <rect x="30" y="100" width="40" height="80" fill="#4CAF50" rx="5" ry="5"/>
+    <rect x="90" y="60" width="40" height="120" fill="#4CAF50" rx="5" ry="5"/>
+    <rect x="150" y="80" width="40" height="100" fill="#4CAF50" rx="5" ry="5"/>
+    <rect x="210" y="40" width="40" height="140" fill="#4CAF50" rx="5" ry="5"/>
+    <rect x="270" y="70" width="40" height="110" fill="#4CAF50" rx="5" ry="5"/>
+    <rect x="330" y="90" width="40" height="90" fill="#4CAF50" rx="5" ry="5"/>
+</svg>
