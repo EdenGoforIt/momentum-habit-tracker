@@ -1,0 +1,56 @@
+## .NET Core
+bin/
+obj/
+out/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+# NuGet Symbol Packages
+*.snupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Local History
+.localhistory/
+
+# .NET Scaffolding
+ScaffoldingReadMe.txt

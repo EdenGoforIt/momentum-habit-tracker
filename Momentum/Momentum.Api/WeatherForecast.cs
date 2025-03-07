@@ -1,6 +1,6 @@
 namespace Momentum.Api;
 
-public class WeatherForecast
+internal sealed class WeatherForecastDto
 {
     public DateOnly Date { get; set; }
 

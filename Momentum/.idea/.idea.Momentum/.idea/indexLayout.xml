@@ -3,9 +3,10 @@
   <component name="UserContentModel">
     <attachedFolders />
     <explicitIncludes>
-      <Path>.editorconfig</Path>
       <Path>Directory.Build.props</Path>
     </explicitIncludes>
-    <explicitExcludes />
+    <explicitExcludes>
+      <Path>.editorconfig</Path>
+    </explicitExcludes>
   </component>
 </project>

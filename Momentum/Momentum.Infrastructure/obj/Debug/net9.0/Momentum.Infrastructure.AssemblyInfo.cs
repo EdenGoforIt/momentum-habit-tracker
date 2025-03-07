@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Momentum.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2dbc59a2f76c8d89bf62f26ae7224a11c9410f03")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ebb654707d9b2c106defada423b1daad08e1f7da")]
 [assembly: System.Reflection.AssemblyProductAttribute("Momentum.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Momentum.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
