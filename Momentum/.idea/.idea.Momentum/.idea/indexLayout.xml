@@ -4,6 +4,7 @@
     <attachedFolders />
     <explicitIncludes>
       <Path>.editorconfig</Path>
+      <Path>Directory.Build.props</Path>
     </explicitIncludes>
     <explicitExcludes />
   </component>
