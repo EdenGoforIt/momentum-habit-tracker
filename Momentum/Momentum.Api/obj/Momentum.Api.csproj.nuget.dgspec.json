@@ -13,6 +13,7 @@
         "packagesPath": "/Users/edenpark/.nuget/packages/",
         "outputPath": "/Users/edenpark/Desktop/Massey/Final Project - Momentum/Project/Momentum/Momentum.Api/obj/",
         "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
         "configFilePaths": [
           "/Users/edenpark/.nuget/NuGet/NuGet.Config"
         ],
@@ -45,10 +46,20 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Ardalis.GuardClauses": {
+              "target": "Package",
+              "version": "[5.0.0, )",
+              "versionCentrallyManaged": true
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.0, )",
+              "versionCentrallyManaged": true
             }
+          },
+          "centralPackageVersions": {
+            "Ardalis.GuardClauses": "5.0.0",
+            "Microsoft.AspNetCore.OpenApi": "9.0.0"
           },
           "imports": [
             "net461",
