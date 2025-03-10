@@ -7,7 +7,7 @@ using Momentum.Api.Extensions;
 namespace Momentum.Api.Handlers;
 
 // ReSharper disable once HollowTypeName
-internal class ErrorHandler : IErrorHandler
+internal sealed class ErrorHandler : IErrorHandler
 {
     private readonly ILogger _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;

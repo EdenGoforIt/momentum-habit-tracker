@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Constants;
 using Momentum.Api.Infrastructure;
@@ -10,26 +11,23 @@ using Momentum.Domain.Errors;
 
 namespace Momentum.Api.Endpoints;
 
-internal sealed class Users : EndpointGroupBase
+internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 {
-    internal override void Map(WebApplication app)
-    {
-        app.MapGroup(this)
-            .MapGet(GetUser, pattern: string.Empty, tag: Tags.Users);
-        // .RequireAuthorization()
-        // .MapPost(CreateTodoItem)
-        // .MapPut(UpdateTodoItem, "{id}")
-        // .MapPut(UpdateTodoItemDetail, "UpdateDetail/{id}")
-        // .MapDelete(DeleteTodoItem, "{id}");
-    }
+    internal override void Map(WebApplication app) => app.MapGroup(this)
+        .MapGet(GetUser, pattern: string.Empty, tag: Tags.Users);
 
-    
-    public async Task<Ok<UserDto>> GetUser(ISender sender,
+    private async Task<IActionResult> GetUser(ISender sender,
         [AsParameters] GetUserQuery query)
     {
         Result<UserDto, IDomainError> result = await sender.Send(query);
 
-        return TypedResults.Ok(result);
+        if (result.IsSuccess)
+        {
+            return (IActionResult)Results.Ok(result.Value);
+        }
+        else
+        {
+            return errorHandler.HandleError(result.Error);
+        }
     }
-
 }
