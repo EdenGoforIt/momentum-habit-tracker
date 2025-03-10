@@ -6,4 +6,7 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
         <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Momentum.Application\Momentum.Application.csproj" />
+    </ItemGroup>
 </Project>
