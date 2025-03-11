@@ -1,4 +1,4 @@
-namespace Momentum.Api.Infrastructure;
+namespace Momentum.Api.Abstractions;
 
 internal abstract class EndpointGroupBase
 {

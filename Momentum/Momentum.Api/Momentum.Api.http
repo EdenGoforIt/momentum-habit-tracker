@@ -1,6 +1,11 @@
 @host = http://localhost:5128
-
+###
 GET {{host}}/api/v1/users/1
+Accept: application/json
+
+###
+
+GET {{host}}/endpoints
 Accept: application/json
 
 ###

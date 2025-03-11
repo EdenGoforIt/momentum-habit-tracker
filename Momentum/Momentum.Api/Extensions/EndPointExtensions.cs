@@ -1,33 +1,43 @@
+using System.Globalization;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Momentum.Api.Abstractions;
 
 namespace Momentum.Api.Extensions;
 
 internal static class EndPointExtensions
 {
-    internal static IServiceCollection AddEndpoints(this IServiceCollection services, Assembly assembly)
+    public static RouteGroupBuilder MapGroup(this WebApplication app, EndpointGroupBase group)
     {
-        ServiceDescriptor[] serviceDescriptors = assembly.DefinedTypes.Where(type =>
-                type is { IsAbstract: false, IsInterface: false } && type.IsAssignableTo(typeof(IEndpoint)))
-            .Select(type => ServiceDescriptor.Transient(typeof(IEndpoint), type))
-            .ToArray();
+#pragma warning disable CA1308
+        string groupName = group.GetType().Name.ToLower(CultureInfo.InvariantCulture);
+#pragma warning restore CA1308
 
-        services.TryAddEnumerable(serviceDescriptors);
-
-        return services;
+        return app
+            .MapGroup($"/api/v{{version:apiVersion}}/{groupName}")
+            .WithGroupName(groupName)
+            .WithTags(groupName)
+            .WithOpenApi();
     }
 
-    internal static IApplicationBuilder MapEndpoints(this WebApplication app,
-        RouteGroupBuilder? routerGroupBuilder = null)
+    public static WebApplication MapEndpoints(this WebApplication app)
     {
-        IEnumerable<IEndpoint> endpoints = app.Services.GetRequiredService<IEnumerable<IEndpoint>>();
+        Type endpointGroupType = typeof(EndpointGroupBase);
+        var assembly = Assembly.GetExecutingAssembly();
+        IEnumerable<Type> endpointGroupTypes = assembly.GetTypes()
+            .Where(t => t.IsSubclassOf(endpointGroupType));
 
-        IEndpointRouteBuilder builder = routerGroupBuilder is null ? app : routerGroupBuilder;
+        using IServiceScope scope = app.Services.CreateScope();
+        IServiceProvider scopedServices = scope.ServiceProvider;
 
-        foreach (IEndpoint endpoint in endpoints)
+        foreach (Type type in endpointGroupTypes)
         {
-            endpoint.MapEndpoint(builder);
+            ConstructorInfo constructorInfo = type.GetConstructors().First();
+            object[] parameters = constructorInfo.GetParameters()
+                .Select(p => scopedServices.GetRequiredService(p.ParameterType))
+                .ToArray();
+
+            var instance = (EndpointGroupBase)constructorInfo.Invoke(parameters);
+            instance.Map(app);
         }
 
         return app;

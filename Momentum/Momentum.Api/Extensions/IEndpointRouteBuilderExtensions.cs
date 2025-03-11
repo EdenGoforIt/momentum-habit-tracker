@@ -1,19 +1,19 @@
 using System.Diagnostics.CodeAnalysis;
 using Ardalis.GuardClauses;
 
-namespace Momentum.Api.Infrastructure;
+namespace Momentum.Api.Extensions;
 
 internal static class EndpointRouteBuilderExtensions
 {
     internal static IEndpointRouteBuilder MapGet(this IEndpointRouteBuilder builder, Delegate handler,
-        [StringSyntax("Route")] string pattern = "", string tag = "", double version = 1.0)
+        [StringSyntax("Route")] string pattern = "", string tag = "")
     {
         Guard.Against.AnonymousMethod(handler);
 
         builder.MapGet(pattern, handler)
             .WithName(handler.Method.Name)
             .WithTags(tag)
-            .MapToApiVersion(version);
+            .WithOpenApi();
 
         return builder;
     }

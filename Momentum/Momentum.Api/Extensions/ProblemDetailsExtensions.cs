@@ -52,11 +52,9 @@ internal static class ProblemDetailsExtensions
             var errorList = new StringBuilder();
             errorList.AppendJoin(",", errors);
 
-            return detailsFactory.CreateProblemDetails(context, statusCode: statusCode, detail: errorList.ToString());
+            return detailsFactory.CreateProblemDetails(context, statusCode, detail: errorList.ToString());
         }
-        else
-        {
-            return detailsFactory.CreateProblemDetails(context, statusCode: statusCode, detail: message);
-        }
+
+        return detailsFactory.CreateProblemDetails(context, statusCode, detail: message);
     }
 }

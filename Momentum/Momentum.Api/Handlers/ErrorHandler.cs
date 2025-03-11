@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Momentum.Api.Abstractions;
-using Momentum.Domain.Errors;
 using Momentum.Api.Extensions;
+using Momentum.Domain.Errors;
 
 namespace Momentum.Api.Handlers;
 
 // ReSharper disable once HollowTypeName
 internal sealed class ErrorHandler : IErrorHandler
 {
-    private readonly ILogger _logger;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ProblemDetailsFactory _problemDetailsFactory;
     private readonly Dictionary<ErrorType, Func<string?, IEnumerable<string>?, ObjectResult>> _errorHandlers;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger _logger;
+    private readonly ProblemDetailsFactory _problemDetailsFactory;
 
     public ErrorHandler(
         ILogger<ErrorHandler> logger,
@@ -51,7 +51,7 @@ internal sealed class ErrorHandler : IErrorHandler
             _problemDetailsFactory.CreateBadRequest(_httpContextAccessor.HttpContext!, details, errors));
 
     public ObjectResult ConflictResponse(string? details = null, IEnumerable<string>? errors = null) =>
-        new ObjectResult(_problemDetailsFactory.CreateConflict(_httpContextAccessor.HttpContext!, details, errors))
+        new(_problemDetailsFactory.CreateConflict(_httpContextAccessor.HttpContext!, details, errors))
             { StatusCode = StatusCodes.Status409Conflict };
 
     public ObjectResult ValidationResponse(string? details = null, IEnumerable<string>? errors = null) =>
@@ -59,7 +59,7 @@ internal sealed class ErrorHandler : IErrorHandler
             _problemDetailsFactory.CreateValidation(_httpContextAccessor.HttpContext!, details, errors));
 
     public ObjectResult UnexpectedResponse(string? details = null, IEnumerable<string>? errors = null) =>
-        new ObjectResult(
+        new(
                 _problemDetailsFactory.CreateUnexpectedResponse(_httpContextAccessor.HttpContext!, details, errors))
             { StatusCode = StatusCodes.Status500InternalServerError };
 }

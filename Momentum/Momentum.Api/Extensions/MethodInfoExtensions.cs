@@ -1,7 +1,7 @@
 using System.Reflection;
 using Ardalis.GuardClauses;
 
-namespace Momentum.Api.Infrastructure;
+namespace Momentum.Api.Extensions;
 
 internal static class MethodInfoExtensions
 {

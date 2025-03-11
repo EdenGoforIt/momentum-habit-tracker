@@ -2,9 +2,9 @@ using Momentum.Api.Abstractions;
 using Momentum.Application.Dtos.Users;
 using Momentum.Domain.Errors;
 
-namespace Momentum.Application.Users.GetUser;
+namespace Momentum.Application.Users.Queries.GetUser;
 
-public abstract record GetUserQuery : IQuery<UserDto>
+public record GetUserQuery : IQuery<UserDto>
 {
     public long Id { get; set; }
 }

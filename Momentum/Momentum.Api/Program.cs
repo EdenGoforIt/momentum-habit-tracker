@@ -1,47 +1,49 @@
-using Asp.Versioning;
-using Asp.Versioning.Builder;
+using System.Reflection;
+using Microsoft.OpenApi.Models;
 using Momentum.Api.Extensions;
+using Momentum.Application.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddApplicationLayer();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddEndpoints(typeof(Program).Assembly);
+builder.Services.AddSwaggerGen(options =>
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Momentum API", Version = "v1" }));
+builder.Services.AddServices();
 
-builder.Services.AddApiVersioning(options =>
-{
-    options.DefaultApiVersion = new ApiVersion(1);
-    options.ApiVersionReader = new UrlSegmentApiVersionReader();
-}).AddMvc().AddApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'V";
-    options.SubstituteApiVersionInUrl = true;
-});
+// After app.UseSwagger();
 
 WebApplication app = builder.Build();
 
-ApiVersionSet apiVersionSet = app.NewApiVersionSet()
-    .HasApiVersion(new ApiVersion(1))
-    .ReportApiVersions()
-    .Build();
-
-RouteGroupBuilder versionedGroup = app
-    .MapGroup("api/v{version:apiVersion}")
-    .WithApiVersionSet(apiVersionSet);
-
-app.MapEndpoints(versionedGroup);
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
+
+    // app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
+// app.UseAuthorization();
 app.MapControllers();
+
+app.MapGet("/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
+{
+    var endpoints = endpointSources
+        .SelectMany(es => es.Endpoints)
+        .OfType<RouteEndpoint>()
+        .Select(e => new
+        {
+            Method = e.Metadata.GetMetadata<HttpMethodMetadata>()?.HttpMethods[0],
+            Route = e.RoutePattern.RawText,
+            Handler = e.Metadata.GetMetadata<MethodInfo>()?.Name ?? "Unknown"
+        })
+        .ToList();
+
+    return Results.Ok(endpoints);
+}).WithTags("Debug");
+app.MapEndpoints();
 
 app.Run();
