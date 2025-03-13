@@ -2,4 +2,7 @@
     <ItemGroup>
         <PackageReference Include="Ardalis.SmartEnum"/>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Users\" />
+    </ItemGroup>
 </Project>

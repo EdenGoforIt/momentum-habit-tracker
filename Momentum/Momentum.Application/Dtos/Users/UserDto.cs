@@ -2,6 +2,6 @@ namespace Momentum.Application.Dtos.Users;
 
 public class UserDto
 {
-    public long Id { get; set; }
-    public required string Name { get; set; }
+    public required string UserName { get; set; } = string.Empty;
+    public required string PasswordHash { get; set; } = string.Empty;
 }

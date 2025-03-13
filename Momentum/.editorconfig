@@ -4,7 +4,9 @@ root = true
 # C# files
 [*.cs]
 
-#### Core EditorConfig Options ####
+# Suppress the ReSharper warning for classes that are never instantiated globally
+dotnet_diagnostic.IDE0051.severity = none
+resharper_class_never_instantiated_global = none
 
 # Indentation and spacing
 indent_size = 4

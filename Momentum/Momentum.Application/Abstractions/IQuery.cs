@@ -1,7 +1,7 @@
 using MediatR;
 using Momentum.Domain.Errors;
 
-namespace Momentum.Api.Abstractions;
+namespace Momentum.Application.Abstractions;
 
 public interface IRequestBase
 {

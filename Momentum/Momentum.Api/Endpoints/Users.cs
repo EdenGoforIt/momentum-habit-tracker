@@ -29,4 +29,17 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 
         return errorHandler.HandleError(result.Error);
     }
+    
+    private async Task<IActionResult> CreateUser(ISender sender,
+        [AsParameters] CreateUserQuery query)
+    {
+        Result<UserDto, IDomainError> result = await sender.Send(query);
+
+        if (result.IsSuccess)
+        {
+            return (IActionResult)Results.Ok(result.Value);
+        }
+
+        return errorHandler.HandleError(result.Error);
+    }
 }
