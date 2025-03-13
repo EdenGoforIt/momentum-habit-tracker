@@ -4,23 +4,23 @@ using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddAuthentication(x =>
-{
-    x.defaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.defaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.defaultscheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
-{
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
+// builder.Services.AddAuthentication(x =>
+// {
+//     x.defaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//     x.defaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//     x.defaultscheme = JwtBearerDefaults.AuthenticationScheme;
+// }).AddJwtBearer(x =>
+// {
+//     x.RequireHttpsMetadata = false;
+//     x.SaveToken = true;
+//     x.TokenValidationParameters = new TokenValidationParameters
+//     {
+//         ValidateIssuerSigningKey = true,
+//         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"])),
+//         ValidateIssuer = false,
+//         ValidateAudience = false
+//     };
+// });
 
 builder.Services.AddApplicationLayer();
 builder.Services.AddControllers();

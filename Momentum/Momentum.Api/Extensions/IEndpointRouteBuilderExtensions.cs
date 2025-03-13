@@ -19,14 +19,14 @@ internal static class EndpointRouteBuilderExtensions
     }
 
     internal static IEndpointRouteBuilder MapPost(this IEndpointRouteBuilder builder, Delegate handler,
-        [StringSyntax("Route")] string pattern = "", string tag = "", double version = 1.0)
+        [StringSyntax("Route")] string pattern = "", string tag = "")
     {
         Guard.Against.AnonymousMethod(handler);
 
         builder.MapPost(pattern, handler)
             .WithName(handler.Method.Name)
             .WithTags(tag)
-            .MapToApiVersion(version);
+            .WithOpenApi();
 
         return builder;
     }

@@ -1,9 +1,19 @@
 @host = http://localhost:5128
-###
+### Get User
 GET {{host}}/api/v1/users/1
 Accept: application/json
 
-###
+### Create User
+POST {{host}}/api/v1/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userName": "exampleUser",
+  "passwordHash": "exampleHash"
+}
+
+### Get End points
 
 GET {{host}}/endpoints
 Accept: application/json

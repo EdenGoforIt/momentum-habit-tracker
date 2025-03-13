@@ -32,7 +32,7 @@ internal sealed class ErrorHandler : IErrorHandler
         };
     }
 
-    public ObjectResult HandleError(IDomainError error)
+    private ObjectResult CreateObjectResult(IDomainError error)
     {
         if (_errorHandlers.TryGetValue(error.ErrorType, out Func<string?, IEnumerable<string>?, ObjectResult>? handler))
         {
@@ -41,6 +41,23 @@ internal sealed class ErrorHandler : IErrorHandler
 
         throw new InvalidOperationException($"Unsupported error type: {error.ErrorType}");
     }
+
+    public IResult HandleError(IDomainError error)
+    {
+        ObjectResult objectResult = CreateObjectResult(error);
+
+        return ConvertObjectResultToIResult(objectResult);
+    }
+
+    private static IResult ConvertObjectResultToIResult(ObjectResult objectResult) =>
+        objectResult.StatusCode switch
+        {
+            400 => Results.BadRequest(objectResult.Value),
+            404 => Results.NotFound(objectResult.Value),
+            403 => Results.Forbid(),
+            500 => Results.Problem(detail: objectResult.Value?.ToString()),
+            _ => Results.StatusCode(objectResult.StatusCode ?? 500)
+        };
 
     public ObjectResult NotFoundResponse(string? message = null, IEnumerable<string>? errors = null) =>
         new NotFoundObjectResult(

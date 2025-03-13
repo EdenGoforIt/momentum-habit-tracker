@@ -1,16 +1,13 @@
+using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Momentum.Domain.Errors;
+using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace Momentum.Api.Abstractions;
 
 internal interface IErrorHandler
 {
-    /// <summary>
-    ///     Handles domain errors by mapping them to appropriate HTTP responses.
-    /// </summary>
-    /// <param name="error">The domain error to handle.</param>
-    /// <returns>An appropriate ObjectResult based on the error type.</returns>
-    ObjectResult HandleError(IDomainError error);
+    IResult HandleError(IDomainError domainError);
 
     /// <summary>
     ///     Creates a NotFound (404) response with optional message and errors.
