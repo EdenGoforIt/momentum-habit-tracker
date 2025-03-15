@@ -47,7 +47,7 @@ internal static class ProblemDetailsExtensions
         string? message = null,
         IEnumerable<string>? errors = null)
     {
-        if (errors != null && errors.Any())
+        if (errors?.Any() == true)
         {
             var errorList = new StringBuilder();
             errorList.AppendJoin(",", errors);
