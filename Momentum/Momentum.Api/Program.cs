@@ -1,7 +1,10 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
+using Momentum.Infrastructure.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddAuthentication(x =>
@@ -30,8 +33,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Momentum API", Version = "v1" }));
 builder.Services.AddServices();
-
-// After app.UseSwagger();
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<DataContext>();
 
 WebApplication app = builder.Build();
 
@@ -39,10 +45,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
-
-    // app.UseSwaggerUI();
 }
 
+app.MapIdentityApi<IdentityUser>();
 app.UseHttpsRedirection();
 // app.UseAuthorization();
 app.MapControllers();

@@ -18,7 +18,7 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, long>
 {
     public Task<Result<long, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = new UserDto();
+        var user = new UserDto(){};
 
         string hashedPassword = new PasswordHasher<UserDto>().HashPassword(user, request.Password);
         user.UserName = request.UserName;
