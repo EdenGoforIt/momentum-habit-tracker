@@ -8,6 +8,11 @@ root = true
 dotnet_diagnostic.IDE0051.severity = none
 resharper_class_never_instantiated_global = none
 
+# Ignore coding style rules in the Migrations folder
+[Migrations/**]
+# Disable all analyzers
+dotnet_analyzer_diagnostic.severity = none
+
 # Indentation and spacing
 indent_size = 4
 indent_style = space

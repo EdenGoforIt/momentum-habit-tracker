@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Momentum.Api.Abstractions;
@@ -7,6 +8,7 @@ using Momentum.Domain.Errors;
 namespace Momentum.Api.Handlers;
 
 // ReSharper disable once HollowTypeName
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated via Dependency Injection")]
 internal sealed class ErrorHandler : IErrorHandler
 {
     private readonly Dictionary<ErrorType, Func<string?, IEnumerable<string>?, ObjectResult>> _errorHandlers;

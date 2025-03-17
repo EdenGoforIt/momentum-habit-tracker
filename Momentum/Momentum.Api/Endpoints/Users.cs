@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace Momentum.Api.Endpoints;
 
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated via Dependency Injection")]
 internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 {
     internal override void Map(WebApplication app) => app.MapGroup(this)
@@ -22,7 +24,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 
     private async Task<IResult> GetUser(ISender sender, [AsParameters] GetUserQuery query)
     {
-        Result<UserDto, IDomainError> result = await sender.Send(query);
+        Result<UserDto, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
 
         if (result.IsSuccess)
         {
@@ -34,7 +36,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 
     private async Task<IResult> CreateUser(ISender sender, CreateUserCommand command)
     {
-        Result<long, IDomainError> result = await sender.Send(command);
+        Result<long, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
 
         if (result.IsSuccess)
         {

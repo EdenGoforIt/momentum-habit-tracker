@@ -20,8 +20,8 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, long>
     {
         var user = new UserDto(){};
 
-        string hashedPassword = new PasswordHasher<UserDto>().HashPassword(user, request.Password);
-        user.UserName = request.UserName;
+        string hashedPassword = new PasswordHasher<UserDto>().HashPassword(user, request?.Password);
+        user.UserName = request?.UserName;
         user.PasswordHash = hashedPassword;
 
         return Task.FromResult(Result.Success<long, IDomainError>(1));
