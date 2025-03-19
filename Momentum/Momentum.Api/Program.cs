@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
 using Momentum.Infrastructure.Data;
+using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddAuthentication(x =>
@@ -28,10 +29,21 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationLayer();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header, Name = "Authorization", Type = SecuritySchemeType.ApiKey
+    });
+
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 builder.Services.AddSwaggerGen(options =>
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Momentum API", Version = "v1" }));
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Momentum API", Version = "v1"
+    }));
 builder.Services.AddServices();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
