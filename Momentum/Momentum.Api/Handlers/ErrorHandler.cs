@@ -8,7 +8,8 @@ using Momentum.Domain.Errors;
 namespace Momentum.Api.Handlers;
 
 // ReSharper disable once HollowTypeName
-[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated via Dependency Injection")]
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes",
+    Justification = "Instantiated via Dependency Injection")]
 internal sealed class ErrorHandler : IErrorHandler
 {
     private readonly Dictionary<ErrorType, Func<string?, IEnumerable<string>?, ObjectResult>> _errorHandlers;
@@ -26,22 +27,22 @@ internal sealed class ErrorHandler : IErrorHandler
         _problemDetailsFactory = problemDetailsFactory;
         _errorHandlers = new Dictionary<ErrorType, Func<string?, IEnumerable<string>?, ObjectResult>>
         {
-            { ErrorType.Conflict, ConflictResponse },
-            { ErrorType.NotFound, NotFoundResponse },
-            { ErrorType.BadRequest, BadRequestResponse },
-            { ErrorType.Validation, ValidationResponse },
-            { ErrorType.Unexpected, UnexpectedResponse }
+            {
+                ErrorType.Conflict, ConflictResponse
+            },
+            {
+                ErrorType.NotFound, NotFoundResponse
+            },
+            {
+                ErrorType.BadRequest, BadRequestResponse
+            },
+            {
+                ErrorType.Validation, ValidationResponse
+            },
+            {
+                ErrorType.Unexpected, UnexpectedResponse
+            }
         };
-    }
-
-    private ObjectResult CreateObjectResult(IDomainError error)
-    {
-        if (_errorHandlers.TryGetValue(error.ErrorType, out Func<string?, IEnumerable<string>?, ObjectResult>? handler))
-        {
-            return handler(error.ErrorMessage, error.Errors);
-        }
-
-        throw new InvalidOperationException($"Unsupported error type: {error.ErrorType}");
     }
 
     public IResult HandleError(IDomainError error)
@@ -50,16 +51,6 @@ internal sealed class ErrorHandler : IErrorHandler
 
         return ConvertObjectResultToIResult(objectResult);
     }
-
-    private static IResult ConvertObjectResultToIResult(ObjectResult objectResult) =>
-        objectResult.StatusCode switch
-        {
-            400 => Results.BadRequest(objectResult.Value),
-            404 => Results.NotFound(objectResult.Value),
-            403 => Results.Forbid(),
-            500 => Results.Problem(detail: objectResult.Value?.ToString()),
-            _ => Results.StatusCode(objectResult.StatusCode ?? 500)
-        };
 
     public ObjectResult NotFoundResponse(string? message = null, IEnumerable<string>? errors = null) =>
         new NotFoundObjectResult(
@@ -71,7 +62,9 @@ internal sealed class ErrorHandler : IErrorHandler
 
     public ObjectResult ConflictResponse(string? details = null, IEnumerable<string>? errors = null) =>
         new(_problemDetailsFactory.CreateConflict(_httpContextAccessor.HttpContext!, details, errors))
-            { StatusCode = StatusCodes.Status409Conflict };
+        {
+            StatusCode = StatusCodes.Status409Conflict
+        };
 
     public ObjectResult ValidationResponse(string? details = null, IEnumerable<string>? errors = null) =>
         new BadRequestObjectResult(
@@ -79,6 +72,28 @@ internal sealed class ErrorHandler : IErrorHandler
 
     public ObjectResult UnexpectedResponse(string? details = null, IEnumerable<string>? errors = null) =>
         new(
-                _problemDetailsFactory.CreateUnexpectedResponse(_httpContextAccessor.HttpContext!, details, errors))
-            { StatusCode = StatusCodes.Status500InternalServerError };
+            _problemDetailsFactory.CreateUnexpectedResponse(_httpContextAccessor.HttpContext!, details, errors))
+        {
+            StatusCode = StatusCodes.Status500InternalServerError
+        };
+
+    private ObjectResult CreateObjectResult(IDomainError error)
+    {
+        if (_errorHandlers.TryGetValue(error.ErrorType, out Func<string?, IEnumerable<string>?, ObjectResult>? handler))
+        {
+            return handler(error.ErrorMessage, error.Errors);
+        }
+
+        throw new InvalidOperationException($"Unsupported error type: {error.ErrorType}");
+    }
+
+    private static IResult ConvertObjectResultToIResult(ObjectResult objectResult) =>
+        objectResult.StatusCode switch
+        {
+            400 => Results.BadRequest(objectResult.Value),
+            404 => Results.NotFound(objectResult.Value),
+            403 => Results.Forbid(),
+            500 => Results.Problem(detail: objectResult.Value?.ToString()),
+            _ => Results.StatusCode(objectResult.StatusCode ?? 500)
+        };
 }

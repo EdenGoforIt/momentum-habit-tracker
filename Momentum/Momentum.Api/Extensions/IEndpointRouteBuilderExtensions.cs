@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Ardalis.GuardClauses;
 
 namespace Momentum.Api.Extensions;
 

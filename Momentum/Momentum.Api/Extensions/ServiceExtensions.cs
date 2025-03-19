@@ -1,7 +1,9 @@
 using System.Reflection;
 using Asp.Versioning;
+using Microsoft.OpenApi.Models;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Handlers;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Momentum.Api.Extensions;
 
@@ -22,6 +24,21 @@ internal static class ServiceExtensions
             options.GroupNameFormat = "'v'V";
             options.SubstituteApiVersionInUrl = true;
         });
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Momentum API", Version = "v1"
+            });
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header, Name = "Authorization", Type = SecuritySchemeType.ApiKey
+            });
+
+            options.OperationFilter<SecurityRequirementsOperationFilter>();
+        });
+        services.AddEndpointsApiExplorer();
+
         return services;
     }
 }

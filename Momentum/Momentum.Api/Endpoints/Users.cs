@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
@@ -13,14 +12,18 @@ using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace Momentum.Api.Endpoints;
 
-[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated via Dependency Injection")]
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes",
+    Justification = "Instantiated via Dependency Injection")]
 internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 {
-    internal override void Map(WebApplication app) => app.MapGroup(this)
-        .WithApiVersionSet()
-        .MapToApiVersion(1.0)
-        .MapGet(GetUser, "{id}", Tags.Users)
-        .MapPost(CreateUser, string.Empty, Tags.Users);
+    internal override void Map(WebApplication app)
+    {
+        app.MapGroup(this)
+            .WithApiVersionSet()
+            .MapToApiVersion(1.0)
+            .MapGet(GetUser, "{id}", Tags.Users)
+            .MapPost(CreateUser, string.Empty, Tags.Users);
+    }
 
     private async Task<IResult> GetUser(ISender sender, [AsParameters] GetUserQuery query)
     {
@@ -40,10 +43,16 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 
         if (result.IsSuccess)
         {
-            var createdUser = new { Id = result.Value };
+            var createdUser = new
+            {
+                Id = result.Value
+            };
 
             return Results.CreatedAtRoute(nameof(GetUser),
-                new { id = result.Value },
+                new
+                {
+                    id = result.Value
+                },
                 createdUser
             );
         }

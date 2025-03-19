@@ -3,6 +3,6 @@
         <PackageReference Include="Ardalis.SmartEnum"/>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Users\" />
+        <Folder Include="Users\"/>
     </ItemGroup>
 </Project>

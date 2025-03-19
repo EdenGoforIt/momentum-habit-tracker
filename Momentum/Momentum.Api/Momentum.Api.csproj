@@ -5,17 +5,17 @@
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"/>
         <PackageReference Include="MediatR"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"/>
         <PackageReference Include="Swashbuckle.AspNetCore"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.Filters" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Momentum.Application\Momentum.Application.csproj"/>
-        <ProjectReference Include="..\Momentum.Infrastructure\Momentum.Infrastructure.csproj" />
+        <ProjectReference Include="..\Momentum.Infrastructure\Momentum.Infrastructure.csproj"/>
     </ItemGroup>
 </Project>

@@ -1,32 +1,13 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
 using Momentum.Infrastructure.Data;
-using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddApplicationLayer();
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header, Name = "Authorization", Type = SecuritySchemeType.ApiKey
-    });
 
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
-});
-
-builder.Services.AddSwaggerGen(options =>
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Momentum API", Version = "v1"  
-    }));
 builder.Services.AddServices();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -39,13 +20,12 @@ WebApplication app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
+    app.UseSwaggerUI();
 }
 
-app.MapIdentityApi<IdentityUser>();
 app.UseHttpsRedirection();
-// app.UseAuthorization();
-app.MapControllers();
+app.UseAuthorization();
+app.MapIdentityApi<IdentityUser>();
 
 app.MapGet("/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
 {
@@ -62,6 +42,7 @@ app.MapGet("/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
 
     return Results.Ok(endpoints);
 }).WithTags("Debug");
+
 app.MapEndpoints();
 
 app.Run();

@@ -1,4 +1,3 @@
-using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;

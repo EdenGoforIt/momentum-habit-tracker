@@ -3,7 +3,7 @@
         <PackageReference Include="AutoMapper"/>
         <PackageReference Include="CSharpFunctionalExtensions"/>
         <PackageReference Include="MediatR"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity"/>
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Users\Commands\"/>
