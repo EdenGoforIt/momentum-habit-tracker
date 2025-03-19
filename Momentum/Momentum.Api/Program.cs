@@ -8,30 +8,13 @@ using Momentum.Infrastructure.Data;
 using Swashbuckle.AspNetCore.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-// builder.Services.AddAuthentication(x =>
-// {
-//     x.defaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//     x.defaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//     x.defaultscheme = JwtBearerDefaults.AuthenticationScheme;
-// }).AddJwtBearer(x =>
-// {
-//     x.RequireHttpsMetadata = false;
-//     x.SaveToken = true;
-//     x.TokenValidationParameters = new TokenValidationParameters
-//     {
-//         ValidateIssuerSigningKey = true,
-//         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"])),
-//         ValidateIssuer = false,
-//         ValidateAudience = false
-//     };
-// });
 
 builder.Services.AddApplicationLayer();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header, Name = "Authorization", Type = SecuritySchemeType.ApiKey
     });
@@ -42,7 +25,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Momentum API", Version = "v1"
+        Title = "Momentum API", Version = "v1"  
     }));
 builder.Services.AddServices();
 builder.Services.AddDbContext<DataContext>(options =>
