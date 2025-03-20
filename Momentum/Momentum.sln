@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momentum.Domain", "Momentum
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momentum.Infrastructure", "Momentum.Infrastructure\Momentum.Infrastructure.csproj", "{3FDC4AF4-A1D4-470E-8064-3F77ECB9ED47}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Momentum.Web", "Momentum.Web", "{39B51AF2-7F8A-43B1-9D56-F73E62FBAEA2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
