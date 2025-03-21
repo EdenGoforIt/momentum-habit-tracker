@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Momentum.Mobile",
-    "slug": "Momentum.Mobile",
+    "name": "Momentum",
+    "slug": "Momentum",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "momentum",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
