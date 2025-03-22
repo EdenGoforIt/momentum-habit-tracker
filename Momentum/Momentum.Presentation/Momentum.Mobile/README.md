@@ -53,3 +53,11 @@ Join our community of developers creating universal apps.
 
 This will reset the project from scratch
 `npm run reset-project`
+
+## If tailwind config not working
+
+delete cache
+
+```
+npx expo start -c
+```
