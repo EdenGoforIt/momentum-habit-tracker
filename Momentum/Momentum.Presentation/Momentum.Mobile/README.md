@@ -61,3 +61,9 @@ delete cache
 ```
 npx expo start -c
 ```
+
+## Known Issue
+
+### Error: Unable to save asset to directory
+
+Simulator -> device -> erase all contents and settings

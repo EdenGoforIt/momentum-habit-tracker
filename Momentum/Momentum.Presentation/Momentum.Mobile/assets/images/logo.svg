@@ -1,0 +1,29 @@
+<svg width="250" height="300" viewBox="0 0 250 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:#00d4ff; stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#007bff; stop-opacity:1"/>
+    </radialGradient>
+  </defs>
+  <circle cx="125" cy="100" r="80" fill="url(#bgGradient)"/>
+
+  <!-- Sleek Abstract "M" -->
+  <path d="M 75 140 C 85 90, 100 60, 125 100 S 165 140, 175 100" 
+        stroke="white" stroke-width="12" fill="none" 
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Dynamic Motion Swirl -->
+  <path d="M 60 120 C 100 50, 150 50, 190 120" stroke="rgba(255,255,255,0.5)" 
+        stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- Text "Momentum" -->
+  <text x="40" y="220" font-family="Poppins, Arial, sans-serif" font-size="30" fill="#222" font-weight="bold">
+    Momentum
+  </text>
+
+  <!-- Tagline -->
+  <text x="45" y="250" font-family="Poppins, Arial, sans-serif" font-size="16" fill="#666">
+    Make Your Habits Right
+  </text>
+</svg>
