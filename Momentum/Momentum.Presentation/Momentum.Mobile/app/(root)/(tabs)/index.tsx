@@ -6,7 +6,7 @@ interface IHomeProps {}
 export default function Home() {
   return (
     <>
-      <Redirect href="/sign-in" />
+      <Redirect href="/welcome" />
     </>
   );
 }
