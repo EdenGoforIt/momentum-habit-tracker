@@ -1,9 +1,11 @@
 import images from "@/constants/images";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function signIn() {
+export default function welcome() {
+  const router = useRouter();
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerClassName="h-full">
@@ -22,12 +24,18 @@ export default function signIn() {
           </Text>
         </View>
         <View className="flex flex-col justify-center items-center w-full">
-          <TouchableOpacity className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5">
+          <TouchableOpacity
+            className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5"
+            onPress={() => router.push("/sign-in")}
+          >
             <Text className="text-lg font-rubik-medium text-black-300 text-center">
               Sign In
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5">
+          <TouchableOpacity
+            className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5"
+            onPress={() => router.push("/register")}
+          >
             <Text className="text-lg font-rubik-medium text-black-300 text-center">
               Register
             </Text>
