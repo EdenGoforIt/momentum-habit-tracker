@@ -34,7 +34,7 @@ export default function welcome() {
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5"
-            onPress={() => router.push("/register")}
+            onPress={() => router.push("/sign-up")}
           >
             <Text className="text-lg font-rubik-medium text-black-300 text-center">
               Register

@@ -1,10 +1,10 @@
 import { SafeAreaView, ScrollView, Text } from "react-native";
 
-export default function signIn() {
+export default function home() {
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerClassName="h-full">
-        <Text>Hi</Text>
+        <Text>Home</Text>
       </ScrollView>
     </SafeAreaView>
   );
