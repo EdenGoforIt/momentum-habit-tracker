@@ -115,8 +115,8 @@ export default function SignUp() {
         >
           <View className="mb-8 items-center">
             <Image
-              source={images.logo}
-              className="w-full h-50"
+              source={images.logoOnly}
+              className="w-full h-46"
               resizeMode="contain"
             />
             <Text className="text-xl text-center text-gray-700">

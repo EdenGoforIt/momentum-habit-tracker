@@ -49,7 +49,7 @@ export default function RootLayout() {
           name="(auth)/sign-in"
           options={{
             headerShown: true,
-            headerTitle: "Sign Up",
+            headerTitle: "Sign In",
             headerBackTitle: "Back",
             headerBackVisible: true,
             headerTitleAlign: "center",
