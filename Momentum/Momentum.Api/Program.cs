@@ -25,7 +25,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.MapIdentityApi<IdentityUser>();
+app.MapGroup("/auth").MapIdentityApi<IdentityUser>();
 
 app.MapGet("/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
 {
