@@ -1,5 +1,15 @@
 ## How to run the MSSQL Locally on mac
 
+## Overview
+
+if everything is setup
+then
+
+``` 
+docker start my-mssql-server
+```
+will do
+
 1. Run docker and start container called `sql`
    -- if permission denied occurred in the docker
 
@@ -30,4 +40,24 @@ docker run --platform=linux/amd64 \
 
 ```
 docker ps
+```
+
+6. Once using the container stop the container
+
+stop the container (Use this)
+
+``` 
+docker stop my-mssql-server
+```
+
+Start the container again
+
+```
+docker start my-mssql-server
+```
+
+Delete container
+
+```
+docker rm my-mssql-server
 ```
