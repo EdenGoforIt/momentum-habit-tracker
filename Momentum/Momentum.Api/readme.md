@@ -8,3 +8,26 @@ sudo chmod 666 /var/run/docker.sock
 ```
 
 2. Using Azure Data Studio, connect to the local db
+
+3. Docker pull (install SQL)
+
+``` 
+docker pull mcr.microsoft.com/mssql/server:2019-latest
+```
+
+4. Run the container
+
+``` 
+docker run --platform=linux/amd64 \
+-e "ACCEPT_EULA=Y" \
+-e "MSSQL_SA_PASSWORD=YourStrong@Passw0rd" \
+--name my-mssql-server \
+-p 1433:1433 \
+-d mcr.microsoft.com/mssql/server:2019-latest
+```
+
+5. Check Docker is running
+
+```
+docker ps
+```

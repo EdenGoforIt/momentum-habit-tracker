@@ -1,4 +1,5 @@
 # Ef Migration
+1. Open terminal under Momentum Solution
 
 ## Add Migration
 
