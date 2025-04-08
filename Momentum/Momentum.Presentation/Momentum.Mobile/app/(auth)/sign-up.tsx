@@ -59,15 +59,15 @@ export default function SignUp() {
 
       try {
         // In real app, call your registration API
-        // const response = await fetch('your-api-url/register', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ email, password }),
-        // });
-        // const data = await response.json();
+        const url = process.env.EXPO_PUBLIC_API_URL;
+        const response = await fetch(`${url}/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const data = await response.json();
+        console.log("response :", data);
 
         // Sample response data (replace with actual API response)
         const authToken = "sample-auth-token";
