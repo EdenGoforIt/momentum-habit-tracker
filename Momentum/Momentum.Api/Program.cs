@@ -16,6 +16,12 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<DataContext>();
 
 WebApplication app = builder.Build();
+// Apply migrations at runtime
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dbContext.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
