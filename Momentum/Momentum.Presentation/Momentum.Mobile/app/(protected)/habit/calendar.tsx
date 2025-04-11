@@ -26,16 +26,25 @@ type Habit = {
   completed: boolean;
 };
 
+type MarkedDates = {
+  [date: string]: {
+    marked?: boolean;
+    dotColor?: string;
+    selected?: boolean;
+    selectedColor?: string;
+  };
+};
+
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
   const [habitsForDay, setHabitsForDay] = useState<Habit[]>([]);
-  const [markedDates, setMarkedDates] = useState<any>({});
+  const [markedDates, setMarkedDates] = useState<MarkedDates>({});
 
   useEffect(() => {
     // Generate marked dates from habits data
-    const marks = Object.keys(MOCK_HABITS).reduce((acc, date) => {
+    const marks: MarkedDates = Object.keys(MOCK_HABITS).reduce((acc, date) => {
       const habits = MOCK_HABITS[date as keyof typeof MOCK_HABITS];
       const allCompleted = habits.every((habit) => habit.completed);
       const someCompleted = habits.some((habit) => habit.completed);
@@ -51,7 +60,7 @@ export default function Calendar() {
           dotColor: dotColor,
         },
       };
-    }, {});
+    }, {} as MarkedDates);
 
     // Highlight selected date
     setMarkedDates({
