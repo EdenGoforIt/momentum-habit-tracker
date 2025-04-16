@@ -1,5 +1,4 @@
 import images from "@/constants/images";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -68,64 +67,37 @@ export default function SignUp() {
 
         // Get response data
         const data = await response.json();
-        console.log(`Response status: ${response.status}, data:`, data);
+        console.log("Response data:", JSON.stringify(data));
 
         if (!response.ok) {
           // Handle different error status codes
-          switch (response.status) {
-            case 400:
-              // Bad request - validation errors
-              const errorMessage = data.errors
-                ? Object.values(data.errors).flat().join("\n")
-                : data.message || "Invalid input data";
-              Alert.alert("Registration Failed", errorMessage);
-              break;
-            case 409:
-              // Conflict - email already exists
-              Alert.alert(
-                "Email Already Registered",
-                "This email is already in use. Please try signing in instead."
-              );
-              break;
-            case 500:
-              // Server error
-              Alert.alert(
-                "Server Error",
-                "Something went wrong on our end. Please try again later."
-              );
-              break;
-            default:
-              // Other errors
-              Alert.alert(
-                "Registration Failed",
-                data.message || "Unable to create account. Please try again."
-              );
+          if (response.status === 400 && data.errors) {
+            // Extract validation errors
+            const errorMessages: string[] = [];
+
+            // Get all validation error messages from the response
+            Object.keys(data.errors).forEach((key) => {
+              errorMessages.push(...data.errors[key]);
+            });
+
+            // Display the errors to the user
+            Alert.alert("Registration Failed", errorMessages.join("\n\n"), [
+              { text: "OK" },
+            ]);
+          } else {
+            // Handle other errors
+            Alert.alert(
+              "Registration Failed",
+              data.title || "Unable to create account. Please try again."
+            );
           }
           return;
         }
 
-        // Success - extract token and user data from response
-        const authToken = data.token || "";
-        const userData = {
-          id: data.userId || data.id || "",
-          email: email,
-          name: data.name || email.split("@")[0],
-          // Add any other user properties returned from your API
-        };
-
-        // Store authentication token/user data
-        await AsyncStorage.setItem("userToken", authToken);
-        await AsyncStorage.setItem("userData", JSON.stringify(userData));
-        await AsyncStorage.setItem("isLoggedIn", "true");
-
-        // Save authentication state using context
-        await login(authToken, userData);
-
-        // Show success message and navigate
         Alert.alert(
           "Registration Successful",
-          "Your account has been created successfully!",
-          [{ text: "Continue", onPress: () => router.replace("/home") }]
+          "Your account has been created successfully! Please sign in.",
+          [{ text: "Continue", onPress: () => router.replace("/sign-in") }]
         );
       } catch (error) {
         console.error("Registration error:", JSON.stringify(error));

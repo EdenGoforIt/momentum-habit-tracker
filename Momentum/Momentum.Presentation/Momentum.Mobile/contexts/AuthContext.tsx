@@ -1,95 +1,102 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type AuthContextType = {
-  isAuthenticated: boolean;
-  userToken: string | null;
-  userData: any;
-  login: (token: string, userData: any) => Promise<void>;
-  logout: () => Promise<void>;
-  isLoading: boolean;
+type User = {
+  id: string;
+  email: string;
+  name: string;
+  [key: string]: any; // For any additional user properties
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextType {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: User | null;
+  token: string | null;
+  login: (token: string, userData: User) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  isLoading: true,
+  user: null,
+  token: null,
+  login: async () => {},
+  logout: async () => {},
+});
+
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [userToken, setUserToken] = useState<string | null>(null);
-  const [userData, setUserData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Check if the user is logged in on app startup
   useEffect(() => {
-    const bootstrapAsync = async () => {
+    // Load stored authentication state on app startup
+    const loadAuthState = async () => {
       try {
-        const token = await AsyncStorage.getItem("userToken");
-        const userDataString = await AsyncStorage.getItem("userData");
+        const storedToken = await AsyncStorage.getItem("userToken");
+        const storedUserData = await AsyncStorage.getItem("userData");
 
-        if (token && userDataString) {
-          setUserToken(token);
-          setUserData(JSON.parse(userDataString));
-          setIsAuthenticated(true);
+        if (storedToken && storedUserData) {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUserData));
         }
-      } catch (e) {
-        console.error("Failed to get authentication state", e);
+      } catch (error) {
+        console.error("Failed to load auth state:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    bootstrapAsync();
+    loadAuthState();
   }, []);
 
-  const login = async (token: string, userData: any) => {
+  const login = async (newToken: string, userData: User) => {
     try {
-      await AsyncStorage.setItem("userToken", token);
+      // Store authentication data
+      await AsyncStorage.setItem("userToken", newToken);
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
-      await AsyncStorage.setItem("isLoggedIn", "true");
 
-      setUserToken(token);
-      setUserData(userData);
-      setIsAuthenticated(true);
-    } catch (e) {
-      console.error("Failed to save auth data", e);
+      // Update state
+      setToken(newToken);
+      setUser(userData);
+    } catch (error) {
+      console.error("Failed to store auth data:", error);
+      throw error;
     }
   };
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem("userToken");
-      await AsyncStorage.removeItem("userData");
-      await AsyncStorage.removeItem("isLoggedIn");
+      // Clear stored authentication data
+      await AsyncStorage.multiRemove(["userToken", "userData"]);
 
-      setUserToken(null);
-      setUserData(null);
-      setIsAuthenticated(false);
-    } catch (e) {
-      console.error("Failed to remove auth data", e);
+      // Reset state
+      setToken(null);
+      setUser(null);
+    } catch (error) {
+      console.error("Failed to clear auth data:", error);
+      throw error;
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated,
-        userToken,
-        userData,
+        isAuthenticated: !!token,
+        isLoading,
+        user,
+        token,
         login,
         logout,
-        isLoading,
       }}
     >
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };

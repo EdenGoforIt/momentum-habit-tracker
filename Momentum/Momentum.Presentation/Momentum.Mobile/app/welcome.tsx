@@ -1,10 +1,16 @@
 import images from "@/constants/images";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function welcome() {
+  // TODO: remove
+  const { logout } = useAuth();
+  useEffect(() => {
+    logout();
+  }, []);
   const router = useRouter();
   return (
     <SafeAreaView className="bg-white h-full">
