@@ -44,46 +44,76 @@ export default function RootLayout() {
     <AuthProvider>
       <AuthStateChangeListener />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(auth)/sign-in"
-          options={{
-            headerShown: true,
-            headerTitle: "Sign In",
-            headerBackTitle: "Back",
-            headerBackVisible: true,
-            headerTitleAlign: "center",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: "white",
-            },
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
-          }}
-        />
+        <Stack.Screen name="home" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
         <Stack.Screen
           name="(auth)/sign-up"
+          options={{ headerTitle: "Sign Up", headerShown: true }}
+        />
+
+        <Stack.Screen
+          name="(protected)/profile"
           options={{
             headerShown: true,
-            headerTitle: "Sign Up",
-            headerBackTitle: "Back",
-            headerBackVisible: true,
+            headerTitle: "Profile",
             headerTitleAlign: "center",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: "white",
-            },
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
           }}
         />
+
         <Stack.Screen
-          name="(protected)/home"
+          name="(protected)/habit/[id]"
+          options={{
+            headerShown: true,
+            headerTitle: "Habit Details",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="(protected)/habit/add"
+          options={{
+            headerShown: true,
+            headerTitle: "Add Habit",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="(protected)/habit/calendar"
+          options={{
+            headerShown: true,
+            headerTitle: "Habit Calendar",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="(protected)/habit/history"
+          options={{
+            headerShown: true,
+            headerTitle: "Habit History",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="(protected)/habit/stats"
+          options={{
+            headerShown: true,
+            headerTitle: "Habit Statistics",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="(root)/(tabs)/explore"
           options={{ headerShown: false }}
         />
-        {/* Add other screens */}
+        <Stack.Screen
+          name="(root)/(tabs)/index"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </AuthProvider>
   );
