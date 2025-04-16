@@ -44,40 +44,29 @@ export default function RootLayout() {
     <AuthProvider>
       <AuthStateChangeListener />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="home" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="home"
+          options={{
+            headerShown: true,
+            headerTitle: "Home",
+            headerBackTitle: "Back",
+          }}
+        />
         <Stack.Screen name="welcome" options={{ headerShown: false }} />
         <Stack.Screen
           name="(auth)/sign-in"
           options={{
             headerShown: true,
-            headerTitle: "Sign In",
+            headerTitle: "Home",
             headerBackTitle: "Back",
-            headerBackVisible: true,
-            headerTitleAlign: "center",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: "white",
-            },
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
           }}
         />
         <Stack.Screen
           name="(auth)/sign-up"
           options={{
             headerShown: true,
-            headerTitle: "Sign Up",
+            headerTitle: "Home",
             headerBackTitle: "Back",
-            headerBackVisible: true,
-            headerTitleAlign: "center",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: "white",
-            },
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
           }}
         />
 

@@ -58,23 +58,59 @@ export default function SignUp() {
       setIsLoading(true);
 
       try {
-        // In real app, call your registration API
         const url = process.env.EXPO_PUBLIC_API_URL;
-        const response = await fetch(`${url}/auth/register`, {
+
+        const response = await fetch(`${url}auth/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
         });
 
+        // Get response data
         const data = await response.json();
-        console.log("response :", data);
+        console.log(`Response status: ${response.status}, data:`, data);
 
-        // Sample response data (replace with actual API response)
-        const authToken = "sample-auth-token";
+        if (!response.ok) {
+          // Handle different error status codes
+          switch (response.status) {
+            case 400:
+              // Bad request - validation errors
+              const errorMessage = data.errors
+                ? Object.values(data.errors).flat().join("\n")
+                : data.message || "Invalid input data";
+              Alert.alert("Registration Failed", errorMessage);
+              break;
+            case 409:
+              // Conflict - email already exists
+              Alert.alert(
+                "Email Already Registered",
+                "This email is already in use. Please try signing in instead."
+              );
+              break;
+            case 500:
+              // Server error
+              Alert.alert(
+                "Server Error",
+                "Something went wrong on our end. Please try again later."
+              );
+              break;
+            default:
+              // Other errors
+              Alert.alert(
+                "Registration Failed",
+                data.message || "Unable to create account. Please try again."
+              );
+          }
+          return;
+        }
+
+        // Success - extract token and user data from response
+        const authToken = data.token || "";
         const userData = {
-          id: "123",
+          id: data.userId || data.id || "",
           email: email,
-          name: email.split("@")[0],
+          name: data.name || email.split("@")[0],
+          // Add any other user properties returned from your API
         };
 
         // Store authentication token/user data
@@ -82,15 +118,20 @@ export default function SignUp() {
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
         await AsyncStorage.setItem("isLoggedIn", "true");
 
-        // Save authentication state using our context
+        // Save authentication state using context
         await login(authToken, userData);
 
-        // Navigate to main app screen
-        router.replace("/home");
-      } catch (error) {
+        // Show success message and navigate
         Alert.alert(
-          "Registration Failed",
-          "Unable to create account. Please try again."
+          "Registration Successful",
+          "Your account has been created successfully!",
+          [{ text: "Continue", onPress: () => router.replace("/home") }]
+        );
+      } catch (error) {
+        console.error("Registration error:", JSON.stringify(error));
+        Alert.alert(
+          "Connection Error",
+          "Unable to connect to the server. Please check your internet connection and try again."
         );
       } finally {
         setIsLoading(false);
