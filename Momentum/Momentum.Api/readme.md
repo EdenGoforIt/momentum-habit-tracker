@@ -61,3 +61,12 @@ Delete container
 ```
 docker rm my-mssql-server
 ```
+
+### Example login
+```
+{
+  "email": "eden@gmail.com",
+  "password": "Password01!"
+}
+```
+ 

@@ -46,10 +46,39 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="home" options={{ headerShown: false }} />
         <Stack.Screen name="welcome" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(auth)/sign-in"
+          options={{
+            headerShown: true,
+            headerTitle: "Sign In",
+            headerBackTitle: "Back",
+            headerBackVisible: true,
+            headerTitleAlign: "center",
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: "white",
+            },
+            headerTitleStyle: {
+              fontWeight: "600",
+            },
+          }}
+        />
         <Stack.Screen
           name="(auth)/sign-up"
-          options={{ headerTitle: "Sign Up", headerShown: true }}
+          options={{
+            headerShown: true,
+            headerTitle: "Sign Up",
+            headerBackTitle: "Back",
+            headerBackVisible: true,
+            headerTitleAlign: "center",
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: "white",
+            },
+            headerTitleStyle: {
+              fontWeight: "600",
+            },
+          }}
         />
 
         <Stack.Screen
