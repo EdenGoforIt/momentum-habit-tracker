@@ -29,3 +29,9 @@ Momentum/
 
 - .NET for the backend - clean architecture, CRQS, minimal API, funcitonal programming, EF, MSSQL
 - React Native with Expo
+
+## How to use dev tool
+
+1. `npm run devtool`
+2. control + command + z once the app is loaded
+3. make sure that you turned off simulator -> I/O -> send keyboard input
