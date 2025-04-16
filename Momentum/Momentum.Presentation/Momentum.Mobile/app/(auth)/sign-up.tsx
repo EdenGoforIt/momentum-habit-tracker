@@ -44,6 +44,14 @@ export default function SignUp() {
     } else if (password.length < 6) {
       setPasswordError("Password must be at least 6 characters");
       return false;
+    } else if (!/[A-Z]/.test(password)) {
+      setPasswordError("Password must have at least one uppercase letter");
+      return false;
+    } else if (!/[^a-zA-Z0-9]/.test(password)) {
+      setPasswordError(
+        "Password must have at least one non-alphanumeric character"
+      );
+      return false;
     }
     setPasswordError("");
     return true;
@@ -56,58 +64,47 @@ export default function SignUp() {
     if (isEmailValid && isPasswordValid) {
       setIsLoading(true);
 
-      try {
-        const url = process.env.EXPO_PUBLIC_API_URL;
+      const url = process.env.EXPO_PUBLIC_API_URL;
 
-        const response = await fetch(`${url}auth/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
+      const response = await fetch(`${url}auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      console.log("Response data:", JSON.stringify(response));
 
-        // Get response data
-        const data = await response.json();
-        console.log("Response data:", JSON.stringify(data));
-
-        if (!response.ok) {
-          // Handle different error status codes
-          if (response.status === 400 && data.errors) {
-            // Extract validation errors
-            const errorMessages: string[] = [];
-
-            // Get all validation error messages from the response
-            Object.keys(data.errors).forEach((key) => {
-              errorMessages.push(...data.errors[key]);
-            });
-
-            // Display the errors to the user
-            Alert.alert("Registration Failed", errorMessages.join("\n\n"), [
-              { text: "OK" },
-            ]);
-          } else {
-            // Handle other errors
-            Alert.alert(
-              "Registration Failed",
-              data.title || "Unable to create account. Please try again."
-            );
-          }
-          return;
-        }
-
+      if (response.ok || response.status === 200) {
         Alert.alert(
           "Registration Successful",
           "Your account has been created successfully! Please sign in.",
           [{ text: "Continue", onPress: () => router.replace("/sign-in") }]
         );
-      } catch (error) {
-        console.error("Registration error:", JSON.stringify(error));
-        Alert.alert(
-          "Connection Error",
-          "Unable to connect to the server. Please check your internet connection and try again."
-        );
-      } finally {
-        setIsLoading(false);
       }
+      // Handle different error status codes
+      if (response.status === 400) {
+        const data = await response.json();
+
+        // Extract validation errors
+        const errorMessages: string[] = [];
+
+        // Get all validation error messages from the response
+        Object.keys(data.errors).forEach((key) => {
+          errorMessages.push(...data.errors[key]);
+        });
+
+        // Display the errors to the user
+        Alert.alert("Registration Failed", errorMessages.join("\n\n"), [
+          { text: "OK" },
+        ]);
+      } else {
+        // Handle other errors
+        Alert.alert(
+          "Registration Failed",
+          data.title || "Unable to create account. Please try again."
+        );
+      }
+
+      setIsLoading(false);
     }
   };
 
@@ -173,7 +170,13 @@ export default function SignUp() {
               />
               {passwordError ? (
                 <Text className="text-red-500 mt-1">{passwordError}</Text>
-              ) : null}
+              ) : (
+                <Text className="text-gray-500 mt-1 text-xs">
+                  Password must be at least 6 characters with at least one
+                  uppercase letter (A-Z) and one special character (!@#$%^&*,
+                  etc).
+                </Text>
+              )}
             </View>
           </View>
 
