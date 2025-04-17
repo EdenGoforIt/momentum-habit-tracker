@@ -4,7 +4,8 @@
 
 if everything is setup
 then
-
+1. open the docker desktop
+2. 
 ``` 
 docker start my-mssql-server
 ```
