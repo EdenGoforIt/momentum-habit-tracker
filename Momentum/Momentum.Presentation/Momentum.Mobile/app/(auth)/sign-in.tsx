@@ -95,11 +95,8 @@ export default function SignIn() {
           throw new Error("No access token received");
         }
 
-        // For now, create basic user data from email
-        // In a real app, you'd likely make another API call to get user profile
-        // or the login endpoint would return user data
         const userData = {
-          id: "user-id", // Replace with actual user ID if available from response
+          id: "user-id",
           email: email,
           name: email.split("@")[0],
         };
