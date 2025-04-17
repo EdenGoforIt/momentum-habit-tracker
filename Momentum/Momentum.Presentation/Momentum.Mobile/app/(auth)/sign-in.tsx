@@ -58,39 +58,72 @@ export default function SignIn() {
       setIsLoading(true);
 
       try {
-        // In real app, call your authentication API
-        // const response = await fetch('your-api-url/login', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ email, password }),
-        // });
-        // const data = await response.json();
+        const url = process.env.EXPO_PUBLIC_API_URL;
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const response = await fetch(`${url}auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-        // Sample response data (replace with actual API response)
-        const authToken = "sample-auth-token";
+        const data = await response.json();
+        console.log("Response data:", JSON.stringify(data));
+
+        if (!response.ok) {
+          // Handle error responses based on status code
+          if (response.status === 401) {
+            Alert.alert(
+              "Authentication Failed",
+              "Invalid email or password. Please try again."
+            );
+          } else {
+            Alert.alert(
+              "Sign In Failed",
+              data.title || "Something went wrong. Please try again later."
+            );
+          }
+          return;
+        }
+
+        // Extract token data from response
+        const accessToken = data.accessToken;
+        const refreshToken = data.refreshToken;
+        const tokenType = data.tokenType;
+        const expiresIn = data.expiresIn;
+
+        if (!accessToken) {
+          throw new Error("No access token received");
+        }
+
+        // For now, create basic user data from email
+        // In a real app, you'd likely make another API call to get user profile
+        // or the login endpoint would return user data
         const userData = {
-          id: "123",
+          id: "user-id", // Replace with actual user ID if available from response
           email: email,
           name: email.split("@")[0],
         };
 
         // Store authentication token/user data
-        await AsyncStorage.setItem("userToken", authToken);
+        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
+        await AsyncStorage.setItem("tokenType", tokenType);
+        await AsyncStorage.setItem(
+          "tokenExpires",
+          (Date.now() + expiresIn * 1000).toString()
+        );
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
-        await AsyncStorage.setItem("isLoggedIn", "true");
 
         // Save authentication state using our context
-        await login(authToken, userData);
+        await login(accessToken, userData);
 
         // Navigate to main app screen
         router.replace("/home");
       } catch (error) {
+        console.error("Sign in error:", error);
         Alert.alert(
-          "Sign In Failed",
-          "Invalid email or password. Please try again."
+          "Connection Error",
+          "Unable to connect to the server. Please check your internet connection and try again."
         );
       } finally {
         setIsLoading(false);
