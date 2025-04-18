@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
         <PackageReference Include="Ardalis.SmartEnum"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Users\"/>
+      <Folder Include="ValueObjects\" />
     </ItemGroup>
 </Project>
