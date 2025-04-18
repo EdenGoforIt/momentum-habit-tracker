@@ -18,7 +18,7 @@ public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserDto>
     {
         var user = new UserDto
         {
-            UserName = "Hey", PasswordHash = "Name"
+            Email = "Test@gmail.com", Password = "Test1234", FirstName = "Test", LastName = "test",
         };
         return Task.FromResult(Result.Success<UserDto, IDomainError>(user));
     }

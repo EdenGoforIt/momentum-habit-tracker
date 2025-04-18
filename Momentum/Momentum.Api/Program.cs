@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
+using Momentum.Domain.Entities.Auth;
 using Momentum.Infrastructure.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -12,10 +13,12 @@ builder.Services.AddServices();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<DataContext>();
+builder.Services.AddAutoMapper();
 
 WebApplication app = builder.Build();
+
 // Apply migrations at runtime
 using (IServiceScope scope = app.Services.CreateScope())
 {
@@ -31,7 +34,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.MapGroup("/auth").MapIdentityApi<IdentityUser>();
+app.MapGroup("/auth").MapIdentityApi<User>();
 
 app.MapGet("/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
 {

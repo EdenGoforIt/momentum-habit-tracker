@@ -4,7 +4,7 @@ namespace Momentum.Domain.Entities.Auth;
 
 public class User : IdentityUser
 {
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
-    public DateTime? DateOfBirth { get; set; }
+    public string FirstName { get; init; } = string.Empty;
+    public string LastName { get; init; } = string.Empty;
+    public DateTime? DateOfBirth { get; init; }
 }
