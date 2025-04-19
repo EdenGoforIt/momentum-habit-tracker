@@ -1,3 +1,4 @@
+using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Identity;
 using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Users;
@@ -20,23 +21,33 @@ public record CreateUserCommand : ICommand<long>
 public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, long>
 {
     private readonly UserManager<User> _userManager;
-    public CreateUserCommandHandler(UserManager<User> userManager)
+#pragma warning disable CA1859
+    private readonly IMapper _mapper;
+#pragma warning restore CA1859
+
+    public CreateUserCommandHandler(UserManager<User> userManager, IMapper mapper)
     {
-        _userManager = userManager;
-    } 
-    public Task<Result<long, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        _userManager = Guard.Against.Null(userManager, nameof(userManager));
+        _mapper = Guard.Against.Null(mapper, nameof(mapper));
+    }
+
+    public async Task<Result<long, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(request);
-        
-        var user = new UserDto()
+        Guard.Against.Null(request, nameof(CreateUserCommand));
+
+        var userDto = new UserDto()
         {
             Email = request.Email,
             Password = request.Password,
             FirstName = request.FirstName,
             LastName = request.LastName,
             DateOfBirth = request.DateOfBirth
-        }; 
+        };
 
-        return Task.FromResult(Result.Success<long, IDomainError>(1));
+        var user = _mapper.Map<User>(userDto);
+
+        var result = await _userManager.CreateAsync(user, request.Password).ConfigureAwait(true);
+
+        return Result.Success<long, IDomainError>(1);
     }
 }

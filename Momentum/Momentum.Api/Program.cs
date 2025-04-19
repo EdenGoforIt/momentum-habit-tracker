@@ -1,5 +1,4 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
@@ -8,14 +7,12 @@ using Momentum.Infrastructure.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationLayer();
-
 builder.Services.AddServices();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<DataContext>();
-builder.Services.AddAutoMapper();
 
 WebApplication app = builder.Build();
 
