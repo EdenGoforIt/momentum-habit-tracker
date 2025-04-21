@@ -20,18 +20,15 @@ public record CreateUserCommand : ICommand<long>
 
 public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, long>
 {
-    private readonly UserManager<User> _userManager;
-#pragma warning disable CA1859
     private readonly IMapper _mapper;
 #pragma warning restore CA1859
 
-    public CreateUserCommandHandler(UserManager<User> userManager, IMapper mapper)
+    public CreateUserCommandHandler(IMapper mapper)
     {
-        _userManager = Guard.Against.Null(userManager, nameof(userManager));
         _mapper = Guard.Against.Null(mapper, nameof(mapper));
     }
 
-    public async Task<Result<long, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public Task<Result<long, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(CreateUserCommand));
 
@@ -46,8 +43,6 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, long>
 
         var user = _mapper.Map<User>(userDto);
 
-        var result = await _userManager.CreateAsync(user, request.Password).ConfigureAwait(true);
-
-        return Result.Success<long, IDomainError>(1);
+        return Task.FromResult(Result.Success<long, IDomainError>(1));
     }
 }
