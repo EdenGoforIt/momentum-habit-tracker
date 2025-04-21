@@ -1,16 +1,19 @@
 @host = http://localhost:5128
 ### Get User
-GET {{host}}/api/v1/users/1
+GET {{host}}/users/1
 Accept: application/json
 
 ### Create User
-POST {{host}}/api/v1/users
+POST {{host}}/users
 Content-Type: application/json
 Accept: application/json
 
 {
-  "userName": "exampleUser",
-  "passwordHash": "exampleHash"
+  "email": "eden@gmail.com",
+  "password": "Password01!",
+  "firstName": "Eden",
+  "lastName": "Park",
+  "dateOfBirth": "2025-04-21T07:31:51.952Z"
 }
 
 ### Get End points

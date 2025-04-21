@@ -19,8 +19,6 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
     internal override void Map(WebApplication app)
     {
         app.MapGroup(nameof(Users))
-            .WithApiVersionSet()
-            .MapToApiVersion(1.0)
             .MapGet(GetUser, "{id}", Tags.Users)
             .MapPost(CreateUser, string.Empty, Tags.Users);
     }
