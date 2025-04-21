@@ -12,3 +12,17 @@
 ```
  dotnet ef database update --project ./Momentum.Infrastructure/Momentum.Infrastructure.csproj --startup-project ./Momentum.Api/Momentum.Api.csproj
 ```
+
+## Remove Migration
+
+```
+ dotnet ef migrations remove --project ./Momentum.Infrastructure/Momentum.Infrastructure.csproj --startup-project ./Momentum.Api/Momentum.Api.csproj
+```
+
+## Rollback Migration
+```
+dotnet ef database update 0 --project ./Momentum.Infrastructure/Momentum.Infrastructure.csproj --startup-project ./Momentum.Api/Momentum.Api.csproj
+```
+```
+    dotnet ef database update <MigrationName> --project ./Momentum.Infrastructure/Momentum.Infrastructure.csproj --startup-project ./Momentum.Api/Momentum.Api.csproj
+```
