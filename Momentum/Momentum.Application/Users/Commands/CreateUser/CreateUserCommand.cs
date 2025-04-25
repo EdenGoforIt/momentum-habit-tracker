@@ -9,32 +9,36 @@ using Momentum.Domain.Errors;
 
 namespace Momentum.Application.Users.Commands.CreateUser;
 
-public record CreateUserCommand : ICommand<long>
+public record CreateUserCommand : ICommand<string>
 {
     public required string Email { get; set; } = string.Empty;
+    public string UserName => this.Email;
     public required string Password { get; set; } = string.Empty;
     public required string FirstName { get; set; } = string.Empty;
     public required string LastName { get; set; } = string.Empty;
     public DateTime? DateOfBirth { get; set; }
 }
 
-public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, long>
+public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, string>
 {
     private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
 #pragma warning restore CA1859
 
-    public CreateUserCommandHandler(IMapper mapper)
+    public CreateUserCommandHandler(IMapper mapper, UserManager<User> userManager)
     {
+        _userManager = Guard.Against.Null(userManager, nameof(userManager));
         _mapper = Guard.Against.Null(mapper, nameof(mapper));
     }
 
-    public Task<Result<long, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(CreateUserCommand));
 
         var userDto = new UserDto()
         {
             Email = request.Email,
+            UserName = request.UserName,
             Password = request.Password,
             FirstName = request.FirstName,
             LastName = request.LastName,
@@ -43,6 +47,8 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, long>
 
         var user = _mapper.Map<User>(userDto);
 
-        return Task.FromResult(Result.Success<long, IDomainError>(1));
+        var result = await _userManager.CreateAsync(user, request.Password).ConfigureAwait(false);
+
+        return user.Id;
     }
 }

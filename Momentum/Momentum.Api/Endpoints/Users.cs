@@ -19,7 +19,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
     internal override void Map(WebApplication app)
     {
         app.MapGroup(nameof(Users))
-            .MapGet(GetUser, "{userName}", Tags.Users)
+            .MapGet(GetUser, "{id}", Tags.Users)
             .MapPost(CreateUser, string.Empty, Tags.Users);
     }
 
@@ -37,19 +37,19 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 
     private async Task<IResult> CreateUser(ISender sender, CreateUserCommand command)
     {
-        Result<long, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
+        Result<string, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
 
         if (result.IsSuccess)
         {
             var createdUser = new
             {
-                Id = result.Value
+                UserName = result.Value
             };
 
             return Results.CreatedAtRoute(nameof(GetUser),
                 new
                 {
-                    id = result.Value
+                    UserName = result.Value
                 },
                 createdUser
             );
