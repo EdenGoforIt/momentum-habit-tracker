@@ -19,7 +19,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
     internal override void Map(WebApplication app)
     {
         app.MapGroup(nameof(Users))
-            .MapGet(GetUser, "{id}", Tags.Users)
+            .MapGet(GetUser, "{userName}", Tags.Users)
             .MapPost(CreateUser, string.Empty, Tags.Users);
     }
 
