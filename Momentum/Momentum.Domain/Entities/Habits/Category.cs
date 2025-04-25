@@ -1,4 +1,4 @@
-namespace Momentum.Domain.Entities.Habit;
+namespace Momentum.Domain.Entities.Habits;
 
 public class Category
 {

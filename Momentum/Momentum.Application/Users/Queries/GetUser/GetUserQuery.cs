@@ -1,6 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
+using Ardalis.GuardClauses;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Users;
+using Momentum.Domain.Entities.Auth;
 using Momentum.Domain.Errors;
 
 namespace Momentum.Application.Users.Queries.GetUser;
@@ -8,18 +12,34 @@ namespace Momentum.Application.Users.Queries.GetUser;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public record GetUserQuery : IQuery<UserDto>
 {
-    public long Id { get; set; }
+    public required string UserName { get; set; }
 }
 
 // ReSharper disable once HollowTypeName
 public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserDto>
 {
-    public Task<Result<UserDto, IDomainError>> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    private readonly UserManager<User> _userManager;
+    private readonly IMapper _mapper;
+
+    public GetUserQueryHandler(UserManager<User> userManager, IMapper mapper)
     {
-        var user = new UserDto
+        _mapper = Guard.Against.Null(mapper, nameof(IMapper));
+        _userManager = Guard.Against.Null(userManager, nameof(UserManager<User>));
+    }
+
+    public async Task<Result<UserDto, IDomainError>> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    {
+        Guard.Against.Null(request, nameof(GetUserQuery));
+
+        User? user = await _userManager.FindByNameAsync(request.UserName).ConfigureAwait(false);
+
+        if (user is null)
         {
-            Email = "Test@gmail.com", Password = "Test1234", FirstName = "Test", LastName = "test",
-        };
-        return Task.FromResult(Result.Success<UserDto, IDomainError>(user));
+            throw new NotFoundException(request.UserName, nameof(User));
+        }
+
+        UserDto userDto = _mapper.Map<UserDto>(user);
+
+        return userDto;
     }
 }

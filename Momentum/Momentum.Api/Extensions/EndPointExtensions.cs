@@ -21,24 +21,6 @@ internal static class EndPointExtensions
 
     public static WebApplication MapEndpoints(this WebApplication app)
     {
-        // Type endpointGroupType = typeof(EndpointGroupBase);
-        // var assembly = Assembly.GetExecutingAssembly();
-        // IEnumerable<Type> endpointGroupTypes = assembly.GetTypes()
-        //     .Where(t => t.IsSubclassOf(endpointGroupType));
-        //
-        // using IServiceScope scope = app.Services.CreateScope();
-        // IServiceProvider scopedServices = scope.ServiceProvider;
-        //
-        // foreach (Type type in endpointGroupTypes)
-        // {
-        //     ConstructorInfo constructorInfo = type.GetConstructors().First();
-        //     object[] parameters = constructorInfo.GetParameters()
-        //         .Select(p => scopedServices.GetRequiredService(p.ParameterType))
-        //         .ToArray();
-        //
-        //     var instance = (EndpointGroupBase)constructorInfo.Invoke(parameters);
-        //     instance.Map(app);
-        // }
         using IServiceScope scope = app.Services.CreateScope();
         IServiceProvider scopedServices = scope.ServiceProvider;
 

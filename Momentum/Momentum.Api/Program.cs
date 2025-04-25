@@ -12,7 +12,7 @@ builder.Services.AddServices();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<DataContext>();
 
 WebApplication app = builder.Build();
@@ -32,7 +32,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.MapGroup("/auth").MapIdentityApi<IdentityUser>();
+app.MapGroup("/auth").MapIdentityApi<User>();
 
 app.MapGet("/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
 {
