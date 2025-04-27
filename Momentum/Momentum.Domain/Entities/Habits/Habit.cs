@@ -5,23 +5,23 @@ namespace Momentum.Domain.Entities.Habits;
 
 public class Habit
 {
-    public required long Id { get; set; }
+    public required long Id { get; init; }
 
-    public required string Name { get; set; } = string.Empty;
-    public string? Description { get; set; }
+    public required string Name { get; init; } = string.Empty;
+    public string? Description { get; init; }
 
-    public required HabitFrequency Frequency { get; set; } // Daily, Weekly, etc.
+    public required HabitFrequency Frequency { get; init; } // Daily, Weekly, etc.
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? ArchivedAt { get; set; }
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public DateTime? ArchivedAt { get; init; }
 
     // User
-    public long UserId { get; set; }
-    public required User User { get; set; } = null!;
+    public long UserId { get; init; }
+    public required User User { get; init; } = null!;
 
     // Category
-    public long? CategoryId { get; set; }
-    public Category? Category { get; set; }
+    public long? CategoryId { get; init; }
+    public Category? Category { get; init; }
 
     public ICollection<HabitEntry> Entries { get; } = [];
 }

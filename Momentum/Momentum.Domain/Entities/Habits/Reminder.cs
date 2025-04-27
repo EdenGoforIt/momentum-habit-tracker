@@ -2,14 +2,14 @@ namespace Momentum.Domain.Entities.Habits;
 
 public class Reminder
 {
-    public long Id { get; set; }
+    public long Id { get; init; }
 
-    public long HabitId { get; set; } // Foreign key to Habit
-    public Habit Habit { get; set; } = null!;
+    public long HabitId { get; init; } // Foreign key to Habit
+    public Habit Habit { get; init; } = null!;
 
-    public TimeSpan ReminderTime { get; set; } // Time of day (e.g., 08:00 AM)
+    public TimeSpan ReminderTime { get; init; } // Time of day (e.g., 08:00 AM)
 
-    public DayOfWeek? DayOfWeek { get; set; } // For weekly reminders (optional)
+    public DayOfWeek? DayOfWeek { get; init; } // For weekly reminders (optional)
 
-    public string Message { get; set; } = "Don't forget your habit!";
+    public string Message { get; init; } = "Don't forget your habit!";
 }
