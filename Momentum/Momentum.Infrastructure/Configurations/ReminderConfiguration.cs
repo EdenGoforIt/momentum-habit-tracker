@@ -1,6 +1,6 @@
 namespace Momentum.Infrastructure.Configurations;
 
-public class RemiderConfiguration
+public class ReminderConfiguration
 {
     
 }
