@@ -4,5 +4,5 @@ public class Category
 {
     public long Id { get; init; }
     public required string Name { get; init; }
-    public ICollection<HabitEntry> Habits { get; init; } = [];
+    public ICollection<Habit> Habits { get; init; } = [];
 }
