@@ -23,5 +23,5 @@ public class Habit
     public long? CategoryId { get; init; }
     public Category? Category { get; init; }
 
-    public ICollection<HabitEntry> Entries { get; } = [];
+    public ICollection<HabitEntry> HabitEntries { get; } = [];
 }

@@ -12,7 +12,8 @@ public class ReminderConfiguration : IEntityTypeConfiguration<Reminder>
 
         builder.HasOne(x => x.HabitEntry)
             .WithMany(x => x.Reminders)
-            .HasForeignKey(x => x.HabitEntryId);
+            .HasForeignKey(x => x.HabitEntryId)
+            .IsRequired();
 
         builder.Property(x => x.DayOfWeek)
             .HasConversion<string>()
