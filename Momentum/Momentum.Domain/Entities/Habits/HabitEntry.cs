@@ -11,4 +11,6 @@ public class HabitEntry
 
     public required long HabitId { get; init; }
     public required Habit Habit { get; init; } = null!;
+    public ICollection<Reminder> Reminders { get; init; } = [];
+
 }
