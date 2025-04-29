@@ -4,8 +4,8 @@ public class Reminder
 {
     public long Id { get; init; }
 
-    public long HabitId { get; init; } // Foreign key to Habit
-    public Habit Habit { get; init; } = null!;
+    public long HabitEntryId { get; init; } // Foreign key to Habit
+    public HabitEntry HabitEntry { get; init; } = null!;
 
     public TimeSpan ReminderTime { get; init; } // Time of day (e.g., 08:00 AM)
 
