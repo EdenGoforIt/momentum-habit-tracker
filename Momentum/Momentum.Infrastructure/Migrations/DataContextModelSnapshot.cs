@@ -233,6 +233,126 @@ namespace Momentum.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.Category", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.Habit", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Habit");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.HabitEntry", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("Completed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("HabitId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HabitId");
+
+                    b.ToTable("HabitEntry");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.Reminder", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("DayOfWeek")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("HabitEntryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<TimeSpan>("ReminderTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HabitEntryId");
+
+                    b.ToTable("Reminder");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -282,6 +402,60 @@ namespace Momentum.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.Habit", b =>
+                {
+                    b.HasOne("Momentum.Domain.Entities.Habits.Category", "Category")
+                        .WithMany("Habits")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("Momentum.Domain.Entities.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.HabitEntry", b =>
+                {
+                    b.HasOne("Momentum.Domain.Entities.Habits.Habit", "Habit")
+                        .WithMany("HabitEntries")
+                        .HasForeignKey("HabitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Habit");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.Reminder", b =>
+                {
+                    b.HasOne("Momentum.Domain.Entities.Habits.HabitEntry", "HabitEntry")
+                        .WithMany("Reminders")
+                        .HasForeignKey("HabitEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HabitEntry");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.Category", b =>
+                {
+                    b.Navigation("Habits");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.Habit", b =>
+                {
+                    b.Navigation("HabitEntries");
+                });
+
+            modelBuilder.Entity("Momentum.Domain.Entities.Habits.HabitEntry", b =>
+                {
+                    b.Navigation("Reminders");
                 });
 #pragma warning restore 612, 618
         }

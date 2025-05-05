@@ -16,7 +16,7 @@ public class Habit
     public DateTime? ArchivedAt { get; init; }
 
     // User
-    public long UserId { get; init; }
+    public required string UserId { get; init; }
     public required User User { get; init; } = null!;
 
     // Category
