@@ -34,7 +34,7 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, strin
     public async Task<Result<string, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(CreateUserCommand));
-
+        // This will generate a new user and will be used to authenticate using userName and password using "/login"
         var userDto = new UserDto()
         {
             Email = request.Email,
