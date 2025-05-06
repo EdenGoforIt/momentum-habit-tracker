@@ -169,10 +169,10 @@ export default function SignUp() {
           }}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="mb-8 items-center">
+          <View className="mb-2 items-center">
             <Image
               source={images.logoOnly}
-              className="w-full h-46"
+              className="w-full h-[200px]"
               resizeMode="contain"
             />
             <Text className="text-xl text-center text-gray-700">
