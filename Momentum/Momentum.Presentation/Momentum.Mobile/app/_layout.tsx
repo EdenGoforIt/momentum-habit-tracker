@@ -5,7 +5,6 @@ import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
 import "../global.css";
 
-// This component handles protected routes
 function AuthStateChangeListener() {
   const { isAuthenticated, isLoading } = useAuth();
   const segments = useSegments();
@@ -43,96 +42,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <AuthStateChangeListener />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="home"
-          options={{
-            headerShown: true,
-            headerTitle: "Home",
-            headerBackTitle: "Back",
-          }}
-        />
-        <Stack.Screen name="welcome" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(auth)/sign-in"
-          options={{
-            headerShown: true,
-            headerTitle: "Home",
-            headerBackTitle: "Back",
-          }}
-        />
-        <Stack.Screen
-          name="(auth)/sign-up"
-          options={{
-            headerShown: true,
-            headerTitle: "Home",
-            headerBackTitle: "Back",
-          }}
-        />
-
-        <Stack.Screen
-          name="(protected)/profile"
-          options={{
-            headerShown: true,
-            headerTitle: "Profile",
-            headerTitleAlign: "center",
-          }}
-        />
-
-        <Stack.Screen
-          name="(protected)/habit/[id]"
-          options={{
-            headerShown: true,
-            headerTitle: "Habit Details",
-            headerTitleAlign: "center",
-          }}
-        />
-
-        <Stack.Screen
-          name="(protected)/habit/add"
-          options={{
-            headerShown: true,
-            headerTitle: "Add Habit",
-            headerTitleAlign: "center",
-          }}
-        />
-
-        <Stack.Screen
-          name="(protected)/habit/calendar"
-          options={{
-            headerShown: true,
-            headerTitle: "Habit Calendar",
-            headerTitleAlign: "center",
-          }}
-        />
-
-        <Stack.Screen
-          name="(protected)/habit/history"
-          options={{
-            headerShown: true,
-            headerTitle: "Habit History",
-            headerTitleAlign: "center",
-          }}
-        />
-
-        <Stack.Screen
-          name="(protected)/habit/stats"
-          options={{
-            headerShown: true,
-            headerTitle: "Habit Statistics",
-            headerTitleAlign: "center",
-          }}
-        />
-
-        <Stack.Screen
-          name="(root)/(tabs)/explore"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="(root)/(tabs)/index"
-          options={{ headerShown: false }}
-        />
-      </Stack>
+      <Stack screenOptions={{ headerShown: false }} />
     </AuthProvider>
   );
 }
