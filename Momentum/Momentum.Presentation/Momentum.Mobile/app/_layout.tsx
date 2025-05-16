@@ -42,7 +42,12 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <AuthStateChangeListener />
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          headerBackVisible: false,
+          headerShown: false,
+        }}
+      />
     </AuthProvider>
   );
 }

@@ -2,21 +2,25 @@ import { Stack } from "expo-router";
 
 export default function HabitLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerBackVisible: true,
+        headerShown: true,
+      }}
+    >
       <Stack.Screen
         name="[id]"
         options={{
-          headerShown: true,
           headerTitle: "Habit Details",
           headerTitleAlign: "center",
+          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
         name="add"
         options={{
-          headerShown: true,
           headerTitle: "Add Habit",
-          headerTitleAlign: "center",
+          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
@@ -33,6 +37,7 @@ export default function HabitLayout() {
           headerShown: true,
           headerTitle: "Habit History",
           headerTitleAlign: "center",
+          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
@@ -41,6 +46,7 @@ export default function HabitLayout() {
           headerShown: true,
           headerTitle: "Habit Statistics",
           headerTitleAlign: "center",
+          headerBackTitle: "Back",
         }}
       />
     </Stack>

@@ -32,7 +32,7 @@ export default function welcome() {
         <View className="flex flex-col justify-center items-center w-full">
           <TouchableOpacity
             className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5"
-            onPress={() => router.push("/sign-in")}
+            onPress={() => router.push("/(auth)/sign-in")}
           >
             <Text className="text-lg font-rubik-medium text-black-300 text-center">
               Sign In
@@ -40,7 +40,7 @@ export default function welcome() {
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5"
-            onPress={() => router.push("/sign-up")}
+            onPress={() => router.push("/(auth)/sign-up")}
           >
             <Text className="text-lg font-rubik-medium text-black-300 text-center">
               Register
