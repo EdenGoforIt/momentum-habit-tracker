@@ -21,6 +21,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         app.MapGroup(nameof(Users))
             .MapGet(GetUser, "{id}", Tags.Users)
             .MapPost(CreateUser, string.Empty, Tags.Users);
+            // .MapPut(UpdateUser, "{id}", Tags.Users);
     }
 
     private async Task<IResult> GetUser(ISender sender, [AsParameters] GetUserQuery query)
@@ -57,4 +58,9 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 
         return errorHandler.HandleError(result.Error);
     }
+
+    // private async Task<IResult> UpdateUser(ISender sender, UpdateUserCommand command, string id)
+    // {
+    //     
+    // }
 }

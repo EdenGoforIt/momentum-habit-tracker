@@ -9,6 +9,7 @@ using Momentum.Infrastructure.Data;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationLayer();
 builder.Services.AddServices();
+builder.Services.AddProblemDetails();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthorization();
