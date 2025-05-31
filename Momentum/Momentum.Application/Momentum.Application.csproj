@@ -8,7 +8,6 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Dtos\" />
-        <Folder Include="Users\Update\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Momentum.Domain\Momentum.Domain.csproj"/>
