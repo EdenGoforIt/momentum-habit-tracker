@@ -22,7 +22,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         app.MapGroup(nameof(Users))
             .MapGet(GetUser, "{id}", Tags.Users)
             .MapPost(CreateUser, string.Empty, Tags.Users)
-            .MapPut(UpdateUser, "{id}", Tags.Users);
+            .MapPatch("{id}", PatchUser).WithTags(Tags.Users);
     }
 
     private async Task<IResult> GetUser(ISender sender, [AsParameters] GetUserQuery query)
@@ -60,26 +60,10 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         return errorHandler.HandleError(result.Error);
     }
 
-    private async Task<IResult> UpdateUser(ISender sender, UpdateUserCommand command, string id)
+    private async Task<IResult> PatchUser(ISender sender, PatchUserCommand command, string id)
     {
-        Result<string, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
+        Result<Unit, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
 
-        if (result.IsSuccess)
-        {
-            var updateUser = new
-            {
-                UserName = result.Value
-            };
-
-            return Results.CreatedAtRoute(nameof(GetUser),
-                new
-                {
-                    UserName = result.Value
-                },
-                updateUser
-            );
-        }
-
-        return errorHandler.HandleError(result.Error);
+        return result.IsSuccess ? Results.NoContent() : errorHandler.HandleError(result.Error);
     }
 }
