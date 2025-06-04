@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
@@ -60,8 +61,34 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         return errorHandler.HandleError(result.Error);
     }
 
-    private async Task<IResult> PatchUser(ISender sender, PatchUserCommand command, string id)
+    private async Task<IResult> PatchUser(ISender sender, JsonPatchDocument<PatchUserCommand>? patchDocument, string id)
     {
+        if (patchDocument is null)
+        {
+            return Results.BadRequest("Invalid patch document.");
+        }
+
+        // Fetch the existing user data (e.g., from the database)
+        Result<UserDto, IDomainError> existingUserResult = await sender.Send(new GetUserQuery
+        {
+            Id = id
+        }).ConfigureAwait(false);
+
+        if (existingUserResult.IsFailure)
+        {
+            return errorHandler.HandleError(existingUserResult.Error);
+        }
+
+        UserDto? existingUser = existingUserResult.Value;
+        // Map the existing user to the command object
+        var command = new PatchUserCommand
+        {
+            Email = existingUser.Email
+        };
+
+        // Apply the patch
+        patchDocument.ApplyTo(command);
+
         Result<Unit, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
 
         return result.IsSuccess ? Results.NoContent() : errorHandler.HandleError(result.Error);

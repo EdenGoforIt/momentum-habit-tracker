@@ -4,11 +4,14 @@
 
 if everything is setup
 then
+
 1. open the docker desktop
-2. 
+2.
+
 ``` 
 docker start my-mssql-server
 ```
+
 will do
 
 1. Run docker and start container called `sql`
@@ -64,6 +67,7 @@ docker rm my-mssql-server
 ```
 
 ### Example login
+
 ```
 {
   "email": "eden@gmail.com",

@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Users;
 using Momentum.Domain.Entities.Auth;
@@ -18,8 +16,8 @@ public record GetUserQuery : IQuery<UserDto>
 // ReSharper disable once HollowTypeName
 public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserDto>
 {
-    private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
 
     public GetUserQueryHandler(UserManager<User> userManager, IMapper mapper)
     {
@@ -38,7 +36,7 @@ public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserDto>
             throw new NotFoundException(request.Id, nameof(User));
         }
 
-        UserDto userDto = _mapper.Map<UserDto>(user);
+        var userDto = _mapper.Map<UserDto>(user);
 
         return userDto;
     }

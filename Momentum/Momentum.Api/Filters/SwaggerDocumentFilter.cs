@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.OpenApi.Models;
@@ -5,7 +6,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Momentum.Api.Filters;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Used by Swagger")]
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Used by Swagger")]
 internal sealed class SwaggerDocumentFilter : IDocumentFilter
 {
     public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext? context)
@@ -25,8 +26,8 @@ internal sealed class SwaggerDocumentFilter : IDocumentFilter
             }
 
             // Ensure it has operation ID and other metadata
-            var route = apiDescription.RelativePath;
-            var httpMethod = apiDescription.HttpMethod;
+            string? route = apiDescription.RelativePath;
+            string? httpMethod = apiDescription.HttpMethod;
 
             // Make sure there's an operation ID
             if (string.IsNullOrEmpty(apiDescription.GroupName))

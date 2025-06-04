@@ -1,4 +1,3 @@
-using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Identity;
 using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Users;
@@ -24,14 +23,14 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, strin
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
 #pragma warning restore CA1859
-
     public CreateUserCommandHandler(IMapper mapper, UserManager<User> userManager)
     {
         _userManager = Guard.Against.Null(userManager, nameof(userManager));
         _mapper = Guard.Against.Null(mapper, nameof(mapper));
     }
 
-    public async Task<Result<string, IDomainError>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string, IDomainError>> Handle(CreateUserCommand request,
+        CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(CreateUserCommand));
         // This will generate a new user and will be used to authenticate using userName and password using "/login"
