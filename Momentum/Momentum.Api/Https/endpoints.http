@@ -1,0 +1,7 @@
+@host = http://localhost:5128
+ 
+### Get End points
+
+GET {{host}}/endpoints
+Accept: application/json
+ 

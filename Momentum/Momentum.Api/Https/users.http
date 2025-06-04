@@ -1,4 +1,6 @@
 @host = http://localhost:5128
+
+
 ### Get User
 GET {{host}}/users/8c205c51-704b-4eec-8792-34e285c71a47
 Accept: application/json
