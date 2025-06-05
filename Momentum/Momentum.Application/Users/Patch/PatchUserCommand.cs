@@ -6,12 +6,13 @@ using Momentum.Application.Users.Commands.CreateUser;
 using Momentum.Domain.Entities.Auth;
 using Momentum.Domain.Errors;
 
-namespace Momentum.Application.Users.Update;
+namespace Momentum.Application.Users.Patch;
 
 public class PatchUserCommand : ICommand<Unit>
 {
-    public string Id { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
+    public required string Id { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
 }
 
 // ReSharper disable once HollowTypeName
@@ -33,7 +34,8 @@ public class PatchUserCommandHandler(UserManager<User> userManager)
             throw new NotFoundException(request.Id, "User");
         }
 
-        user.Email = request.Email;
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
 
         IdentityResult result = await _userManager.UpdateAsync(user).ConfigureAwait(false);
 

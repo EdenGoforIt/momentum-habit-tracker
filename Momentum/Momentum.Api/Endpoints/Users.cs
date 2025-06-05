@@ -7,8 +7,8 @@ using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
 using Momentum.Application.Dtos.Users;
 using Momentum.Application.Users.Commands.CreateUser;
+using Momentum.Application.Users.Patch;
 using Momentum.Application.Users.Queries.GetUser;
-using Momentum.Application.Users.Update;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
@@ -83,7 +83,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         // Map the existing user to the command object
         var command = new PatchUserCommand
         {
-            Email = existingUser.Email
+            Id = id, FirstName = existingUser.FirstName, LastName = existingUser.LastName
         };
 
         // Apply the patch

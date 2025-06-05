@@ -18,9 +18,21 @@ Accept: application/json
   "dateOfBirth": "2025-04-21T07:31:51.952Z"
 }
 
-### Get End points
+### Patch User
 
-GET {{host}}/endpoints
+POST {{host}}/users
+Content-Type: application/json
 Accept: application/json
 
-###
+[
+  {
+    "op": "replace",
+    "path": "/firstName",
+    "value": "UpdatedFirstName"
+  },
+  {
+    "op": "replace",
+    "path": "/lastName",
+    "value": "UpdatedLastName"
+  }
+]

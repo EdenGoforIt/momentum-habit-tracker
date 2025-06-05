@@ -14,16 +14,10 @@ public record GetUserQuery : IQuery<UserDto>
 }
 
 // ReSharper disable once HollowTypeName
-public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserDto>
+public class GetUserQueryHandler(UserManager<User> userManager, IMapper mapper) : IQueryHandler<GetUserQuery, UserDto>
 {
-    private readonly IMapper _mapper;
-    private readonly UserManager<User> _userManager;
-
-    public GetUserQueryHandler(UserManager<User> userManager, IMapper mapper)
-    {
-        _mapper = Guard.Against.Null(mapper, nameof(IMapper));
-        _userManager = Guard.Against.Null(userManager, nameof(UserManager<User>));
-    }
+    private readonly IMapper _mapper = Guard.Against.Null(mapper, nameof(IMapper));
+    private readonly UserManager<User> _userManager = Guard.Against.Null(userManager, nameof(UserManager<User>));
 
     public async Task<Result<UserDto, IDomainError>> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
