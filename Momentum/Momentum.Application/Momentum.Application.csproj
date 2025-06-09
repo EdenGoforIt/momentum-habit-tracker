@@ -7,9 +7,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity"/>
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Dtos\"/>
-    </ItemGroup>
-    <ItemGroup>
         <ProjectReference Include="..\Momentum.Domain\Momentum.Domain.csproj"/>
     </ItemGroup>
 </Project>
