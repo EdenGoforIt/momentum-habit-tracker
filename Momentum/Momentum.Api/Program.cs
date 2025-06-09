@@ -1,5 +1,4 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
@@ -15,12 +14,6 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<DataContext>();
-// Configure System.Text.Json to handle JsonPatch
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.PropertyNamingPolicy = null;
-    options.SerializerOptions.PropertyNameCaseInsensitive = true;
-});
 
 WebApplication app = builder.Build();
 

@@ -20,7 +20,7 @@ Accept: application/json
 
 ### Patch User
 
-POST {{host}}/users
+PATCH {{host}}/users/8c205c51-704b-4eec-8792-34e285c71a47
 Content-Type: application/json
 Accept: application/json
 

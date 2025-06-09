@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
+using Momentum.Api.Wrappers;
 using Momentum.Application.Dtos.Users;
 using Momentum.Application.Users.Commands.CreateUser;
 using Momentum.Application.Users.Patch;
@@ -61,11 +62,13 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         return errorHandler.HandleError(result.Error);
     }
 
-    private async Task<IResult> PatchUser(ISender sender, JsonPatchDocument<PatchUserCommand>? patchDocument, string id)
+    private async Task<IResult> PatchUser(ISender sender, JsonPatchDocumentWrapper<PatchUserCommand> wrapper, string id)
     {
-        if (patchDocument is null)
+        JsonPatchDocument<PatchUserCommand>? patchDocument = wrapper.Value;
+
+        if (patchDocument == null)
         {
-            return Results.BadRequest("Invalid patch document.");
+            return Results.BadRequest("Invalid patch document");
         }
 
         // Fetch the existing user data (e.g., from the database)

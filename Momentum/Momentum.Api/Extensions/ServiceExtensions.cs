@@ -14,7 +14,13 @@ internal static class ServiceExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<IErrorHandler, ErrorHandler>();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        services.AddSwagger();
 
+        return services;
+    }
+
+    private static IServiceCollection AddSwagger(this IServiceCollection services)
+    {
         services.AddApiVersioning(options =>
         {
             options.DefaultApiVersion = new ApiVersion(1);
