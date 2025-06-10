@@ -8,5 +8,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Momentum.Domain\Momentum.Domain.csproj"/>
+        <ProjectReference Include="..\Momentum.Infrastructure\Momentum.Infrastructure.csproj" />
     </ItemGroup>
 </Project>
