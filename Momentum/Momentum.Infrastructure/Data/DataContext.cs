@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Momentum.Domain.Entities.Auth;
+using Momentum.Domain.Entities;
+using Momentum.Domain.Entities.Habits;
 
 namespace Momentum.Infrastructure.Data;
 
-public class DataContext : IdentityDbContext<User>
+public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<User>(options)
 {
-    public DataContext(DbContextOptions<DataContext> options) : base(options)
-    {
-    }
+    public DbSet<Habit> Habits { get; set; }
+    public DbSet<Reminder> Reminders { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<HabitEntry> HabitEntries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

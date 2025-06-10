@@ -4,7 +4,7 @@ using Momentum.Api.Abstractions;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
 using Momentum.Application.Dtos.Habit;
-using Momentum.Application.Habits.Get;
+using Momentum.Application.Habits.GetAll;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
