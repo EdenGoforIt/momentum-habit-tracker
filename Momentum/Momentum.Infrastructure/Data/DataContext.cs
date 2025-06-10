@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Momentum.Domain.Entities.Auth;
-using Momentum.Domain.Entities;
 using Momentum.Domain.Entities.Habits;
 
 namespace Momentum.Infrastructure.Data;

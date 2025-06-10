@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using MediatR;
 using Momentum.Api.Abstractions;
@@ -10,12 +11,15 @@ using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace Momentum.Api.Endpoints;
 
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes",
+    Justification = "Instantiated via Dependency Injection")]
 internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
 {
+    private IErrorHandler _errorHandler = errorHandler;
 
     internal override void Map(WebApplication app)
     {
-        errorHandler = Guard.Against.Null(errorHandler, nameof(errorHandler));
+        _errorHandler = Guard.Against.Null(_errorHandler, nameof(errorHandler));
         app.MapGroup(nameof(Habits))
             .MapGet(GetHabits, "{userId}", Tags.Habits);
         //     .MapPost(CreateHabit, string.Empty, Tags.Habits)
@@ -31,6 +35,6 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
             return Results.Ok(result.Value);
         }
 
-        return errorHandler.HandleError(result.Error);
+        return _errorHandler.HandleError(result.Error);
     }
 }

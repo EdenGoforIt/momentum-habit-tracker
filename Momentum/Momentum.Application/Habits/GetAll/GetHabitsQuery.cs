@@ -15,8 +15,8 @@ public abstract class GetHabitsQuery : IQuery<IEnumerable<HabitDto>>
 public class GetHabitsQueryHandler(DataContext context, IMapper mapper)
     : IQueryHandler<GetHabitsQuery, IEnumerable<HabitDto>>
 {
-    private readonly IMapper _mapper = Guard.Against.Null(mapper, nameof(IMapper));
     private readonly DataContext _context = Guard.Against.Null(context, nameof(AppContext));
+    private readonly IMapper _mapper = Guard.Against.Null(mapper, nameof(IMapper));
 
     public async Task<Result<IEnumerable<HabitDto>, IDomainError>> Handle(GetHabitsQuery request,
         CancellationToken cancellationToken)
