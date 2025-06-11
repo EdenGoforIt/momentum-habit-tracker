@@ -6,7 +6,7 @@ using Momentum.Infrastructure.Data;
 
 namespace Momentum.Application.Habits.GetAll;
 
-public abstract class GetHabitsQuery : IQuery<IEnumerable<HabitDto>>
+public class GetHabitsQuery : IQuery<IEnumerable<HabitDto>>
 {
     public required string UserId { get; set; }
 }

@@ -21,6 +21,13 @@ internal static class EndPointExtensions
 
     public static WebApplication MapEndpoints(this WebApplication app)
     {
+        ConfigureEndpoints(app);
+        ConfigureSwagger(app);
+        return app;
+    }
+
+    private static void ConfigureEndpoints(WebApplication app)
+    {
         using IServiceScope scope = app.Services.CreateScope();
         IServiceProvider scopedServices = scope.ServiceProvider;
 
@@ -29,13 +36,21 @@ internal static class EndPointExtensions
 
         // Manually create Users endpoint
         var usersEndpoint = new Users(errorHandler);
+        var habitsEndpoint = new Habits(errorHandler);
+        
         usersEndpoint.Map(app);
+        habitsEndpoint.Map(app);
+    }
+
+    private static void ConfigureSwagger(WebApplication app)
+    {
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Momentum API v1");
             options.RoutePrefix = string.Empty;
         });
-        return app;
     }
+
+
 }
