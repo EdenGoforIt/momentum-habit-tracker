@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
@@ -21,14 +22,26 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
     {
         _errorHandler = Guard.Against.Null(_errorHandler, nameof(errorHandler));
         app.MapGroup(nameof(Habits))
-            .MapGet(GetHabits, "{userId}", Tags.Habits);
-        //     .MapPost(CreateHabit, string.Empty, Tags.Habits)
+            .MapGet(GetHabits, "{userId}", Tags.Habits)
+            .MapPost(CreateHabit, string.Empty, Tags.Habits);
         //     .MapPut("{id}", PatchHabit).WithTags(Tags.Habits);
     }
 
     private async Task<IResult> GetHabits(string userId, ISender sender, [AsParameters] GetHabitsQuery query)
     {
         Result<IEnumerable<HabitDto>, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
+
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value);
+        }
+
+        return _errorHandler.HandleError(result.Error);
+    }
+
+    private async Task<IResult> CreateHabit(ISender sender, [FromBody] CrerateHabitCommand query)
+    {
+        Result<string, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
 
         if (result.IsSuccess)
         {
