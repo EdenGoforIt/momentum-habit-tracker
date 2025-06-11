@@ -1,0 +1,6 @@
+@url = http://localhost:5128/habits
+
+
+### Get Habits
+GET {{url}}/8c205c51-704b-4eec-8792-34e285c71a47
+Accept: application/json
