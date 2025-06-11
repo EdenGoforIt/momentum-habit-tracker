@@ -4,4 +4,3 @@
 
 GET {{host}}/endpoints
 Accept: application/json
- 
