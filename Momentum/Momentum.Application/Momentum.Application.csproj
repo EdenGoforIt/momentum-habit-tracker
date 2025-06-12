@@ -3,6 +3,8 @@
         <PackageReference Include="Ardalis.GuardClauses"/>
         <PackageReference Include="AutoMapper"/>
         <PackageReference Include="CSharpFunctionalExtensions"/>
+        <PackageReference Include="FluentValidation"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions"/>
         <PackageReference Include="MediatR"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity"/>
     </ItemGroup>

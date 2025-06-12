@@ -9,7 +9,7 @@ namespace Momentum.Api.Extensions;
 
 internal static class ServiceExtensions
 {
-    internal static IServiceCollection AddServices(this IServiceCollection services)
+    internal static IServiceCollection AddApiLayer(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
         services.AddScoped<IErrorHandler, ErrorHandler>();

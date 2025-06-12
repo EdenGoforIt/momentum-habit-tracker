@@ -4,13 +4,12 @@ using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
 using Momentum.Domain.Entities.Auth;
 using Momentum.Infrastructure.Data;
+using Momentum.Infrastructure.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddApplicationLayer();
-builder.Services.AddServices();
+builder.Services.AddApiLayer().AddApplicationLayer().AddInfrastructureLayer(builder.Configuration);
+
 builder.Services.AddProblemDetails();
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<DataContext>();

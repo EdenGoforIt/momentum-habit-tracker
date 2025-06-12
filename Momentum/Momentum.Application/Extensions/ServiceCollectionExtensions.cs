@@ -1,4 +1,6 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Momentum.Application.Abstractions;
 using Momentum.Application.Mappings;
 
 namespace Momentum.Application.Extensions;
@@ -14,6 +16,10 @@ public static class ServiceCollectionExtensions
         var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new UserMapping()); });
         IMapper? mapper = mappingConfig.CreateMapper();
         services.AddSingleton(mapper);
+
+        // Add FluentValidation
+        services.AddValidatorsFromAssemblyContaining<AbstractLayer>();
+
 
         return services;
     }

@@ -37,7 +37,7 @@ internal static class EndPointExtensions
         // Manually create Users endpoint
         var usersEndpoint = new Users(errorHandler);
         var habitsEndpoint = new Habits(errorHandler);
-        
+
         usersEndpoint.Map(app);
         habitsEndpoint.Map(app);
     }
@@ -51,6 +51,4 @@ internal static class EndPointExtensions
             options.RoutePrefix = string.Empty;
         });
     }
-
-
 }
