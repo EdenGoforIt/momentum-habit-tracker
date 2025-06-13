@@ -6,6 +6,7 @@ using Momentum.Api.Abstractions;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
 using Momentum.Application.Dtos.Habit;
+using Momentum.Application.Habits.Create;
 using Momentum.Application.Habits.GetAll;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
@@ -39,12 +40,18 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
         return _errorHandler.HandleError(result.Error);
     }
 
-    private async Task<IResult> CreateHabit(ISender sender, [FromBody] CrerateHabitCommand query)
+    private async Task<IResult> CreateHabit(ISender sender, [FromBody] HabitDto habitDto)
     {
-        Result<string, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
+        var command = new CreateHabitCommand
+        {
+            HabitDto = habitDto
+        };
+
+        Result<long, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
 
         if (result.IsSuccess)
         {
+            // TODO: return Created Route
             return Results.Ok(result.Value);
         }
 
