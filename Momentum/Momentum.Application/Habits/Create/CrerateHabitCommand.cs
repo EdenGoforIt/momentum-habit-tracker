@@ -21,7 +21,8 @@ public class CreateHabitCommandHandler(DataContext context, IMapper mapper)
         Guard.Against.Null(request, nameof(CreateHabitCommand));
         var habitEntity = mapper.Map<Habit>(request.HabitDto);
 
-        await context.Habits.AddAsync(habitEntity, cancellationToken).ConfigureAwait(false);
+        await context.Habits.AddAsync(habitEntity, cancellationToken).ConfigureAwait(true);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(true);
 
         return Result.Success<long, IDomainError>(habitEntity.Id);
     }

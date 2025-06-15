@@ -13,7 +13,12 @@ public static class ServiceCollectionExtensions
             configuration.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly));
 
         // Auto Mapper Configurations
-        var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new UserMapping()); });
+        var mappingConfig = new MapperConfiguration(mc =>
+        {
+            mc.AddProfile(new UserMapping());
+            mc.AddProfile(new HabitMapping());
+        });
+        
         IMapper? mapper = mappingConfig.CreateMapper();
         services.AddSingleton(mapper);
 

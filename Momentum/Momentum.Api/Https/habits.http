@@ -11,7 +11,6 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "id": 1,
   "name": "Daily Reading",
   "description": "Read at least 20 pages every day",
   "frequency": 0,
