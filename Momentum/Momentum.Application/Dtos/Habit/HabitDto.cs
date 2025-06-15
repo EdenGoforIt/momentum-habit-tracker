@@ -18,11 +18,11 @@ public class HabitDto
 
     // User
     public required string UserId { get; init; }
-    public required User User { get; init; } = null!;
+    public User? User { get; init; }
 
     // Category
     public long? CategoryId { get; init; }
     public Category? Category { get; init; }
 
-    public ICollection<HabitEntry> HabitEntries { get; } = [];
+    public ICollection<HabitEntryDto> HabitEntries { get; } = [];
 }
