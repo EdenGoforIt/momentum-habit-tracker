@@ -10,6 +10,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"/>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\Momentum.Application\Momentum.Application.csproj" />
         <ProjectReference Include="..\Momentum.Domain\Momentum.Domain.csproj"/>
     </ItemGroup>
 </Project>
