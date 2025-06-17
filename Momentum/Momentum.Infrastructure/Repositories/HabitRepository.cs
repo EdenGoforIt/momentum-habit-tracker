@@ -1,29 +1,34 @@
 using Momentum.Application.Abstractions;
+using Momentum.Application.Dtos.Habit;
 using Momentum.Domain.Entities.Habits;
+using Momentum.Infrastructure.Data;
 
 namespace Momentum.Infrastructure.Repositories;
 
-public class HabitRepository : IHabitRepository
+public class HabitRepository(DataContext context) : IHabitRepository
 {
-
-    public Task<IEnumerable<Habit>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
-
-    public Task<Habit?> GetByIdAsync(object id, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
-
     public void Add(Habit entity)
     {
-        throw new NotImplementedException();
+        context.Habits.Add(entity);
     }
 
     public void Update(Habit entity)
     {
-        throw new NotImplementedException();
+        context.Habits.Remove(entity);
     }
 
     public void Delete(Habit entity)
     {
-        throw new NotImplementedException();
+        context.Habits.Remove(entity);
+    }
+
+    public IQueryable<Habit> GetById(long id)
+    {
+        return context.Habits.Where(x => x.Id == id);
+    }
+
+    public IQueryable<Habit> GetAllByUserId(string userId)
+    {
+        return context.Habits.Where(x => x.UserId == userId);
     }
 }

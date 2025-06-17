@@ -4,4 +4,6 @@ namespace Momentum.Application.Abstractions;
 
 public interface IHabitRepository : IRepository<Habit>
 {
+    IQueryable<Habit> GetById(long id);
+    IQueryable<Habit> GetAllByUserId(string userId);
 }
