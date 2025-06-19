@@ -1,31 +1,17 @@
+using Microsoft.EntityFrameworkCore;
 using Momentum.Application.Abstractions;
 using Momentum.Domain.Entities.Auth;
+using Momentum.Infrastructure.Data;
 
 namespace Momentum.Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(DataContext context) : BaseRepository<User>(context), IUserRepository
 {
-    public Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
+    private readonly DataContext _context = context;
 
-    public Task<User?> GetByIdAsync(object id, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
-
-    public void Add(User entity)
+    public async Task<bool> UserExistsAsync(string userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _context.Users.AnyAsync(u => u.Id == userId, cancellationToken).ConfigureAwait(false);
     }
 
-    public void Update(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> UserExistsAsync(string userId, CancellationToken cancellationToken) =>
-        throw new NotImplementedException();
 }
