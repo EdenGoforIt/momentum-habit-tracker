@@ -5,6 +5,7 @@ using Momentum.Domain.Errors;
 
 namespace Momentum.Application.Habits.GetAll;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class GetHabitsQuery : IQuery<IEnumerable<HabitDto>>
 {
     public required string UserId { get; set; }

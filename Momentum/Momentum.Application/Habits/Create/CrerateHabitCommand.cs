@@ -12,7 +12,7 @@ public class CreateHabitCommand : ICommand<long>
 }
 
 // ReSharper disable once HollowTypeName
-public class CreateHabitCommandHandler(DataContext context, IMapper mapper)
+public class CreateHabitCommandHandler(IHabitRepository repository, IMapper mapper)
     : ICommandHandler<CreateHabitCommand, long>
 {
     public async Task<Result<long, IDomainError>> Handle(CreateHabitCommand request,
@@ -20,9 +20,8 @@ public class CreateHabitCommandHandler(DataContext context, IMapper mapper)
     {
         Guard.Against.Null(request, nameof(CreateHabitCommand));
         var habitEntity = mapper.Map<Habit>(request.HabitDto);
-
-        await context.Habits.AddAsync(habitEntity, cancellationToken).ConfigureAwait(true);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(true);
+        repository.Add(habitEntity);
+        await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result.Success<long, IDomainError>(habitEntity.Id);
     }
