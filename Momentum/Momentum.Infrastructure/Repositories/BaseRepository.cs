@@ -25,4 +25,9 @@ public class BaseRepository<T> where T : class
     {
         _context.Set<T>().Remove(entity);
     }
+
+    public virtual Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return _context.SaveChangesAsync(cancellationToken);
+    }
 }
