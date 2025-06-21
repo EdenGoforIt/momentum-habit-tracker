@@ -6,8 +6,7 @@ namespace Momentum.Application.Dtos.Habit;
 
 public class HabitDto
 {
-    public required long Id { get; init; }
-
+    public long? Id { get; init; }
     public required string Name { get; init; } = string.Empty;
     public string? Description { get; init; }
 
