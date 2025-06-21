@@ -2,7 +2,6 @@ using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Habit;
 using Momentum.Domain.Entities.Habits;
 using Momentum.Domain.Errors;
-using Momentum.Infrastructure.Data;
 
 namespace Momentum.Application.Habits.Create;
 
