@@ -13,5 +13,4 @@ public class UserRepository(DataContext context) : BaseRepository<User>(context)
     {
         return await _context.Users.AnyAsync(u => u.Id == userId, cancellationToken).ConfigureAwait(false);
     }
-
 }

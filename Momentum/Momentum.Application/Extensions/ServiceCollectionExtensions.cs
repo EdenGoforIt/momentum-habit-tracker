@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
             mc.AddProfile(new UserMapping());
             mc.AddProfile(new HabitMapping());
         });
-        
+
         IMapper? mapper = mappingConfig.CreateMapper();
         services.AddSingleton(mapper);
 

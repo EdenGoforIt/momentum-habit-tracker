@@ -2,7 +2,7 @@ namespace Momentum.Application.Dtos.Habit;
 
 public class ReminderDto
 {
-    public long Id { get; init; }
+    public long? Id { get; init; }
 
     public long HabitEntryId { get; init; } // Foreign key to Habit
     public HabitEntryDto? HabitEntry { get; init; }

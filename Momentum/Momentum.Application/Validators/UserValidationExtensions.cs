@@ -1,5 +1,3 @@
-using FluentValidation;
-
 namespace Momentum.Application.Validators;
 
 public static class UserValidationExtensions

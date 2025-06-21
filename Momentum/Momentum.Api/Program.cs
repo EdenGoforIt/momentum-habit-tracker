@@ -1,5 +1,7 @@
 using System.Reflection;
+using Asp.Versioning.Conventions;
 using Microsoft.EntityFrameworkCore;
+using Momentum.Api.Common;
 using Momentum.Api.Extensions;
 using Momentum.Application.Extensions;
 using Momentum.Domain.Entities.Auth;
@@ -48,6 +50,10 @@ app.MapGet("/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
     return Results.Ok(endpoints);
 }).WithTags("Debug");
 
+ApiVersioning.V1 = app.NewApiVersionSet()
+    .HasApiVersion(1.0)
+    .ReportApiVersions()
+    .Build();
 app.MapEndpoints();
 
 app.Run();

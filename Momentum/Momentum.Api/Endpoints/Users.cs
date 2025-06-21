@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Momentum.Api.Abstractions;
+using Momentum.Api.Common;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
 using Momentum.Api.Wrappers;
@@ -21,10 +22,10 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 {
     internal override void Map(WebApplication app)
     {
-        app.MapGroup(nameof(Users))
-            .MapGet(GetUser, "{id}", Tags.Users)
-            .MapPost(CreateUser, string.Empty, Tags.Users)
-            .MapPatch("{id}", PatchUser).WithTags(Tags.Users);
+        app.MapGroup("/api/v{version:apiVersion}/users")
+            .MapGet(GetUser, "{id}", Tags.Users, ApiVersioning.V1)
+            .MapPost(CreateUser, string.Empty, Tags.Users, ApiVersioning.V1)
+            .MapPatch(PatchUser, "{id}", Tags.Users, ApiVersioning.V1);
     }
 
     private async Task<IResult> GetUser(ISender sender, [AsParameters] GetUserQuery query)
