@@ -24,6 +24,7 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
     {
         _errorHandler = Guard.Against.Null(_errorHandler, nameof(errorHandler));
         app.MapGroup("/api/v{version:apiVersion}/habits")
+            // .RequireAuthorization()
             .MapGet(GetHabits, "{userId}", Tags.Habits, ApiVersioning.V1)
             .MapPost(CreateHabit, string.Empty, Tags.Habits, ApiVersioning.V1);
         // .MapPut(UpdateHabit, "{habitId}", Tags.Habits);
