@@ -23,6 +23,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
     internal override void Map(WebApplication app)
     {
         app.MapGroup("/api/v{version:apiVersion}/users")
+            // .RequireAuthorization()
             .MapGet(GetUser, "{id}", Tags.Users, ApiVersioning.V1)
             .MapPost(CreateUser, string.Empty, Tags.Users, ApiVersioning.V1)
             .MapPatch(PatchUser, "{id}", Tags.Users, ApiVersioning.V1);
