@@ -25,7 +25,6 @@ public static class ServiceCollectionExtensions
         // Add FluentValidation
         services.AddValidatorsFromAssemblyContaining<AbstractLayer>();
 
-
         return services;
     }
 }

@@ -9,6 +9,7 @@ using Momentum.Api.Extensions;
 using Momentum.Application.Dtos.Habit;
 using Momentum.Application.Habits.Create;
 using Momentum.Application.Habits.GetAll;
+using Momentum.Application.Habits.Update;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
@@ -26,8 +27,26 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
         app.MapGroup("/api/v{version:apiVersion}/habits")
             // .RequireAuthorization()
             .MapGet(GetHabits, "{userId}", Tags.Habits, ApiVersioning.V1)
-            .MapPost(CreateHabit, string.Empty, Tags.Habits, ApiVersioning.V1);
-        // .MapPut(UpdateHabit, "{habitId}", Tags.Habits);
+            .MapPost(CreateHabit, string.Empty, Tags.Habits, ApiVersioning.V1)
+            .MapPut(UpdateHabit, "{habitId}", Tags.Habits);
+    }
+
+    private async Task<IResult> UpdateHabit(ISender sender, long habitId, [FromBody] HabitDto habitDto)
+    {
+        var command = new UpdateHabitCommand
+        {
+            HabitId = habitId, HabitDto = habitDto
+        };
+
+        Result<long, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
+
+        if (result.IsSuccess)
+        {
+            // TODO: return Created Route
+            return Results.Ok(result.Value);
+        }
+
+        return _errorHandler.HandleError(result.Error);
     }
 
     private async Task<IResult> GetHabits(string userId, ISender sender, [AsParameters] GetHabitsQuery query)
@@ -53,8 +72,20 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
 
         if (result.IsSuccess)
         {
-            // TODO: return Created Route
-            return Results.Ok(result.Value);
+            // TODO: return Create Route for Get Habit By Id
+            // var createdUser = new
+            // {
+            //     UserName = result.Value
+            // };
+            //
+            // return Results.CreatedAtRoute(nameof(GetUser),
+            //     new
+            //     {
+            //         UserName = result.Value
+            //     },
+            //     createdUser
+            // );
+            return Results.Ok();
         }
 
         return _errorHandler.HandleError(result.Error);
