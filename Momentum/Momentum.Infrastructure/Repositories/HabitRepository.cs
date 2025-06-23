@@ -25,5 +25,4 @@ public class HabitRepository(DataContext context) : BaseRepository<Habit>(contex
         return await _context.Habits.AnyAsync(x => x.Id == habitId && x.UserId == userId,
             cancellationToken).ConfigureAwait(true);
     }
-
 }
