@@ -53,8 +53,13 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
 
         if (result.IsSuccess)
         {
-            // TODO: return Created Route
-            return Results.Ok(result.Value);
+            return Results.CreatedAtRoute(nameof(GetHabit),
+                new
+                {
+                    habitId = habitDto.Id
+                },
+                habitDto
+            );
         }
 
         return errorHandler.HandleError(result.Error);
@@ -68,24 +73,18 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
             HabitDto = habitDto
         };
 
+
         Result<long, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
 
         if (result.IsSuccess)
         {
-            // TODO: return Create Route for Get Habit By Id
-            // var createdUser = new
-            // {
-            //     UserName = result.Value
-            // };
-            //
-            // return Results.CreatedAtRoute(nameof(GetUser),
-            //     new
-            //     {
-            //         UserName = result.Value
-            //     },
-            //     createdUser
-            // );
-            return Results.Ok();
+            return Results.CreatedAtRoute(nameof(GetHabit),
+                new
+                {
+                    habitId = habitDto.Id
+                },
+                habitDto
+            );
         }
 
         return errorHandler.HandleError(result.Error);

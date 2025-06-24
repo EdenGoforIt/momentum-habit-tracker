@@ -1,4 +1,4 @@
-@url = http://localhost:5128/api/v1/habits 
+@url = http://localhost:5128/api/v1/habits
 
 
 ### Create Habit
