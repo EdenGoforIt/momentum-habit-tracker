@@ -7,7 +7,9 @@ using Momentum.Api.Common;
 using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
 using Momentum.Api.Wrappers;
+using Momentum.Application.Dtos.Habit;
 using Momentum.Application.Dtos.Users;
+using Momentum.Application.Habits.GetAll;
 using Momentum.Application.Users.Commands.CreateUser;
 using Momentum.Application.Users.Patch;
 using Momentum.Application.Users.Queries.GetUser;
@@ -25,8 +27,21 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         app.MapGroup("/api/v{version:apiVersion}/users")
             // .RequireAuthorization()
             .MapGet(GetUser, "{id}", Tags.Users, ApiVersioning.V1)
+            .MapGet(GetHabits, "{userId}/habits", Tags.Users, ApiVersioning.V1)
             .MapPost(CreateUser, string.Empty, Tags.Users, ApiVersioning.V1)
             .MapPatch(PatchUser, "{id}", Tags.Users, ApiVersioning.V1);
+    }
+    
+    private async Task<IResult> GetHabits(string userId, ISender sender, [AsParameters] GetHabitsQuery query)
+    {
+        Result<IEnumerable<HabitDto>, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
+
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value);
+        }
+
+        return errorHandler.HandleError(result.Error);
     }
 
     private async Task<IResult> GetUser(ISender sender, [AsParameters] GetUserQuery query)
