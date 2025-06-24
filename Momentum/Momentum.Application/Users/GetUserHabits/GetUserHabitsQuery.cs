@@ -3,19 +3,19 @@ using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Habit;
 using Momentum.Domain.Errors;
 
-namespace Momentum.Application.Habits.GetAll;
+namespace Momentum.Application.Users.GetUserHabits;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class GetHabitsQuery : IQuery<IEnumerable<HabitDto>>
+public class GetUserHabitsQuery : IQuery<IEnumerable<HabitDto>>
 {
     public required string UserId { get; set; }
 }
 
 // ReSharper disable once HollowTypeName
-public class GetHabitsQueryHandler(IHabitRepository repository, IMapper mapper)
-    : IQueryHandler<GetHabitsQuery, IEnumerable<HabitDto>>
+public class GetUserHabitsQueryHandler(IHabitRepository repository, IMapper mapper)
+    : IQueryHandler<GetUserHabitsQuery, IEnumerable<HabitDto>>
 {
-    public async Task<Result<IEnumerable<HabitDto>, IDomainError>> Handle(GetHabitsQuery request,
+    public async Task<Result<IEnumerable<HabitDto>, IDomainError>> Handle(GetUserHabitsQuery request,
         CancellationToken cancellationToken)
     {
         Guard.Against.Null(request);

@@ -8,7 +8,7 @@ using Momentum.Api.Constants;
 using Momentum.Api.Extensions;
 using Momentum.Application.Dtos.Habit;
 using Momentum.Application.Habits.Create;
-using Momentum.Application.Habits.GetAll;
+using Momentum.Application.Habits.GetHabit;
 using Momentum.Application.Habits.Update;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
@@ -17,18 +17,29 @@ namespace Momentum.Api.Endpoints;
 
 [SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes",
     Justification = "Instantiated via Dependency Injection")]
+// ReSharper disable once CapturedPrimaryConstructorParameterIsMutable
 internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
 {
-    private IErrorHandler _errorHandler = errorHandler;
 
     internal override void Map(WebApplication app)
     {
-        _errorHandler = Guard.Against.Null(_errorHandler, nameof(errorHandler));
         app.MapGroup("/api/v{version:apiVersion}/habits")
             // .RequireAuthorization()
-            .MapGet(GetHabits, "{userId}", Tags.Habits, ApiVersioning.V1)
+            .MapGet(GetHabit, "{habitId}", Tags.Habits, ApiVersioning.V1)
             .MapPost(CreateHabit, string.Empty, Tags.Habits, ApiVersioning.V1)
             .MapPut(UpdateHabit, "{habitId}", Tags.Habits);
+    }
+
+    private async Task<IResult> GetHabit(ISender sender, [AsParameters] GetHabitQuery query)
+    {
+        Result<HabitDto, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
+
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value);
+        }
+
+        return errorHandler.HandleError(result.Error);
     }
 
     private async Task<IResult> UpdateHabit(ISender sender, long habitId, [FromBody] HabitDto habitDto)
@@ -46,20 +57,9 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
             return Results.Ok(result.Value);
         }
 
-        return _errorHandler.HandleError(result.Error);
+        return errorHandler.HandleError(result.Error);
     }
 
-    private async Task<IResult> GetHabits(string userId, ISender sender, [AsParameters] GetHabitsQuery query)
-    {
-        Result<IEnumerable<HabitDto>, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
-
-        if (result.IsSuccess)
-        {
-            return Results.Ok(result.Value);
-        }
-
-        return _errorHandler.HandleError(result.Error);
-    }
 
     private async Task<IResult> CreateHabit(ISender sender, [FromBody] HabitDto habitDto)
     {
@@ -88,6 +88,6 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
             return Results.Ok();
         }
 
-        return _errorHandler.HandleError(result.Error);
+        return errorHandler.HandleError(result.Error);
     }
 }

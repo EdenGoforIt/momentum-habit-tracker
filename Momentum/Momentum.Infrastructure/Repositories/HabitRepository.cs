@@ -9,12 +9,12 @@ public class HabitRepository(DataContext context) : BaseRepository<Habit>(contex
 {
     private readonly DataContext _context = context;
 
-    public IQueryable<Habit> GetById(long id)
+    public IQueryable<Habit?> GetById(long id)
     {
         return _context.Habits.Where(x => x.Id == id);
     }
 
-    public IQueryable<Habit> GetAllByUserId(string userId)
+    public IQueryable<Habit?> GetAllByUserId(string userId)
     {
         return _context.Habits.Where(x => x.UserId == userId);
     }

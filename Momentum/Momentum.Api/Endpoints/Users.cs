@@ -9,8 +9,8 @@ using Momentum.Api.Extensions;
 using Momentum.Api.Wrappers;
 using Momentum.Application.Dtos.Habit;
 using Momentum.Application.Dtos.Users;
-using Momentum.Application.Habits.GetAll;
 using Momentum.Application.Users.Commands.CreateUser;
+using Momentum.Application.Users.GetUserHabits;
 using Momentum.Application.Users.Patch;
 using Momentum.Application.Users.Queries.GetUser;
 using Momentum.Domain.Errors;
@@ -31,8 +31,8 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
             .MapPost(CreateUser, string.Empty, Tags.Users, ApiVersioning.V1)
             .MapPatch(PatchUser, "{id}", Tags.Users, ApiVersioning.V1);
     }
-    
-    private async Task<IResult> GetHabits(string userId, ISender sender, [AsParameters] GetHabitsQuery query)
+
+    private async Task<IResult> GetHabits(ISender sender, [AsParameters] GetUserHabitsQuery query)
     {
         Result<IEnumerable<HabitDto>, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
 
