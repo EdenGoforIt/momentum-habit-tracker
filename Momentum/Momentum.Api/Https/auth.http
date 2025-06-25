@@ -1,0 +1,12 @@
+@url = http://localhost:5128/auth
+ 
+### Login User
+
+POST {{url}}/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "eden@gmail.com",
+  "password": "Password01!"
+}

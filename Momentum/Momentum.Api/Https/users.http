@@ -1,5 +1,4 @@
-@url = http://localhost:5128/api/v1/users
-
+@url = http://localhost:5128/api/v1/users  
 
 ### Get User
 GET {{url}}/8c205c51-704b-4eec-8792-34e285c71a47
