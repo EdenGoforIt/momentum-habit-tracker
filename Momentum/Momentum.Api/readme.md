@@ -1,77 +1,94 @@
-## How to run the MSSQL Locally on mac
+# 🐘 How to Run MSSQL Locally on macOS
 
-## Overview
+## 📌 Overview
 
-if everything is setup
-then
+This guide explains how to set up, start, and connect to a local SQL Server (MSSQL) instance using Docker on macOS.
 
-1. open the docker desktop
-2.
+---
 
-``` 
-docker start my-mssql-server
+## 🚀 Quick Start (One-liner)
+
+Start the SQL Server container and run the API in one go:
+
+```bash
+docker start my-mssql-server && cd Momentum.Api && dotnet run
 ```
 
-will do
+---
 
-1. Run docker and start container called `sql`
-   -- if permission denied occurred in the docker
+## 🐳 Set Up and Run Docker Container
 
-```
-sudo chmod 666 /var/run/docker.sock
-```
+### 1. Pull the SQL Server image (if not already installed)
 
-2. Using Azure Data Studio, connect to the local db
-
-3. Docker pull (install SQL)
-
-``` 
+```bash
 docker pull mcr.microsoft.com/mssql/server:2019-latest
 ```
 
-4. Run the container
+### 2. Run the container
 
-``` 
+```bash
 docker run --platform=linux/amd64 \
--e "ACCEPT_EULA=Y" \
--e "MSSQL_SA_PASSWORD=YourStrong@Passw0rd" \
---name my-mssql-server \
--p 1433:1433 \
--d mcr.microsoft.com/mssql/server:2019-latest
+  -e "ACCEPT_EULA=Y" \
+  -e "MSSQL_SA_PASSWORD=YourStrong@Passw0rd" \
+  --name my-mssql-server \
+  -p 1433:1433 \
+  -d mcr.microsoft.com/mssql/server:2019-latest
 ```
 
-5. Check Docker is running
+### 3. Start the container
 
-```
-docker ps
-```
-
-6. Once using the container stop the container
-
-stop the container (Use this)
-
-``` 
-docker stop my-mssql-server
-```
-
-Start the container again
-
-```
+```bash
 docker start my-mssql-server
 ```
 
-Delete container
+### 4. Stop the container (when done)
 
+```bash
+docker stop my-mssql-server
 ```
+
+### 5. Delete the container (optional)
+
+```bash
 docker rm my-mssql-server
 ```
 
-### Example login
+### 6. Check running containers
 
+```bash
+docker ps
 ```
+
+---
+
+## ⚠️ Common Issues
+
+### Permission Denied When Using Docker
+
+If you see a permission error like `permission denied on /var/run/docker.sock`, run:
+
+```bash
+sudo chmod 666 /var/run/docker.sock
+```
+
+---
+
+## 🔌 Connect to Local SQL Server
+
+You can use **Azure Data Studio** or any SQL client to connect:
+
+- **Server**: `localhost`
+- **Port**: `1433`
+- **Username**: `sa`
+- **Password**: `YourStrong@Passw0rd`
+
+---
+
+## 🔐 Example Login Request Payload
+
+```json
 {
   "email": "eden@gmail.com",
   "password": "Password01!"
 }
 ```
- 
