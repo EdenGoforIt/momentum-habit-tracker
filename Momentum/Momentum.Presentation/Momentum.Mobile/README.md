@@ -62,6 +62,20 @@ delete cache
 npx expo start -c
 ```
 
+# how to run the backend
+
+**Back-end**
+
+```
+docker start my-mssql-server && cd ../../Momentum.Api && dotnet run
+```
+
+**Font-end**
+
+```
+npx expo start -c
+```
+
 ## Known Issue
 
 ### Error: Unable to save asset to directory
