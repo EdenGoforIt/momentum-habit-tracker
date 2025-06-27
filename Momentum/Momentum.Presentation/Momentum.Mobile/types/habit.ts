@@ -1,4 +1,4 @@
-interface Habit {
+export interface Habit {
   id: number;
   title: string;
   startDate: string;
