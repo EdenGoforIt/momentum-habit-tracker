@@ -1,3 +1,4 @@
+import AuthLink from "@/components/AuthLink";
 import images from "@/constants/images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
@@ -219,12 +220,11 @@ export default function SignIn() {
           </TouchableOpacity>
 
           {/* Register Link */}
-          <View className="flex-row justify-center mt-8">
-            <Text className="text-gray-600">Don't have an account? </Text>
-            <TouchableOpacity onPress={() => router.push("/sign-up")}>
-              <Text className="text-blue-600 font-semibold">Register</Text>
-            </TouchableOpacity>
-          </View>
+          <AuthLink
+            question="Already have an account?"
+            linkText="Sign In"
+            route="sign-in"
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
