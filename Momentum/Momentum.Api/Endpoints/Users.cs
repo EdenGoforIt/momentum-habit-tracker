@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Common;
 using Momentum.Api.Constants;
@@ -27,6 +28,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
         app.MapGroup("/api/v{version:apiVersion}/users")
             // .RequireAuthorization()
             .MapGet(GetUser, "{id}", Tags.Users, ApiVersioning.V1)
+            .MapGet(GetUsers, string.Empty, Tags.Users, ApiVersioning.V1)
             .MapGet(GetHabits, "{userId}/habits", Tags.Users, ApiVersioning.V1)
             .MapPost(CreateUser, string.Empty, Tags.Users, ApiVersioning.V1)
             .MapPatch(PatchUser, "{id}", Tags.Users, ApiVersioning.V1);
@@ -45,6 +47,18 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
     }
 
     private async Task<IResult> GetUser(ISender sender, [AsParameters] GetUserQuery query)
+    {
+        Result<UserDto, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
+
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value);
+        }
+
+        return errorHandler.HandleError(result.Error);
+    }
+
+    private async Task<IResult> GetUsers(ISender sender, [AsParameters] GetUsersQuery query)
     {
         Result<UserDto, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
 
