@@ -2,12 +2,7 @@ import { Stack } from "expo-router";
 
 export default function HabitLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerBackVisible: true,
-        headerShown: true,
-      }}
-    >
+    <Stack>
       <Stack.Screen
         name="[id]"
         options={{

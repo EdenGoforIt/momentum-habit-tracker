@@ -72,6 +72,8 @@ docker start my-mssql-server && cd ../../Momentum.Api && dotnet run
 
 **Font-end**
 
+Run Simulator
+
 ```
 npx expo start -c
 ```

@@ -92,3 +92,13 @@ You can use **Azure Data Studio** or any SQL client to connect:
   "password": "Password01!"
 }
 ```
+## How to swap .net in Mac
+
+Check
+```aiignore
+brew search dotnet
+```
+```aiignore
+dotnet link dotnet@9
+
+```

@@ -70,6 +70,8 @@ export default function SignIn() {
         const data = await response.json();
         console.log("Response data:", JSON.stringify(data));
 
+        // TODO: fetch user info
+
         if (!response.ok) {
           // Handle error responses based on status code
           if (response.status === 401) {
