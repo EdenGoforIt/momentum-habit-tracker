@@ -14,6 +14,7 @@ using Momentum.Application.Users.Commands.CreateUser;
 using Momentum.Application.Users.GetUserHabits;
 using Momentum.Application.Users.Patch;
 using Momentum.Application.Users.Queries.GetUser;
+using Momentum.Application.Users.Queries.GetUsers;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
