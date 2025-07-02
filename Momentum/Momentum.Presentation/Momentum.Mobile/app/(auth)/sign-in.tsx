@@ -1,11 +1,13 @@
+import { useGetUser, UserDto } from "@/api";
+import { useLogin } from "@/api/auth";
 import AuthLink from "@/components/AuthLink";
 import images from "@/constants/images";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "@/lib/auth";
+import { showErrorAlert } from "@/utils/errorHandler";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -16,16 +18,25 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "../../contexts/AuthContext";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
-  const { login } = useAuth();
+  const { signIn, setUser } = useAuth();
+
+  // Simplified login mutation
+  const { isPending: isLoginPending, mutateAsync: loginMutateAsync } =
+    useLogin();
+
+  // Get user query - disabled by default
+  const { refetch: refetchUser } = useGetUser({
+    variables: { email },
+    enabled: false,
+  });
 
   const validateEmail = () => {
     if (!email) {
@@ -52,84 +63,45 @@ export default function SignIn() {
   };
 
   const handleSignIn = async () => {
+    // Validate inputs first
     const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
 
-    if (isEmailValid && isPasswordValid) {
-      setIsLoading(true);
+    if (!isEmailValid || !isPasswordValid) return;
 
-      try {
-        const url = process.env.EXPO_PUBLIC_API_URL;
+    try {
+      // Step 1: Login and get tokens
+      const loginData = await loginMutateAsync({ email, password });
 
-        const response = await fetch(`${url}auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
+      // Step 2: Store authentication tokens immediately
+      signIn({
+        accessToken: loginData.accessToken,
+        expiresIn: loginData.expiresIn,
+        refreshToken: loginData.refreshToken,
+      });
 
-        const data = await response.json();
-        console.log("Response data:", JSON.stringify(data));
+      // Step 3: Fetch and store user profile
+      setIsLoadingProfile(true);
+      const userResult = await refetchUser();
 
-        // TODO: fetch user info
-
-        if (!response.ok) {
-          // Handle error responses based on status code
-          if (response.status === 401) {
-            Alert.alert(
-              "Authentication Failed",
-              "Invalid email or password. Please try again."
-            );
-          } else {
-            Alert.alert(
-              "Sign In Failed",
-              data.title || "Something went wrong. Please try again later."
-            );
-          }
-          return;
-        }
-
-        // Extract token data from response
-        const accessToken = data.accessToken;
-        const refreshToken = data.refreshToken;
-        const tokenType = data.tokenType;
-        const expiresIn = data.expiresIn;
-
-        if (!accessToken) {
-          throw new Error("No access token received");
-        }
-
-        const userData = {
-          id: "user-id",
-          email: email,
-          name: email.split("@")[0],
-        };
-
-        // Store authentication token/user data
-        await AsyncStorage.setItem("accessToken", accessToken);
-        await AsyncStorage.setItem("refreshToken", refreshToken);
-        await AsyncStorage.setItem("tokenType", tokenType);
-        await AsyncStorage.setItem(
-          "tokenExpires",
-          (Date.now() + expiresIn * 1000).toString()
-        );
-        await AsyncStorage.setItem("userData", JSON.stringify(userData));
-
-        // Save authentication state using our context
-        await login(accessToken, userData);
-
-        // Navigate to main app screen
-        router.replace("/home");
-      } catch (error) {
-        console.error("Sign in error:", error);
-        Alert.alert(
-          "Connection Error",
-          "Unable to connect to the server. Please check your internet connection and try again."
-        );
-      } finally {
-        setIsLoading(false);
+      if (userResult.data) {
+        setUser(userResult.data as UserDto);
+        console.log("User profile fetched:", userResult.data);
+      } else {
+        console.warn("User fetch succeeded but no data returned");
       }
+
+      // Step 4: Navigate to home
+      router.replace("/home");
+    } catch (error) {
+      console.error("Authentication error:", error);
+      showErrorAlert(error);
+    } finally {
+      setIsLoadingProfile(false);
     }
   };
+
+  const isLoading = isLoginPending || isLoadingProfile;
 
   return (
     <SafeAreaView className="bg-white h-full">
@@ -172,6 +144,7 @@ export default function SignIn() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                editable={!isLoading}
               />
               {emailError ? (
                 <Text className="text-red-500 mt-1">{emailError}</Text>
@@ -190,21 +163,13 @@ export default function SignIn() {
                 onChangeText={setPassword}
                 onBlur={validatePassword}
                 secureTextEntry
+                editable={!isLoading}
               />
               {passwordError ? (
                 <Text className="text-red-500 mt-1">{passwordError}</Text>
               ) : null}
             </View>
           </View>
-
-          {/* Forgot Password Link - Commented out for now 
-          <TouchableOpacity
-            className="self-end mb-6"
-            onPress={() => router.push("/forgot-password")}
-          >
-            <Text className="text-blue-600">Forgot Password?</Text>
-          </TouchableOpacity>
-          */}
 
           {/* Sign In Button */}
           <TouchableOpacity
@@ -215,7 +180,12 @@ export default function SignIn() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="white" />
+              <View className="flex-row justify-center items-center">
+                <ActivityIndicator color="white" />
+                <Text className="text-white ml-2">
+                  {isLoginPending ? "Signing in..." : "Loading profile..."}
+                </Text>
+              </View>
             ) : (
               <Text className="text-white font-bold text-center">Sign In</Text>
             )}
@@ -223,9 +193,9 @@ export default function SignIn() {
 
           {/* Register Link */}
           <AuthLink
-            question="Already have an account?"
-            linkText="Sign In"
-            route="sign-in"
+            question="Don't have an account?"
+            linkText="Register"
+            route="sign-up"
           />
         </ScrollView>
       </KeyboardAvoidingView>
