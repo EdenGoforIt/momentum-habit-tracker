@@ -40,10 +40,49 @@ export async function multiGet(
   keys: string[]
 ): Promise<Array<[string, string | null]>> {
   try {
-    return await AsyncStorage.multiGet(keys);
+    var data = await AsyncStorage.multiGet(keys);
+    return [...data];
   } catch (error) {
     console.error("Error getting multiple items:", error);
     return [];
+  }
+}
+
+export async function getAllValues(): Promise<Record<string, any>> {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const keyValuePairs = await AsyncStorage.multiGet(keys);
+
+    const result: Record<string, any> = {};
+
+    keyValuePairs.forEach(([key, value]) => {
+      if (value !== null) {
+        try {
+          // Try to parse JSON values
+          result[key] = JSON.parse(value);
+        } catch {
+          // If not JSON, store as string
+          result[key] = value;
+        }
+      } else {
+        result[key] = null;
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error getting all values:", error);
+    return {};
+  }
+}
+
+export async function dumpStorage(): Promise<void> {
+  try {
+    const allValues = await getAllValues();
+    console.log("📦 COMPLETE STORAGE DUMP:");
+    console.log(JSON.stringify(allValues, null, 2));
+  } catch (error) {
+    console.error("Error dumping storage:", error);
   }
 }
 

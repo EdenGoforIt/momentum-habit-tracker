@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import { UserDto } from "@/api";
+import { AUTH_STATUS, type AuthStatus } from "@/constants/auth";
 import { createSelectors } from "../utils";
 import type { TokenType } from "./utils";
 import { getToken, removeToken, setToken, setUser } from "./utils";
@@ -8,7 +9,7 @@ import { getToken, removeToken, setToken, setUser } from "./utils";
 interface AuthState {
   token: TokenType | null;
   user: UserDto | null;
-  status: "idle" | "signOut" | "signIn";
+  status: AuthStatus;
   signIn: (data: TokenType) => void;
   setUser: (user: UserDto) => void;
   signOut: () => void;
@@ -16,12 +17,12 @@ interface AuthState {
 }
 
 const _useAuth = create<AuthState>((set, get) => ({
-  status: "idle",
+  status: AUTH_STATUS.IDLE,
   token: null,
   user: null,
   signIn: (token) => {
     setToken(token);
-    set({ status: "signIn", token });
+    set({ status: AUTH_STATUS.SIGNED_IN, token });
   },
   setUser: (user) => {
     setUser(user);
@@ -29,7 +30,7 @@ const _useAuth = create<AuthState>((set, get) => ({
   },
   signOut: () => {
     removeToken();
-    set({ status: "signOut", token: null });
+    set({ status: AUTH_STATUS.SIGNED_OUT, token: null });
   },
   hydrate: async () => {
     try {

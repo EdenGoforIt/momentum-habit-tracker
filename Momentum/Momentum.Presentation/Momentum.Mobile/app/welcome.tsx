@@ -1,3 +1,5 @@
+import { ROUTENAMES } from "@/constants";
+import { AUTH_STATUS } from "@/constants/auth";
 import images from "@/constants/images";
 import { useAuth } from "@/lib";
 import { useRouter } from "expo-router";
@@ -6,13 +8,25 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function welcome() {
-  // TODO: remove
-  const { signOut } = useAuth();
+  const { status } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    signOut();
-  }, []);
-  const router = useRouter();
+    // If user is already authenticated, redirect to home
+    if (status === AUTH_STATUS.SIGNED_IN) {
+      router.replace(ROUTENAMES.HOME);
+    }
+  }, [status, router]);
+
+  // Show loading or nothing while checking auth status
+  if (status === AUTH_STATUS.IDLE) {
+    return null; // or a loading spinner
+  }
+
+  // If user is signed in, don't show welcome screen (redirect is happening)
+  if (status === AUTH_STATUS.SIGNED_IN) {
+    return null;
+  }
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerClassName="h-full">
@@ -33,7 +47,7 @@ export default function welcome() {
         <View className="flex flex-col justify-center items-center w-full">
           <TouchableOpacity
             className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5"
-            onPress={() => router.push("/(auth)/sign-in")}
+            onPress={() => router.push(ROUTENAMES.SIGN_IN)}
           >
             <Text className="text-lg font-rubik-medium text-black-300 text-center">
               Sign In
@@ -41,7 +55,7 @@ export default function welcome() {
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-white shadow-md shadow-zinc-300 rounded-full w-[80%] py-4 mt-5"
-            onPress={() => router.push("/(auth)/sign-up")}
+            onPress={() => router.push(ROUTENAMES.SIGN_UP)}
           >
             <Text className="text-lg font-rubik-medium text-black-300 text-center">
               Register

@@ -1,109 +1,46 @@
-import { useGetUser, UserDto } from "@/api";
+import { useGetUser } from "@/api";
 import { useLogin } from "@/api/auth";
 import AuthLink from "@/components/AuthLink";
+import { Button, Input } from "@/components/common";
+import { AUTH_VALIDATION_SCHEMAS } from "@/constants";
 import images from "@/constants/images";
-import { useAuth } from "@/lib/auth";
-import { showErrorAlert } from "@/utils/errorHandler";
-import { router } from "expo-router";
+import { useAuthFlow } from "@/hooks/useAuthFlow";
+import { useFormValidation } from "@/hooks/useFormValidation";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
-  const { signIn, setUser } = useAuth();
-
-  // Simplified login mutation
-  const { isPending: isLoginPending, mutateAsync: loginMutateAsync } =
-    useLogin();
-
-  // Get user query - disabled by default
+  const { errors, validateAll, validateField } = useFormValidation(
+    AUTH_VALIDATION_SCHEMAS.signIn
+  );
+  const { isLoading, executeAuthFlow } = useAuthFlow();
+  const { mutateAsync: loginMutateAsync } = useLogin();
   const { refetch: refetchUser } = useGetUser({
     variables: { email },
     enabled: false,
   });
 
-  const validateEmail = () => {
-    if (!email) {
-      setEmailError("Email is required");
-      return false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError("Please enter a valid email");
-      return false;
-    }
-    setEmailError("");
-    return true;
-  };
-
-  const validatePassword = () => {
-    if (!password) {
-      setPasswordError("Password is required");
-      return false;
-    } else if (password.length < 6) {
-      setPasswordError("Password must be at least 6 characters");
-      return false;
-    }
-    setPasswordError("");
-    return true;
-  };
-
   const handleSignIn = async () => {
-    // Validate inputs first
-    const isEmailValid = validateEmail();
-    const isPasswordValid = validatePassword();
+    const isValid = validateAll({ email, password });
+    if (!isValid) return;
 
-    if (!isEmailValid || !isPasswordValid) return;
-
-    try {
-      // Step 1: Login and get tokens
-      const loginData = await loginMutateAsync({ email, password });
-      console.log("loginData :", loginData);
-
-      // Step 2: Store authentication tokens immediately
-      signIn({
-        accessToken: loginData.accessToken,
-        expiresIn: loginData.expiresIn,
-        refreshToken: loginData.refreshToken,
-      });
-
-      // Step 3: Fetch and store user profile
-      setIsLoadingProfile(true);
-      const userResult = await refetchUser();
-      console.log("userResult :", userResult);
-
-      if (userResult.data) {
-        setUser(userResult.data as UserDto);
-        console.log("User profile fetched:", userResult.data);
-      } else {
-        console.warn("User fetch succeeded but no data returned");
-      }
-
-      // Step 4: Navigate to home
-      router.replace("/home");
-    } catch (error) {
-      console.log("error :", error);
-      showErrorAlert(error);
-    } finally {
-      setIsLoadingProfile(false);
-    }
+    await executeAuthFlow(
+      () => loginMutateAsync({ email, password }),
+      refetchUser,
+      "/home"
+    );
   };
-
-  const isLoading = isLoginPending || isLoadingProfile;
 
   return (
     <SafeAreaView className="bg-white h-full">
@@ -132,72 +69,45 @@ export default function SignIn() {
           </View>
 
           <View className="space-y-4 mb-6">
-            {/* Email Field */}
-            <View>
-              <Text className="text-gray-700 mb-2 font-medium">Email</Text>
-              <TextInput
-                className={`border ${
-                  emailError ? "border-red-500" : "border-gray-300"
-                } rounded-lg px-4 py-3 text-gray-800 bg-gray-50`}
-                placeholder="Enter your email"
-                value={email}
-                onChangeText={setEmail}
-                onBlur={validateEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!isLoading}
-              />
-              {emailError ? (
-                <Text className="text-red-500 mt-1">{emailError}</Text>
-              ) : null}
-            </View>
+            <Input
+              label="Email"
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+              onBlur={() => validateField("email", email)}
+              error={errors.email}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!isLoading}
+              required
+            />
 
-            {/* Password Field */}
-            <View>
-              <Text className="text-gray-700 mb-2 font-medium">Password</Text>
-              <TextInput
-                className={`border ${
-                  passwordError ? "border-red-500" : "border-gray-300"
-                } rounded-lg px-4 py-3 text-gray-800 bg-gray-50`}
-                placeholder="Enter your password"
-                value={password}
-                onChangeText={setPassword}
-                onBlur={validatePassword}
-                secureTextEntry
-                editable={!isLoading}
-              />
-              {passwordError ? (
-                <Text className="text-red-500 mt-1">{passwordError}</Text>
-              ) : null}
-            </View>
+            <Input
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              onBlur={() => validateField("password", password)}
+              error={errors.password}
+              secureTextEntry
+              editable={!isLoading}
+              required
+            />
           </View>
 
-          {/* Sign In Button */}
-          <TouchableOpacity
-            className={`rounded-lg py-4 ${
-              isLoading ? "bg-blue-400" : "bg-blue-600"
-            }`}
+          <Button
+            title="Sign In"
             onPress={handleSignIn}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <View className="flex-row justify-center items-center">
-                <ActivityIndicator color="white" />
-                <Text className="text-white ml-2">
-                  {isLoginPending ? "Signing in..." : "Loading profile..."}
-                </Text>
-              </View>
-            ) : (
-              <Text className="text-white font-bold text-center">Sign In</Text>
-            )}
-          </TouchableOpacity>
+            loading={isLoading}
+            loadingText="Signing in..."
+            className="mb-4"
+          />
 
-          {/* Register Link */}
           <AuthLink
             question="Don't have an account?"
             linkText="Register"
-            route="sign-up"
+            route="./sign-up"
           />
         </ScrollView>
       </KeyboardAvoidingView>
