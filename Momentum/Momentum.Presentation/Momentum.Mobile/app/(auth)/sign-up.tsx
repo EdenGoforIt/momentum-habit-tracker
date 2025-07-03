@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "../../contexts/AuthContext";
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -28,8 +27,6 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const { login } = useAuth();
 
   const validateFirstName = () => {
     if (!firstName.trim()) {

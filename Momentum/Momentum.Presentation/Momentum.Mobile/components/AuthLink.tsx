@@ -1,11 +1,11 @@
-import { router } from "expo-router";
+import { RelativePathString, router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface AuthLinkProps {
   question: string;
   linkText: string;
-  route: string;
+  route: RelativePathString;
   marginTop?: number;
 }
 

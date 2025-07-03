@@ -1,6 +1,6 @@
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/lib/auth";
+import { showErrorAlert } from "@/utils/errorHandler";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -19,10 +19,9 @@ import {
 } from "react-native";
 
 export default function EditProfile() {
-  const { user } = useAuth();
+  const { user, token, setUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
 
   // Form state
   const [firstName, setFirstName] = useState("");
@@ -35,24 +34,12 @@ export default function EditProfile() {
 
   useEffect(() => {
     loadUserData();
-  }, []);
+  }, [user]);
 
-  const loadUserData = async () => {
-    setIsLoading(true);
-    try {
-      const storedUserData = await AsyncStorage.getItem("userData");
-      if (storedUserData) {
-        const parsedData = JSON.parse(storedUserData);
-        setUserData(parsedData);
-        setFirstName(parsedData.firstName || "");
-        setLastName(parsedData.lastName || "");
-        setProfileImage(parsedData.profileImage || null);
-      }
-    } catch (error) {
-      console.error("Failed to load user data:", error);
-      Alert.alert("Error", "Failed to load your profile information");
-    } finally {
-      setIsLoading(false);
+  const loadUserData = () => {
+    if (user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
     }
   };
 
@@ -109,68 +96,70 @@ export default function EditProfile() {
     const isFirstNameValid = validateFirstName();
     const isLastNameValid = validateLastName();
 
-    if (isFirstNameValid && isLastNameValid) {
-      setIsSaving(true);
+    if (!isFirstNameValid || !isLastNameValid) return;
 
-      try {
-        // In a production app, we would upload the image to a server here
-        // and send the user data to the API
-        const url = process.env.EXPO_PUBLIC_API_URL;
-        const accessToken = await AsyncStorage.getItem("accessToken");
+    setIsSaving(true);
 
-        if (!accessToken) {
-          throw new Error("No access token found");
-        }
+    try {
+      const url = process.env.EXPO_PUBLIC_API_URL;
+      const accessToken = token?.accessToken;
 
-        // First, handle profile image if it's changed
-        let profileImageUrl = profileImage;
-        if (profileImage && profileImage !== userData?.profileImage) {
-          // In a real app, you would upload the image to your server here
-          // and get back a URL. For now, we'll just use the local URI
-          profileImageUrl = profileImage;
-        }
+      if (!accessToken) {
+        throw new Error("No access token found");
+      }
 
-        // Then update user profile
-        const response = await fetch(`${url}user/profile`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            firstName,
-            lastName,
-            profileImage: profileImageUrl,
-          }),
-        });
+      // Handle profile image upload if changed
+      let profileImageUrl = profileImage;
 
-        // For demo, we'll simulate a successful update by updating AsyncStorage
-        // In a real app, you would parse the response from your API
-        const updatedUserData = {
-          ...userData,
+      // Update user profile via API
+      const response = await fetch(`${url}user/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
           firstName,
           lastName,
           profileImage: profileImageUrl,
-        };
+        }),
+      });
 
-        await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData));
-
-        Alert.alert("Success", "Your profile has been updated successfully!", [
-          { text: "OK", onPress: () => router.back() },
-        ]);
-      } catch (error) {
-        console.error("Failed to update profile:", error);
-        Alert.alert(
-          "Error",
-          "Failed to update your profile. Please try again."
-        );
-      } finally {
-        setIsSaving(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const updatedUserData = await response.json();
+
+      // Update Zustand store with new user data
+      const newUserData = {
+        ...user,
+        firstName,
+        lastName,
+        profileImage: profileImageUrl,
+        // Spread any additional data from API response
+        ...updatedUserData,
+      };
+
+      setUser(newUserData);
+
+      Alert.alert("Success", "Your profile has been updated successfully!", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      showErrorAlert(
+        error,
+        "Update Failed",
+        "Failed to update your profile. Please try again."
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  if (isLoading) {
+  // Show loading only if we don't have user data yet
+  if (!user && isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#4a90e2" />
@@ -209,7 +198,7 @@ export default function EditProfile() {
                   <View className="w-full h-full bg-blue-500 items-center justify-center">
                     <Text className="text-white text-5xl font-bold">
                       {firstName?.charAt(0) ||
-                        userData?.email?.charAt(0)?.toUpperCase() ||
+                        user?.email?.charAt(0)?.toUpperCase() ||
                         "?"}
                     </Text>
                   </View>
@@ -240,6 +229,7 @@ export default function EditProfile() {
                 onChangeText={setFirstName}
                 onBlur={validateFirstName}
                 autoCapitalize="words"
+                editable={!isSaving}
               />
               {firstNameError ? (
                 <Text className="text-red-500 mt-1">{firstNameError}</Text>
@@ -258,6 +248,7 @@ export default function EditProfile() {
                 onChangeText={setLastName}
                 onBlur={validateLastName}
                 autoCapitalize="words"
+                editable={!isSaving}
               />
               {lastNameError ? (
                 <Text className="text-red-500 mt-1">{lastNameError}</Text>
@@ -268,7 +259,7 @@ export default function EditProfile() {
             <View>
               <Text className="text-gray-700 mb-2 font-medium">Email</Text>
               <View className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-100">
-                <Text className="text-gray-800">{userData?.email || ""}</Text>
+                <Text className="text-gray-800">{user?.email || ""}</Text>
               </View>
               <Text className="text-gray-500 mt-1 text-xs">
                 To change your email address, use the "Update Email" option in

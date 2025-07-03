@@ -83,3 +83,7 @@ npx expo start -c
 ### Error: Unable to save asset to directory
 
 Simulator -> device -> erase all contents and settings
+
+## Resources
+
+[](https://github.dev/obytes/react-native-template-obytes/tree/master/src)

@@ -6,16 +6,6 @@ enum HabitFrequency {
   Yearly = "Yearly",
 }
 
-// User DTO interface
-interface UserDto {
-  email: string;
-  userName?: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth?: string; // ISO 8601 date string
-}
-
 // Category interface
 interface Category {
   id: number;
@@ -57,4 +47,14 @@ export interface HabitDto {
   categoryId?: number;
   category?: Category;
   habitEntries: HabitEntryDto[];
+}
+
+// types/type.ts
+export interface ProblemDetails {
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
+  instance?: string;
+  errors?: Record<string, string[]>; // Make sure this is properly defined
 }

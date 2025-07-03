@@ -1,4 +1,3 @@
-import { logAllStorage } from "@/utils/storageUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -41,9 +40,6 @@ export default function Home() {
   const [quote, setQuote] = useState("");
 
   useEffect(() => {
-    // Log AsyncStorage for debugging
-    logAllStorage();
-
     // Set a random motivational quote
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 

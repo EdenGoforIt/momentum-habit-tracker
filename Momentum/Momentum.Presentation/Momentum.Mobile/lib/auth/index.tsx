@@ -31,9 +31,9 @@ const _useAuth = create<AuthState>((set, get) => ({
     removeToken();
     set({ status: "signOut", token: null });
   },
-  hydrate: () => {
+  hydrate: async () => {
     try {
-      const userToken = getToken();
+      const userToken = await getToken();
       if (userToken !== null) {
         get().signIn(userToken);
       } else {
@@ -52,4 +52,4 @@ export const useAuth = createSelectors(_useAuth);
 
 export const signOut = () => _useAuth.getState().signOut();
 export const signIn = (token: TokenType) => _useAuth.getState().signIn(token);
-export const hydrateAuth = () => _useAuth.getState().hydrate();
+export const hydrateAuth = async () => await _useAuth.getState().hydrate();

@@ -1,15 +1,16 @@
 import images from "@/constants/images";
+import { useAuth } from "@/lib";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../contexts/AuthContext";
 
 export default function welcome() {
   // TODO: remove
-  const { logout } = useAuth();
+  const { signOut } = useAuth();
+
   useEffect(() => {
-    logout();
+    signOut();
   }, []);
   const router = useRouter();
   return (

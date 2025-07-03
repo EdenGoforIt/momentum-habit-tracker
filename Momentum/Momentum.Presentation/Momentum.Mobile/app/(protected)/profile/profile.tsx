@@ -1,12 +1,11 @@
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/lib/auth";
+import { showErrorAlert } from "@/utils/errorHandler";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   SafeAreaView,
   ScrollView,
   Switch,
@@ -16,35 +15,13 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
 
-  // App preferences
+  // App preferences - these would ideally come from a settings store
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [weekStartsOnMonday, setWeekStartsOnMonday] = useState(true);
-
-  useEffect(() => {
-    loadUserData();
-  }, []);
-
-  const loadUserData = async () => {
-    setIsLoading(true);
-    try {
-      // In a real app, you would fetch this from your API
-      // For now, we'll use the auth context and AsyncStorage
-      const storedUserData = await AsyncStorage.getItem("userData");
-      if (storedUserData) {
-        setUserData(JSON.parse(storedUserData));
-      }
-    } catch (error) {
-      console.error("Failed to load user data:", error);
-      Alert.alert("Error", "Failed to load user information");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleLogout = async () => {
     Alert.alert("Confirm Logout", "Are you sure you want to log out?", [
@@ -54,11 +31,16 @@ export default function Profile() {
         onPress: async () => {
           setIsLoading(true);
           try {
-            await logout();
+            // Use Zustand signOut - it handles token cleanup automatically
+            signOut();
             router.replace("/sign-in");
           } catch (error) {
             console.error("Logout error:", error);
-            Alert.alert("Error", "Failed to log out. Please try again.");
+            showErrorAlert(
+              error,
+              "Logout Failed",
+              "Failed to log out. Please try again."
+            );
           } finally {
             setIsLoading(false);
           }
@@ -72,7 +54,8 @@ export default function Profile() {
     router.push("/profile/edit");
   };
 
-  if (isLoading && !userData) {
+  // Show loading only if we're actively logging out
+  if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#4a90e2" />
@@ -85,28 +68,28 @@ export default function Profile() {
       <ScrollView className="flex-1">
         {/* User info section */}
         <View className="px-6 pt-8 pb-6 items-center">
-          <View className="w-24 h-24 rounded-full bg-gray-200 mb-4 overflow-hidden">
-            {userData?.profileImage ? (
+          {/* <View className="w-24 h-24 rounded-full bg-gray-200 mb-4 overflow-hidden">
+            {user?.profileImage ? (
               <Image
-                source={{ uri: userData.profileImage }}
+                source={{ uri: user.profileImage }}
                 className="w-full h-full"
               />
             ) : (
               <View className="w-full h-full bg-blue-500 items-center justify-center">
                 <Text className="text-white text-3xl font-bold">
-                  {userData?.firstName?.charAt(0) ||
-                    userData?.email?.charAt(0)?.toUpperCase() ||
+                  {user?.firstName?.charAt(0) ||
+                    user?.email?.charAt(0)?.toUpperCase() ||
                     "?"}
                 </Text>
               </View>
             )}
-          </View>
+          </View> */}
           <Text className="text-2xl font-bold text-gray-800">
-            {userData?.firstName
-              ? `${userData.firstName} ${userData.lastName || ""}`
+            {user?.firstName
+              ? `${user.firstName} ${user.lastName || ""}`
               : "User"}
           </Text>
-          <Text className="text-gray-500">{userData?.email || ""}</Text>
+          <Text className="text-gray-500">{user?.email || ""}</Text>
 
           <TouchableOpacity
             className="mt-4 px-6 py-2 bg-blue-500 rounded-full"
@@ -119,25 +102,31 @@ export default function Profile() {
         <View className="h-2 bg-gray-100" />
 
         {/* Stats summary */}
-        <View className="p-6">
+        {/* <View className="p-6">
           <Text className="text-lg font-bold text-gray-800 mb-4">
             Your Progress
           </Text>
           <View className="flex-row justify-between">
             <View className="items-center">
-              <Text className="text-2xl font-bold text-blue-500">12</Text>
+              <Text className="text-2xl font-bold text-blue-500">
+                {user?.currentStreak || 0}
+              </Text>
               <Text className="text-gray-600">Current Streak</Text>
             </View>
             <View className="items-center">
-              <Text className="text-2xl font-bold text-green-500">87%</Text>
+              <Text className="text-2xl font-bold text-green-500">
+                {user?.completionRate ? `${user.completionRate}%` : "0%"}
+              </Text>
               <Text className="text-gray-600">Completion Rate</Text>
             </View>
             <View className="items-center">
-              <Text className="text-2xl font-bold text-purple-500">145</Text>
+              <Text className="text-2xl font-bold text-purple-500">
+                {user?.totalCompletions || 0}
+              </Text>
               <Text className="text-gray-600">Total Completions</Text>
             </View>
           </View>
-        </View>
+        </View> */}
 
         <View className="h-2 bg-gray-100" />
 
@@ -223,8 +212,13 @@ export default function Profile() {
           <TouchableOpacity
             className="py-4 bg-gray-100 rounded-lg items-center"
             onPress={handleLogout}
+            disabled={isLoading}
           >
-            <Text className="text-red-500 font-medium">Logout</Text>
+            {isLoading ? (
+              <ActivityIndicator color="#ef4444" />
+            ) : (
+              <Text className="text-red-500 font-medium">Logout</Text>
+            )}
           </TouchableOpacity>
         </View>
 

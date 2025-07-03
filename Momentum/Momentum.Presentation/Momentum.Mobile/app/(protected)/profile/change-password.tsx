@@ -1,5 +1,5 @@
+import { useAuth } from "@/lib";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -92,8 +92,7 @@ export default function ChangePassword() {
 
       try {
         const url = process.env.EXPO_PUBLIC_API_URL;
-        const accessToken = await AsyncStorage.getItem("accessToken");
-
+        const { token: accessToken } = useAuth();
         if (!accessToken) {
           throw new Error("No access token found");
         }
