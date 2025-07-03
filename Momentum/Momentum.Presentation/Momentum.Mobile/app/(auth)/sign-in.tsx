@@ -72,6 +72,7 @@ export default function SignIn() {
     try {
       // Step 1: Login and get tokens
       const loginData = await loginMutateAsync({ email, password });
+      console.log("loginData :", loginData);
 
       // Step 2: Store authentication tokens immediately
       signIn({
@@ -83,6 +84,7 @@ export default function SignIn() {
       // Step 3: Fetch and store user profile
       setIsLoadingProfile(true);
       const userResult = await refetchUser();
+      console.log("userResult :", userResult);
 
       if (userResult.data) {
         setUser(userResult.data as UserDto);
@@ -94,7 +96,7 @@ export default function SignIn() {
       // Step 4: Navigate to home
       router.replace("/home");
     } catch (error) {
-      console.error("Authentication error:", error);
+      console.log("error :", error);
       showErrorAlert(error);
     } finally {
       setIsLoadingProfile(false);
