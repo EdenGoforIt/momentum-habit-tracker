@@ -11,6 +11,10 @@ This guide explains how to set up, start, and connect to a local SQL Server (MSS
 Start the SQL Server container and run the API in one go:
 
 ```bash
+open -a Docker
+
+docker start my-mssql-server
+
 docker start my-mssql-server && cd Momentum.Api && dotnet run
 ```
 
