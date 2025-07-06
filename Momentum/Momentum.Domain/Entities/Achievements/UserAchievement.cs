@@ -15,11 +15,11 @@ public class UserAchievement
 
 	// Achievement details
 	public DateTime EarnedDate { get; set; } = DateTime.UtcNow;
-	public bool IsViewed { get; set; } = false; // Whether user has seen the achievement notification
+	public bool IsViewed { get; set; } // Whether user has seen the achievement notification
 	public string? EarnedContext { get; set; } // Additional context about how it was earned
 
 	// Progress tracking (for multi-step achievements)
-	public int CurrentProgress { get; set; } = 0;
+	public int CurrentProgress { get; set; }
 	public bool IsInProgress { get; set; } = true;
 	public DateTime? CompletedDate { get; set; }
 }
