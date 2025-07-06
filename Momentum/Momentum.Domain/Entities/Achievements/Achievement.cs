@@ -6,7 +6,6 @@ namespace Momentum.Domain.Entities.Achievements;
 public class Achievement
 {
 	public required long Id { get; init; }
-
 	public required string Name { get; set; }
 	public required string Description { get; set; }
 	public string? IconName { get; set; } // For UI display
@@ -23,7 +22,4 @@ public class Achievement
 	public int SortOrder { get; set; }
 
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-	// Navigation properties
-	public ICollection<UserAchievement> UserAchievements { get; } = [];
 }
