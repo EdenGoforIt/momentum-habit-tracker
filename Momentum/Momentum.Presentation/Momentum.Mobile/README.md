@@ -65,6 +65,9 @@ npx expo start -c
 # how to run the backend
 
 **Back-end**
+```
+docker start my-mssql-server
+```
 
 ```
 docker start my-mssql-server && cd ../../Momentum.Api && dotnet run
