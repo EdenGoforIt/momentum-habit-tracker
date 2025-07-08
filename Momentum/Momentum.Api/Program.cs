@@ -16,7 +16,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<User>(options =>
     {
         options.Lockout.MaxFailedAccessAttempts = 20;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15); 
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.AllowedForNewUsers = true;
     })
     .AddEntityFrameworkStores<DataContext>();

@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
 using Momentum.Api.Abstractions;
 using Momentum.Api.Common;
 using Momentum.Api.Constants;
