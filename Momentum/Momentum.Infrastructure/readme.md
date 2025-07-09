@@ -5,7 +5,7 @@
 ## Add Migration
 
 ```
- dotnet ef migrations add AddMoreEntities --verbose --project ./Momentum.Infrastructure/Momentum.Infrastructure.csproj --startup-project ./Momentum.Api/Momentum.Api.csproj
+ dotnet ef migrations add AddConfiguration --verbose --project ./Momentum.Infrastructure/Momentum.Infrastructure.csproj --startup-project ./Momentum.Api/Momentum.Api.csproj
 ```
 
 ## Update Database
