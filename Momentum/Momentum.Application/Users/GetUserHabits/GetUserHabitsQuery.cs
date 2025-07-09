@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Habit;
-using Momentum.Domain.Enums;
 using Momentum.Domain.Errors;
 
 namespace Momentum.Application.Users.GetUserHabits;

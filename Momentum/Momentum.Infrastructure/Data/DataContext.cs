@@ -13,12 +13,12 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public DbSet<Category> Categories { get; set; }
     public DbSet<HabitEntry> HabitEntries { get; set; }
     public DbSet<Achievement> Achievements { get; set; }
-    public DbSet<UserAchievement> UserAchievements { get; set; } 
-    public DbSet<HabitGoal> HabitGoals { get; set; } 
-    public DbSet<HabitSchedule> HabitSchedules { get; set; } 
+    public DbSet<UserAchievement> UserAchievements { get; set; }
+    public DbSet<HabitGoal> HabitGoals { get; set; }
+    public DbSet<HabitSchedule> HabitSchedules { get; set; }
 
     /// <summary>
-    /// This method is called when the model for a derived context is being created.
+    ///     This method is called when the model for a derived context is being created.
     /// </summary>
     /// <param name="builder">The builder used to construct the model for this context.</param>
     protected override void OnModelCreating(ModelBuilder builder)

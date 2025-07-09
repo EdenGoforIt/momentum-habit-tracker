@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 #nullable disable
 
 namespace Momentum.Infrastructure.Migrations
-{
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "EF Core auto-generated code")]
+{    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "EF Core auto-generated code")]
+
 
     /// <inheritdoc />
     public partial class AddBasicEntiteis : Migration

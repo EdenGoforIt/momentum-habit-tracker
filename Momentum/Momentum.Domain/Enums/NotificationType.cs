@@ -1,15 +1,12 @@
-namespace Momentum.Domain.Enums
+namespace Momentum.Domain.Enums;
+
+public enum NotificationType
 {
-
-	public enum NotificationType
-	{
-		HabitReminder,
-		AchievementEarned,
-		StreakMilestone,
-		MotivationalMessage,
-		WeeklySummary,
-		MissedHabit,
-		GoalReminder
-	}
-
+    HabitReminder,
+    AchievementEarned,
+    StreakMilestone,
+    MotivationalMessage,
+    WeeklySummary,
+    MissedHabit,
+    GoalReminder
 }

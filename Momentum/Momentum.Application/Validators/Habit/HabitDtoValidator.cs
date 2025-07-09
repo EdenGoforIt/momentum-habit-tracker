@@ -3,7 +3,6 @@ using Momentum.Application.Dtos.Habit;
 
 namespace Momentum.Application.Validators.Habit;
 
-
 public class HabitDtoValidator : AbstractValidator<HabitDto>
 {
     public HabitDtoValidator()
