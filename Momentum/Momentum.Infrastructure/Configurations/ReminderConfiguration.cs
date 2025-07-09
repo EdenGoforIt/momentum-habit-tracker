@@ -12,13 +12,16 @@ public class ReminderConfiguration : IEntityTypeConfiguration<Reminder>
 
         builder.HasIndex(x => x.HabitEntryId);
 
+        builder.Property(x => x.HabitEntryId)
+            .IsRequired();
+
         builder.Property(x => x.DayOfWeek)
             .HasConversion<string>()
             .IsRequired(false);
 
         builder.Property(x => x.Message)
             .HasMaxLength(200)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.Property(x => x.ReminderTime)
             .IsRequired();
