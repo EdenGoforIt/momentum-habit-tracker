@@ -34,7 +34,7 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
             .MapPatch(PatchUser, "{id}", Tags.Users, ApiVersioning.V1);
     }
 
-    private async Task<IResult> GetHabits(ISender sender, [AsParameters] GetUserHabitsQuery query)
+    private async Task<IResult> GetHabits(ISender sender, string userId, [AsParameters] GetUserHabitsQuery query)
     {
         Result<IEnumerable<HabitDto>, IDomainError> result = await sender.Send(query).ConfigureAwait(false);
 
