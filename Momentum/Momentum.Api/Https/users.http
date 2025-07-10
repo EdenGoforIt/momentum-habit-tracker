@@ -43,5 +43,5 @@ Accept: application/json
 
 
 ### Get Habits
-GET {{url}}/8c205c51-704b-4eec-8792-34e285c71a47/habits
+GET {{url}}/8c205c51-704b-4eec-8792-34e285c71a47/habits?date=2025-07-07
 Accept: application/json

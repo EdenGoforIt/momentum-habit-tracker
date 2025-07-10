@@ -7,20 +7,25 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "id": 0,
-  "name": "Daily Reading",
-  "description": "Read at least 20 pages every day",
-  "frequency": 0,
-  "createdAt": "2024-06-01T10:00:00Z",
+  "name": "Morning Jog",
+  "description": "Jog for at least 30 minutes",
+  "frequency": "Daily",
+  "iconName": "run",
+  "color": "#FF5733",
+  "priority": 1,
+  "difficultyLevel": 3,
+  "startDate": "2025-07-01T06:30:00Z",
+  "endDate": "2025-12-31T06:30:00Z",
+  "preferredTime": "06:30:00",
+  "isPublic": true,
+  "notificationsEnabled": true,
+  "reminderMinutesBefore": 15,
+  "sortOrder": 0,
+  "notes": "Avoid rainy days",
+  "createdAt": "2025-07-01T00:00:00Z",
   "archivedAt": null,
-  "userId": "8c205c51-704b-4eec-8792-34e285c71a47",
-  "user": null,
-  "categoryId": null,
-  "category": null,
-  "habitEntries": [
-  ]
+  "categoryId": 5
 }
-
 ### Get Habit
 GET {{url}}/1
 Accept: application/json
