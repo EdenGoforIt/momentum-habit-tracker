@@ -334,7 +334,7 @@ namespace Momentum.Infrastructure.Migrations
                     b.Property<string>("Color")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -360,6 +360,128 @@ namespace Momentum.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Color = "#4CAF50",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits for physical and mental well-being",
+                            IconName = "health_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Health",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Color = "#2196F3",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits to boost productivity",
+                            IconName = "productivity_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Productivity",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Color = "#FFC107",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits for personal growth and learning",
+                            IconName = "learning_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Learning",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Color = "#8BC34A",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits for managing money and financial growth",
+                            IconName = "finance_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Finance",
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Color = "#E91E63",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Physical exercise and activity habits",
+                            IconName = "fitness_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Fitness",
+                            SortOrder = 5
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Color = "#9C27B0",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits for meditation and mental clarity",
+                            IconName = "mindfulness_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Mindfulness",
+                            SortOrder = 6
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            Color = "#FF9800",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits to improve social connections",
+                            IconName = "relationships_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Relationships",
+                            SortOrder = 7
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            Color = "#00BCD4",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits to boost creative skills",
+                            IconName = "creativity_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Creativity",
+                            SortOrder = 8
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            Color = "#607D8B",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits for personal well-being and care",
+                            IconName = "selfcare_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Self-Care",
+                            SortOrder = 9
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            Color = "#795548",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Habits for staying organized and tidy",
+                            IconName = "organization_icon",
+                            IsActive = true,
+                            IsSystem = true,
+                            Name = "Organization",
+                            SortOrder = 10
+                        });
                 });
 
             modelBuilder.Entity("Momentum.Domain.Entities.Habits.Habit", b =>
