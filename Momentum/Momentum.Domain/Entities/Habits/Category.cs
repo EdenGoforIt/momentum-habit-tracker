@@ -11,7 +11,7 @@ public class Category
     public bool IsSystem { get; set; } // System categories vs user-created
     public bool IsActive { get; set; } = true;
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<Habit> Habits { get; init; } = [];
 }
