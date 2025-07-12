@@ -16,6 +16,9 @@ open -a Docker
 docker start my-mssql-server
 
 docker start my-mssql-server && cd Momentum.Api && dotnet run
+
+cd Momentum.Api && dotnet run
+
 ```
 
 ---

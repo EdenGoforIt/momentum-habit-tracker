@@ -7,9 +7,11 @@ Content-Type: application/json
 Accept: application/json
 
 {
+  "id": 0, 
   "name": "Morning Jog",
   "description": "Jog for at least 30 minutes",
-  "frequency": "Daily",
+  "userId": "e27bdd5f-f02e-467b-9cc7-66f358bf3ffd",
+  "frequency": 0,
   "iconName": "run",
   "color": "#FF5733",
   "priority": 1,
