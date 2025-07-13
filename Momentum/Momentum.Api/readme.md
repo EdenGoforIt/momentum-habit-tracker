@@ -91,6 +91,13 @@ You can use **Azure Data Studio** or any SQL client to connect:
 
 ---
 
+
+
+## Use Docker Compose (Optional)
+```asm
+docker compose up -d
+```
+
 ## 🔐 Example Login Request Payload
 
 ```json
