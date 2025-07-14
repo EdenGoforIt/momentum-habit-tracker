@@ -64,10 +64,7 @@ export interface UpdateHabitDto {
 
 export interface GetHabitsParams {
   userId?: string;
-  categoryId?: number;
-  includeArchived?: boolean;
-  page?: number;
-  limit?: number;
+  date?: number;
 }
 
 // API Response types

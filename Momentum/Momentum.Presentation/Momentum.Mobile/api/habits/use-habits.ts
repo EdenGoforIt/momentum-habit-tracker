@@ -23,50 +23,6 @@ export const useCreateHabit = createMutation<Response, Variables, AxiosError>({
     }).then((response) => response.data),
 });
 
-// Get All Habits
-type GetHabitsVariables = GetHabitsParams;
-type GetHabitsResponse = HabitsResponse;
-
-export const useGetHabits = createQuery<
-  GetHabitsResponse,
-  GetHabitsVariables,
-  AxiosError
->({
-  queryKey: ["habits"],
-  fetcher: (variables) => {
-    const params = new URLSearchParams();
-
-    if (variables.userId) params.append("userId", variables.userId);
-    if (variables.categoryId)
-      params.append("categoryId", variables.categoryId.toString());
-    if (variables.includeArchived)
-      params.append("includeArchived", variables.includeArchived.toString());
-    if (variables.page) params.append("page", variables.page.toString());
-    if (variables.limit) params.append("limit", variables.limit.toString());
-
-    const queryString = params.toString();
-    const url = queryString ? `v1/habits?${queryString}` : "v1/habits";
-
-    return client.get(url).then((response) => response.data);
-  },
-});
-
-// Get Single Habit
-type GetHabitVariables = { habitId: number };
-type GetHabitResponse = HabitResponse;
-
-export const useGetHabit = createQuery<
-  GetHabitResponse,
-  GetHabitVariables,
-  AxiosError
->({
-  queryKey: ["habit"],
-  fetcher: (variables) =>
-    client
-      .get(`v1/habits/${variables.habitId}`)
-      .then((response) => response.data),
-});
-
 // Update Habit
 type UpdateHabitVariables = UpdateHabitDto;
 type UpdateHabitResponse = HabitResponse;
@@ -133,12 +89,28 @@ export const useRestoreHabit = createMutation<
 });
 
 // Get User's Habits (convenience hook)
-export const useGetUserHabits = (
-  userId: string,
-  options?: Partial<GetHabitsParams>
-) => {
-  return useGetHabits({
-    variables: { userId, ...options },
-    enabled: !!userId,
-  });
-};
+// If you want to add extraParams to the Axios request, you need to merge them into the query parameters when calling useGetHabits.
+// Modify the hook to spread extraParams into the variables:
+
+export const useGetUserHabits = createQuery<
+  HabitsResponse,
+  GetHabitsParams,
+  AxiosError
+>({
+  queryKey: ["userHabits"],
+  fetcher: (variables) => {
+    if (!variables.userId) throw new Error("userId is required");
+
+    const { userId, ...rest } = variables;
+    const params = new URLSearchParams();
+
+    if (rest.date) params.append("date", rest.date.toString());
+
+    const queryString = params.toString();
+    const url = queryString
+      ? `v1/habits/${userId}/habits?${queryString}`
+      : `v1/habits/${userId}/habits`;
+
+    return client.get(url).then((response) => response.data);
+  },
+});
