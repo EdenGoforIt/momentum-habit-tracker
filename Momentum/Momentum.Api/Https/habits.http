@@ -1,6 +1,5 @@
 @url = http://localhost:5128/api/v1/habits
 
-
 ### Create Habit
 POST {{url}}
 Content-Type: application/json
@@ -10,14 +9,14 @@ Accept: application/json
   "id": 0, 
   "name": "Morning Jog",
   "description": "Jog for at least 30 minutes",
-  "userId": "e27bdd5f-f02e-467b-9cc7-66f358bf3ffd",
+  "userId": "74ea04cf-51c1-475a-bafc-d6c7c252ca2b",
   "frequency": 0,
   "iconName": "run",
   "color": "#FF5733",
   "priority": 1,
   "difficultyLevel": 3,
   "startDate": "2025-07-01T06:30:00Z",
-  "endDate": "2025-12-31T06:30:00Z",
+  "endDate": "2025-07-31T06:30:00Z",
   "preferredTime": "06:30:00",
   "isPublic": true,
   "notificationsEnabled": true,

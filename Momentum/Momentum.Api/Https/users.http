@@ -1,7 +1,7 @@
 @url = http://localhost:5128/api/v1/users
-
+@userId = 74ea04cf-51c1-475a-bafc-d6c7c252ca2b
 ### Get User
-GET {{url}}/e27bdd5f-f02e-467b-9cc7-66f358bf3ffd
+GET {{url}}/{{userId}}
 Accept: application/json
 
 ### Get User By Email
@@ -24,7 +24,7 @@ Accept: application/json
 
 ### Patch User
 
-PATCH {{url}}/e27bdd5f-f02e-467b-9cc7-66f358bf3ffd
+PATCH {{url}}/{{userId}}
 Content-Type: application/json
 Accept: application/json
 
@@ -43,5 +43,5 @@ Accept: application/json
 
 
 ### Get Habits
-GET {{url}}/e27bdd5f-f02e-467b-9cc7-66f358bf3ffd/habits?date=2025-07-07
+GET {{url}}/{{userId}}/habits?date=2025-07-07
 Accept: application/json
