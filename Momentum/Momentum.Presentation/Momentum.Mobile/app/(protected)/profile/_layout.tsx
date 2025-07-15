@@ -1,56 +1,57 @@
+import { Header } from "@/components/common";
 import { Stack } from "expo-router";
 
 export default function ProfileLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      {/* This 'index' screen will be your actual 'menu' content */}
       <Stack.Screen
-        name="index"
+        name="index" // <-- Changed from "menu" to "index"
         options={{
-          headerTitle: "Profile",
-          headerTitleAlign: "center",
+          header: () => <Header title="Profile" showClose={true} />,
         }}
       />
       <Stack.Screen
-        name="change-password"
+        name="change-password" // This implies app/(profile)/change-password.tsx
         options={{
-          headerTitle: "Change Password",
-          headerTitleAlign: "center",
-          presentation: "card", // Standard push navigation
+          header: () => (
+            <Header title="Change Password" showBack={true} showClose={true} />
+          ),
+        }}
+      />
+      {/* ... and so on for your other Stack.Screen components */}
+      <Stack.Screen
+        name="edit" // This implies app/(profile)/edit.tsx
+        options={{
+          header: () => <Header title="Edit Profile" showClose={true} />,
         }}
       />
       <Stack.Screen
-        name="edit"
+        name="support" // This implies app/(profile)/support.tsx
         options={{
-          headerTitle: "Edit Profile",
-          headerTitleAlign: "center",
+          header: () => <Header title="Help & Support" showClose={true} />,
         }}
       />
       <Stack.Screen
-        name="support"
+        name="about" // This implies app/(profile)/about.tsx
         options={{
-          headerTitle: "Help & Support",
-          headerTitleAlign: "center",
+          header: () => <Header title="About Momentum" showClose={true} />,
         }}
       />
       <Stack.Screen
-        name="about"
+        name="privacy-policy" // This implies app/(profile)/privacy-policy.tsx
         options={{
-          headerTitle: "About Momentum",
-          headerTitleAlign: "center",
+          header: () => <Header title="Privacy Policy" showClose={true} />,
         }}
       />
       <Stack.Screen
-        name="privacy-policy"
+        name="update-email" // This implies app/(profile)/update-email.tsx
         options={{
-          headerTitle: "Privacy Policy",
-          headerTitleAlign: "center",
-        }}
-      />
-      <Stack.Screen
-        name="update-email"
-        options={{
-          headerTitle: "Update Email",
-          headerTitleAlign: "center",
+          header: () => <Header title="Update Email" showClose={true} />,
         }}
       />
     </Stack>
