@@ -1,3 +1,5 @@
+import { Header } from "@/components/common";
+import { useAuth } from "@/lib";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -38,6 +40,13 @@ export default function Home() {
   const [todayHabits, setTodayHabits] = useState(TODAY_HABITS);
   const [stats, setStats] = useState(STATS);
   const [quote, setQuote] = useState("");
+  const { user, token } = useAuth();
+  const userId = user?.id;
+  console.log("userId :", token);
+  // const { data, isPending, isError } = useGetUserHabits({
+  //   //@ts-ignore
+  //   variables: { userId: "", date: new Date().toISOString().split("T")[0] },
+  // });
 
   useEffect(() => {
     // Set a random motivational quote
@@ -62,10 +71,11 @@ export default function Home() {
 
   return (
     <SafeAreaView className="bg-white flex-1">
+      <Header title="Home" showMenu={true} />
       <ScrollView className="flex-1">
-        {/* Header with greeting */}
-        <View className="px-6 pt-6 pb-4">
-          <Text className="text-3xl font-bold text-gray-800">Good Morning</Text>
+        {/* Greeting section */}
+        <View className="px-6 pt-4 pb-4">
+          <Text className="text-2xl font-bold text-gray-800">Good Morning</Text>
           <Text className="text-lg text-gray-600">
             Let's build some great habits today!
           </Text>
