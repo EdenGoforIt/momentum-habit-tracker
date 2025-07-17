@@ -1,5 +1,6 @@
+import { useGetUserHabits } from "@/api";
 import { Header } from "@/components/common";
-import { useAuth } from "@/lib";
+import { useAuth, useIsAuthenticated } from "@/lib";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -40,13 +41,17 @@ export default function Home() {
   const [todayHabits, setTodayHabits] = useState(TODAY_HABITS);
   const [stats, setStats] = useState(STATS);
   const [quote, setQuote] = useState("");
-  const { user, token } = useAuth();
+  const { user, token, isAuthenticated } = useAuth();
   const userId = user?.id;
   console.log("userId :", token);
-  // const { data, isPending, isError } = useGetUserHabits({
-  //   //@ts-ignore
-  //   variables: { userId: "", date: new Date().toISOString().split("T")[0] },
-  // });
+  const { data, isPending, isError } = useGetUserHabits({
+    //@ts-ignore
+    variables: { userId: "", date: new Date().toISOString().split("T")[0] },
+  });
+
+  if (!useIsAuthenticated()) {
+    router.push("/welcome");
+  }
 
   useEffect(() => {
     // Set a random motivational quote
