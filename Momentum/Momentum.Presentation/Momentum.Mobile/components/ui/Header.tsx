@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-
 interface HeaderProps {
   title: string;
   showMenu?: boolean;
@@ -38,14 +37,14 @@ const Header: React.FC<HeaderProps> = ({
     }
 
     return (
-      <View className="flex-row items-center">
+      <View className="flex-row items-center  ">
         {showMenu && (
           <TouchableOpacity
             onPress={handleMenuPress}
             accessibilityLabel="Menu"
-            className="me-1"
+            className="color-black-100"
           >
-            <Ionicons name="menu" size={32} color="#000" />
+            <Ionicons name="menu" size={24} color={"#000"} />
           </TouchableOpacity>
         )}
       </View>
@@ -55,21 +54,22 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <View>
       <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-        <View className="flex-row items-center flex-1">
+        {/* Left: Back button */}
+        <View className="w-10">
           {showBack && (
             <TouchableOpacity onPress={handleBack} className="mr-3 p-1">
-              <Ionicons name="arrow-back" size={28} color="#000" />
+              <Ionicons name="arrow-back" size={28} color="green" />
             </TouchableOpacity>
           )}
         </View>
 
-        <Text className="text-lg font-semibold text-gray-800 absolute left-0 right-0 text-center">
-          {title}
-        </Text>
-
-        <View className="flex-row items-center flex-1 justify-end">
-          {renderRightContent()}
+        {/* Center: Title */}
+        <View className="flex-1 items-center">
+          <Text className="text-lg font-semibold text-gray-800">{title}</Text>
         </View>
+
+        {/* Right: Menu or right content */}
+        <View className="w-10 items-end">{renderRightContent()}</View>
       </View>
     </View>
   );
