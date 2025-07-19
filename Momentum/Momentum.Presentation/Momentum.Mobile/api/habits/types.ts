@@ -18,9 +18,17 @@ export interface Category {
 export interface HabitEntry {
   id: number;
   habitId: number;
-  completedAt: string;
-  notes?: string;
-  value?: number;
+  date: string;
+  completed: boolean;
+  completedAt?: string;
+  difficultyRating?: number;
+  moodBefore?: number;
+  moodAfter?: number;
+  duration?: string;
+  location?: string;
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Main Habit interface
@@ -29,13 +37,23 @@ export interface Habit {
   name: string;
   description?: string;
   frequency: HabitFrequency;
+  iconName?: string;
+  color?: string;
+  priority: number;
+  difficultyLevel: number;
+  startDate?: string;
+  endDate?: string;
+  preferredTime?: string;
+  isPublic: boolean;
+  notificationsEnabled: boolean;
+  reminderMinutesBefore: number;
+  sortOrder: number;
+  notes?: string;
   createdAt: string;
   archivedAt?: string | null;
   userId: string;
-  user?: any | null;
   categoryId?: number | null;
   category?: Category | null;
-  habitEntries: HabitEntry[];
 }
 
 // DTOs for API requests

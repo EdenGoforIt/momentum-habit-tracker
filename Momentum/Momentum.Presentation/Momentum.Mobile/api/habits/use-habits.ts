@@ -17,7 +17,7 @@ type Response = HabitResponse;
 export const useCreateHabit = createMutation<Response, Variables, AxiosError>({
   mutationFn: async (variables) =>
     client({
-      url: "v1/habits",
+      url: "api/v1/habits",
       method: "POST",
       data: variables,
     }).then((response) => response.data),
@@ -34,7 +34,7 @@ export const useUpdateHabit = createMutation<
 >({
   mutationFn: async (variables) =>
     client({
-      url: `v1/habits/${variables.id}`,
+      url: `api/v1/habits/${variables.id}`,
       method: "PUT",
       data: variables,
     }).then((response) => response.data),
@@ -108,9 +108,21 @@ export const useGetUserHabits = createQuery<
 
     const queryString = params.toString();
     const url = queryString
-      ? `v1/habits/${userId}/habits?${queryString}`
-      : `v1/habits/${userId}/habits`;
+      ? `api/v1/users/${userId}/habits?${queryString}`
+      : `api/v1/users/${userId}/habits`;
 
     return client.get(url).then((response) => response.data);
+  },
+});
+
+// Get Single Habit
+export const useGetHabit = createQuery<
+  HabitResponse,
+  { habitId: number },
+  AxiosError
+>({
+  queryKey: ["habit"],
+  fetcher: (variables) => {
+    return client.get(`api/v1/habits/${variables.habitId}`).then((response) => response.data);
   },
 });

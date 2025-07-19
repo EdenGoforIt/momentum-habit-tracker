@@ -11,7 +11,7 @@ export const calculateStreak = (habitEntries: HabitEntry[]): number => {
   // Sort entries by completion date (most recent first)
   const sortedEntries = [...habitEntries].sort(
     (a, b) =>
-      new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+      new Date(b.completedAt || b.createdAt).getTime() - new Date(a.completedAt || a.createdAt).getTime()
   );
 
   let streak = 0;
@@ -19,7 +19,7 @@ export const calculateStreak = (habitEntries: HabitEntry[]): number => {
   currentDate.setHours(0, 0, 0, 0);
 
   for (const entry of sortedEntries) {
-    const entryDate = new Date(entry.completedAt);
+    const entryDate = new Date(entry.completedAt || entry.createdAt);
     entryDate.setHours(0, 0, 0, 0);
 
     // Check if entry is from current date or previous consecutive day
@@ -46,7 +46,7 @@ export const isCompletedToday = (habitEntries: HabitEntry[]): boolean => {
   today.setHours(0, 0, 0, 0);
 
   return habitEntries.some((entry) => {
-    const entryDate = new Date(entry.completedAt);
+    const entryDate = new Date(entry.completedAt || entry.createdAt);
     entryDate.setHours(0, 0, 0, 0);
     return entryDate.getTime() === today.getTime();
   });
@@ -62,7 +62,7 @@ export const getCompletionRate = (
   frequency: HabitFrequency = HabitFrequency.Daily
 ): number => {
   const entries = habitEntries.filter((entry) => {
-    const entryDate = new Date(entry.completedAt);
+    const entryDate = new Date(entry.completedAt || entry.createdAt);
     return entryDate >= startDate && entryDate <= endDate;
   });
 
@@ -129,20 +129,20 @@ export const getNextDueDate = (
  */
 export type HabitStatus = "completed" | "pending" | "overdue" | "upcoming";
 
-export const getHabitStatus = (habit: Habit): HabitStatus => {
-  const completedToday = isCompletedToday(habit.habitEntries);
+export const getHabitStatus = (habit: Habit, habitEntries: HabitEntry[] = []): HabitStatus => {
+  const completedToday = isCompletedToday(habitEntries);
 
   if (completedToday) {
     return "completed";
   }
 
-  const lastEntry = habit.habitEntries.sort(
-    (a, b) =>
-      new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+  const lastEntry = habitEntries.sort(
+    (a: HabitEntry, b: HabitEntry) =>
+      new Date(b.completedAt || b.createdAt).getTime() - new Date(a.completedAt || a.createdAt).getTime()
   )[0];
 
   const nextDue = getNextDueDate(
-    lastEntry ? new Date(lastEntry.completedAt) : null,
+    lastEntry ? new Date(lastEntry.completedAt || lastEntry.createdAt) : null,
     habit.frequency
   );
 
@@ -180,11 +180,12 @@ export const formatFrequency = (frequency: HabitFrequency): string => {
 /**
  * Get habits for today based on frequency and last completion
  */
-export const getTodaysHabits = (habits: Habit[]): Habit[] => {
+export const getTodaysHabits = (habits: Habit[], allHabitEntries: HabitEntry[] = []): Habit[] => {
   return habits.filter((habit) => {
     if (habit.archivedAt) return false; // Exclude archived habits
 
-    const status = getHabitStatus(habit);
+    const habitEntries = allHabitEntries.filter(entry => entry.habitId === habit.id);
+    const status = getHabitStatus(habit, habitEntries);
     return status === "pending" || status === "overdue";
   });
 };
@@ -202,19 +203,17 @@ export interface HabitStats {
   completionRate: number;
 }
 
-export const getHabitStats = (habits: Habit[]): HabitStats => {
+export const getHabitStats = (habits: Habit[], allHabitEntries: HabitEntry[] = []): HabitStats => {
   const activeHabits = habits.filter((h) => !h.archivedAt);
   const archivedHabits = habits.filter((h) => h.archivedAt);
 
-  const totalCompletions = habits.reduce(
-    (sum, habit) => sum + habit.habitEntries.length,
-    0
-  );
+  const totalCompletions = allHabitEntries.length;
 
   // Calculate overall streak (simplified - you might want to implement more complex logic)
-  const streaks = activeHabits.map((habit) =>
-    calculateStreak(habit.habitEntries)
-  );
+  const streaks = activeHabits.map((habit) => {
+    const habitEntries = allHabitEntries.filter(entry => entry.habitId === habit.id);
+    return calculateStreak(habitEntries);
+  });
   const currentStreak = Math.max(...streaks, 0);
   const bestStreak = currentStreak; // You might want to store this separately
 
@@ -222,14 +221,15 @@ export const getHabitStats = (habits: Habit[]): HabitStats => {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const completionRates = activeHabits.map((habit) =>
-    getCompletionRate(
-      habit.habitEntries,
+  const completionRates = activeHabits.map((habit) => {
+    const habitEntries = allHabitEntries.filter(entry => entry.habitId === habit.id);
+    return getCompletionRate(
+      habitEntries,
       thirtyDaysAgo,
       new Date(),
       habit.frequency
-    )
-  );
+    );
+  });
 
   const avgCompletionRate =
     completionRates.length > 0
