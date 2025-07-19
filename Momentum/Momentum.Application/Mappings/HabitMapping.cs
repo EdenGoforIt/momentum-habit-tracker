@@ -13,5 +13,7 @@ public class HabitMapping : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore()).ReverseMap();
         CreateMap<ReminderDto, Reminder>()
             .ForMember(dest => dest.Id, opt => opt.Ignore()).ReverseMap();
+        CreateMap<CategoryDto, Category>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore()).ReverseMap();
     }
 }

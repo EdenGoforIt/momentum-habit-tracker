@@ -17,6 +17,8 @@ public static class ServiceExtensions
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
         services.TryAddScoped<IHabitRepository, HabitRepository>();
         services.TryAddScoped<IUserRepository, UserRepository>();
+        services.TryAddScoped<IHabitEntryRepository, HabitEntryRepository>();
+        services.TryAddScoped<ICategoryRepository, CategoryRepository>();
         return services;
     }
 }
