@@ -1,0 +1,31 @@
+@url = http://localhost:5128/api/v1/habit-entries
+@habitId = 1
+@entryId = 1
+
+### Get habit entries for a specific habit
+GET {{url}}/habit/{{habitId}}
+Accept: application/json
+
+### Create a new habit entry
+POST {{url}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "habitId": 1,
+  "date": "2025-01-18T10:00:00",
+  "completed": true,
+  "note": "Completed morning routine successfully"
+}
+
+### Update a habit entry
+PUT {{url}}/{{entryId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "habitId": 1,
+  "date": "2025-01-18T10:30:00",
+  "completed": true,
+  "note": "Updated notes for the habit entry"
+}

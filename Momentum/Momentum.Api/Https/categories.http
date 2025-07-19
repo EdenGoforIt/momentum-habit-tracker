@@ -1,0 +1,5 @@
+@url = http://localhost:5128/api/v1/categories
+
+### Get all categories
+GET {{url}}
+Accept: application/json
