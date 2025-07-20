@@ -37,9 +37,13 @@ internal static class EndPointExtensions
         // Manually create Users endpoint
         var usersEndpoint = new Users(errorHandler);
         var habitsEndpoint = new Habits(errorHandler);
+        var categoriesEndpoint = new Categories(errorHandler);
+        var habitEntriesEndpoint = new HabitEntries(errorHandler);
 
         usersEndpoint.Map(app);
         habitsEndpoint.Map(app);
+        categoriesEndpoint.Map(app);
+        habitEntriesEndpoint.Map(app);
     }
 
     private static void ConfigureSwagger(WebApplication app)
