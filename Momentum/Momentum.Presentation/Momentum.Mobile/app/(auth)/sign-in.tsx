@@ -4,10 +4,12 @@ import AuthLink from "@/components/AuthLink";
 import { Button, Input } from "@/components/common";
 import { AUTH_VALIDATION_SCHEMAS } from "@/constants";
 import images from "@/constants/images";
-import { useAuthFlow } from "@/hooks/useAuthFlow";
 import { useFormValidation } from "@/hooks/useFormValidation";
+import { useAuth } from "@/lib/auth";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -20,11 +22,12 @@ import {
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { errors, validateAll, validateField } = useFormValidation(
     AUTH_VALIDATION_SCHEMAS.signIn
   );
-  const { isLoading, executeAuthFlow } = useAuthFlow();
+  const { signIn, setUser } = useAuth();
   const { mutateAsync: loginMutateAsync } = useLogin();
   const { refetch: refetchUser } = useGetUser({
     variables: { email },
@@ -35,11 +38,38 @@ export default function SignIn() {
     const isValid = validateAll({ email, password });
     if (!isValid) return;
 
-    await executeAuthFlow(
-      () => loginMutateAsync({ email, password }),
-      refetchUser,
-      "/home"
-    );
+    setIsLoading(true);
+    try {
+      const loginData = await loginMutateAsync({ email, password });
+
+      // Store token in Zustand
+      signIn({
+        accessToken: loginData.accessToken,
+        expiresIn: loginData.expiresIn,
+        refreshToken: loginData.refreshToken,
+      });
+
+      // Fetch user data using API pattern
+      const userResult = await refetchUser();
+      const userData = userResult.data;
+
+      // Store user in Zustand
+      if (userData) {
+        setUser(userData);
+      }
+
+      // Navigate to home
+      router.replace("/home");
+    } catch (error: any) {
+      console.error("Sign-in error:", error);
+      Alert.alert(
+        "Sign In Failed",
+        error?.response?.data?.message ||
+          "Please check your credentials and try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
