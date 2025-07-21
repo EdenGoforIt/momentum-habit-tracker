@@ -11,7 +11,7 @@ export const useGetUser = createQuery<Response, Variables, AxiosError>({
   queryKey: ["user"],
   fetcher: (variables) => {
     return client
-      .get(`users?email=${variables.email}`)
+      .get(`api/v1/users?email=${variables.email}`)
       .then((response) => response.data);
   },
 });

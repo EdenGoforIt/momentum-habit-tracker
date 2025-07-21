@@ -62,6 +62,18 @@ export interface CreateHabitDto {
   name: string;
   description?: string;
   frequency: HabitFrequency;
+  iconName?: string;
+  color?: string;
+  priority?: number;
+  difficultyLevel?: number;
+  startDate?: string;
+  endDate?: string | null;
+  preferredTime?: string | null;
+  isPublic?: boolean;
+  notificationsEnabled?: boolean;
+  reminderMinutesBefore?: number | null;
+  sortOrder?: number;
+  notes?: string | null;
   createdAt?: string;
   archivedAt?: string | null;
   userId: string;

@@ -104,7 +104,11 @@ export const useGetUserHabits = createQuery<
     const { userId, ...rest } = variables;
     const params = new URLSearchParams();
 
-    if (rest.date) params.append("date", rest.date.toString());
+    if (rest.date) {
+      // Convert timestamp to YYYY-MM-DD format
+      const dateString = new Date(rest.date).toISOString().split('T')[0];
+      params.append("date", dateString);
+    }
 
     const queryString = params.toString();
     const url = queryString
