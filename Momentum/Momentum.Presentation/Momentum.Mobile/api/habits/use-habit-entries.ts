@@ -139,3 +139,22 @@ export const useGetHabitEntriesForHabit = (
     enabled: !!habitId,
   });
 };
+
+// Get Habit Entries by Habit ID (Direct API call)
+export const getHabitEntriesByHabitId = async (
+  habitId: number,
+  startDate?: string,
+  endDate?: string
+): Promise<HabitEntry[]> => {
+  const params = new URLSearchParams();
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+  
+  const queryString = params.toString();
+  const url = queryString
+    ? `api/v1/habit-entries/habit/${habitId}?${queryString}`
+    : `api/v1/habit-entries/habit/${habitId}`;
+  
+  const response = await client.get(url);
+  return response.data;
+};
