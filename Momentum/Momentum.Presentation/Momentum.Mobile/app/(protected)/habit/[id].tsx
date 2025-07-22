@@ -1,62 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   ActivityIndicator,
   Alert,
+  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
-// Mock data to simulate fetching habit details from API
-const MOCK_HABITS = {
-  "1": {
-    id: 1,
-    title: "Morning Meditation",
-    startDate: "2025-04-01",
-    recurring: true,
-    recurringDays: {
-      monday: true,
-      tuesday: true,
-      wednesday: true,
-      thursday: true,
-      friday: true,
-      saturday: false,
-      sunday: false,
-    },
-    reminder: true,
-    reminderTime: "2025-04-10T06:30:00.000Z",
-    streak: 15,
-    totalCompletions: 23,
-    lastCompleted: "2025-04-10",
-    completed: true,
-    notes: "Focus on breathing techniques",
-  },
-  "2": {
-    id: 2,
-    title: "Read for 30 minutes",
-    startDate: "2025-03-15",
-    recurring: true,
-    recurringDays: {
-      monday: true,
-      tuesday: false,
-      wednesday: true,
-      thursday: false,
-      friday: true,
-      saturday: true,
-      sunday: true,
-    },
-    reminder: false,
-    reminderTime: null,
-    streak: 3,
-    totalCompletions: 12,
-    lastCompleted: "2025-04-09",
-    completed: false,
-    notes: "Focus on non-fiction books",
-  },
-};
+import { useGetHabit, useDeleteHabit } from "@/api/habits/use-habits";
+import { useToggleHabitCompletion, useGetHabitEntries } from "@/api/habits/use-habit-entries-real";
+import { HabitFrequency } from "@/api/habits/types";
 
 // Days of week for showing schedule
 const DAYS_OF_WEEK = [
@@ -71,61 +28,79 @@ const DAYS_OF_WEEK = [
 
 export default function HabitDetail() {
   const { id } = useLocalSearchParams();
-  const [habit, setHabit] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const habitId = Number(id);
+  const [todaysDate] = useState(new Date().toISOString().split("T")[0]);
+  
+  // Fetch habit details
+  const { data: habitData, isPending: habitLoading, isError: habitError } = useGetHabit({
+    variables: { habitId },
+    enabled: !!habitId && !isNaN(habitId),
+  });
 
-  useEffect(() => {
-    // Simulate API call to fetch habit details
-    const fetchHabit = async () => {
-      try {
-        // In real app, call API with id: await fetch(`/api/habits/${id}`);
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+  // Fetch habit entries for statistics
+  const { data: entriesData } = useGetHabitEntries({
+    variables: { 
+      habitId,
+      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // Last 30 days
+      endDate: todaysDate,
+    },
+    enabled: !!habitId && !isNaN(habitId),
+  });
 
-        const habitData = MOCK_HABITS[id as keyof typeof MOCK_HABITS];
+  // Mutations
+  const deleteMutation = useDeleteHabit();
+  const toggleCompletionMutation = useToggleHabitCompletion();
 
-        if (!habitData) {
-          Alert.alert("Error", "Habit not found");
-          router.back();
-          return;
-        }
-
-        setHabit(habitData);
-        setIsCompleted(habitData.completed);
-      } catch (error) {
-        Alert.alert("Error", "Failed to load habit details");
-      } finally {
-        setLoading(false);
+  // Calculate stats from entries
+  const stats = useMemo(() => {
+    if (!entriesData) return { streak: 0, totalCompletions: 0 };
+    
+    const completedEntries = entriesData.filter(entry => entry.completed);
+    const totalCompletions = completedEntries.length;
+    
+    // Calculate current streak
+    let streak = 0;
+    const today = new Date();
+    for (let i = 0; i < 365; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+      
+      const entry = entriesData.find(e => e.date === dateStr);
+      if (entry?.completed) {
+        streak++;
+      } else if (i > 0) { // Don't break on today if not completed yet
+        break;
       }
-    };
+    }
+    
+    return { streak, totalCompletions };
+  }, [entriesData]);
 
-    fetchHabit();
-  }, [id]);
+  // Check if habit is completed today
+  const isCompletedToday = useMemo(() => {
+    if (!entriesData) return false;
+    const todayEntry = entriesData.find(entry => entry.date === todaysDate);
+    return todayEntry?.completed || false;
+  }, [entriesData, todaysDate]);
 
-  const handleToggleCompletion = () => {
-    // Update local state
-    setIsCompleted(!isCompleted);
-
-    // In real app, update in API: PATCH /api/habits/${id}
-    // For mock, we'll just update our local state
-
-    setHabit((prev: Habit) => ({
-      ...prev,
-      completed: !prev.completed,
-      lastCompleted: !prev.completed
-        ? new Date().toISOString().split("T")[0]
-        : prev.lastCompleted,
-      streak: !prev.completed ? prev.streak + 1 : prev.streak - 1,
-      totalCompletions: !prev.completed
-        ? prev.totalCompletions + 1
-        : prev.totalCompletions - 1,
-    }));
+  const handleToggleCompletion = async () => {
+    try {
+      await toggleCompletionMutation.mutateAsync({
+        habitId,
+        date: todaysDate,
+        completed: !isCompletedToday,
+      });
+    } catch (error) {
+      Alert.alert("Error", "Failed to update habit completion");
+    }
   };
 
   const handleEditHabit = () => {
-    // In real app, navigate to edit form with habit data
-    Alert.alert("Edit", "Navigate to edit form with habit data");
-    // router.push(`/habit/edit/${id}`);
+    router.push({
+      pathname: "/(protected)/habit/add",
+      params: { habitId: habitId.toString(), isEdit: "true" },
+    });
   };
 
   const handleDeleteHabit = () => {
@@ -137,10 +112,13 @@ export default function HabitDetail() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
-            // In real app, call API: DELETE /api/habits/${id}
-            Alert.alert("Success", "Habit deleted successfully");
-            router.back();
+          onPress: async () => {
+            try {
+              await deleteMutation.mutateAsync({ habitId });
+              router.back();
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete habit");
+            }
           },
         },
       ]
@@ -151,12 +129,12 @@ export default function HabitDetail() {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
-      month: "short",
+      month: "long",
       day: "numeric",
     });
   };
 
-  const formatTime = (dateTimeString: string) => {
+  const formatTime = (dateTimeString: string | null | undefined) => {
     if (!dateTimeString) return null;
     const date = new Date(dateTimeString);
     return date.toLocaleTimeString("en-US", {
@@ -165,142 +143,196 @@ export default function HabitDetail() {
     });
   };
 
-  if (loading) {
+  const getFrequencyText = (frequency: HabitFrequency) => {
+    switch (frequency) {
+      case HabitFrequency.Daily:
+        return "Daily";
+      case HabitFrequency.Weekly:
+        return "Weekly";
+      case HabitFrequency.Monthly:
+        return "Monthly";
+      case HabitFrequency.Custom:
+        return "Custom";
+      default:
+        return "Unknown";
+    }
+  };
+
+  if (habitLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#4a90e2" />
-        <Text className="mt-4 text-gray-600">Loading habit details...</Text>
-      </View>
+      <SafeAreaView className="flex-1 bg-white">
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#4a90e2" />
+          <Text className="mt-4 text-gray-600">Loading habit details...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
+  if (habitError || !habitData?.habit) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <View className="flex-1 justify-center items-center px-6">
+          <Text className="text-red-600 text-center mb-4">
+            Failed to load habit details
+          </Text>
+          <TouchableOpacity
+            className="bg-blue-500 px-4 py-2 rounded-full"
+            onPress={() => router.back()}
+          >
+            <Text className="text-white font-medium">Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const habit = habitData.habit;
+
   return (
-    <ScrollView className="flex-1 bg-white px-4 py-6">
-      {/* Habit Header */}
-      <View className="flex-row items-center justify-between mb-6">
-        <View className="flex-1 mr-4">
-          <Text className="text-2xl font-bold text-gray-800">
-            {habit.title}
-          </Text>
-          <Text className="text-gray-500 mt-1">
-            Started {formatDate(habit.startDate)}
-          </Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView className="flex-1 px-4 py-6">
+        {/* Habit Header */}
+        <View className="flex-row items-center justify-between mb-6">
+          <View className="flex-1 mr-4">
+            <Text className="text-2xl font-bold text-gray-800">
+              {habit.name}
+            </Text>
+            <Text className="text-gray-500 mt-1">
+              Started {formatDate(habit.startDate || habit.createdAt)}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            className={`w-14 h-14 rounded-full flex items-center justify-center ${
+              isCompletedToday ? "bg-green-500" : "bg-gray-200"
+            }`}
+            onPress={handleToggleCompletion}
+            disabled={toggleCompletionMutation.isPending}
+          >
+            {toggleCompletionMutation.isPending ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : isCompletedToday ? (
+              <Ionicons name="checkmark" size={28} color="white" />
+            ) : null}
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          className={`w-14 h-14 rounded-full flex items-center justify-center ${
-            isCompleted ? "bg-green-500" : "bg-gray-200"
-          }`}
-          onPress={handleToggleCompletion}
-        >
-          {isCompleted && <Ionicons name="checkmark" size={28} color="white" />}
-        </TouchableOpacity>
-      </View>
+        {/* Stats Section */}
+        <View className="flex-row justify-between bg-gray-50 rounded-xl p-4 mb-6">
+          <View className="items-center">
+            <Text className="text-2xl font-bold text-blue-500">
+              {stats.streak}
+            </Text>
+            <Text className="text-gray-600">Current Streak</Text>
+          </View>
 
-      {/* Stats Section */}
-      <View className="flex-row justify-between bg-gray-50 rounded-xl p-4 mb-6">
-        <View className="items-center">
-          <Text className="text-2xl font-bold text-blue-500">
-            {habit.streak}
-          </Text>
-          <Text className="text-gray-600">Current Streak</Text>
+          <View className="items-center">
+            <Text className="text-2xl font-bold text-green-500">
+              {stats.totalCompletions}
+            </Text>
+            <Text className="text-gray-600">Total Completions</Text>
+          </View>
+
+          <View className="items-center">
+            <Text className="text-2xl font-bold text-purple-500">
+              {getFrequencyText(habit.frequency)}
+            </Text>
+            <Text className="text-gray-600">Frequency</Text>
+          </View>
         </View>
 
-        <View className="items-center">
-          <Text className="text-2xl font-bold text-blue-500">
-            {habit.totalCompletions}
+        {/* Habit Details */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold text-gray-800 mb-4">
+            Habit Details
           </Text>
-          <Text className="text-gray-600">Total Completions</Text>
-        </View>
 
-        <View className="items-center">
-          <Text className="text-2xl font-bold text-blue-500">
-            {new Date(habit.lastCompleted).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}
-          </Text>
-          <Text className="text-gray-600">Last Completed</Text>
-        </View>
-      </View>
+          {habit.description && (
+            <View className="mb-4">
+              <Text className="text-gray-600 font-medium mb-1">Description</Text>
+              <Text className="text-gray-700">{habit.description}</Text>
+            </View>
+          )}
 
-      {/* Schedule Section */}
-      <View className="mb-6">
-        <Text className="font-semibold text-gray-700 mb-2">Schedule</Text>
-        {habit.recurring ? (
-          <View>
-            <View className="flex-row flex-wrap justify-between mb-2">
-              {DAYS_OF_WEEK.map((day) => (
-                <View
-                  key={day.key}
-                  className={`rounded-full w-10 h-10 items-center justify-center mb-2 ${
-                    habit.recurringDays[day.key] ? "bg-blue-500" : "bg-gray-200"
-                  }`}
-                >
-                  <Text
-                    className={
-                      habit.recurringDays[day.key]
-                        ? "text-white"
-                        : "text-gray-600"
-                    }
-                  >
-                    {day.label}
-                  </Text>
-                </View>
+          {habit.category && (
+            <View className="mb-4">
+              <Text className="text-gray-600 font-medium mb-1">Category</Text>
+              <View className="flex-row items-center">
+                <View 
+                  className="w-4 h-4 rounded-full mr-2" 
+                  style={{ backgroundColor: habit.category.color || '#ccc' }}
+                />
+                <Text className="text-gray-700">{habit.category.name}</Text>
+              </View>
+            </View>
+          )}
+
+          {habit.preferredTime && (
+            <View className="mb-4">
+              <Text className="text-gray-600 font-medium mb-1">Preferred Time</Text>
+              <Text className="text-gray-700">{formatTime(habit.preferredTime)}</Text>
+            </View>
+          )}
+
+          <View className="mb-4">
+            <Text className="text-gray-600 font-medium mb-1">Priority</Text>
+            <Text className="text-gray-700">
+              {habit.priority === 1 ? "High" : habit.priority === 2 ? "Medium" : "Low"}
+            </Text>
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-gray-600 font-medium mb-1">Difficulty</Text>
+            <View className="flex-row">
+              {[1, 2, 3, 4, 5].map((level) => (
+                <Ionicons
+                  key={level}
+                  name={level <= habit.difficultyLevel ? "star" : "star-outline"}
+                  size={20}
+                  color={level <= habit.difficultyLevel ? "#fbbf24" : "#d1d5db"}
+                />
               ))}
             </View>
-            <Text className="text-gray-600">
-              Repeating weekly on selected days
-            </Text>
           </View>
-        ) : (
-          <Text className="text-gray-600">
-            One-time habit on {formatDate(habit.startDate)}
-          </Text>
-        )}
-      </View>
 
-      {/* Reminder Section */}
-      <View className="mb-6">
-        <Text className="font-semibold text-gray-700 mb-2">Reminder</Text>
-        {habit.reminder ? (
-          <View className="flex-row items-center">
-            <Ionicons name="notifications" size={20} color="#4a90e2" />
-            <Text className="ml-2 text-gray-700">
-              {formatTime(habit.reminderTime)}
-            </Text>
-          </View>
-        ) : (
-          <Text className="text-gray-600">No reminder set</Text>
-        )}
-      </View>
+          {habit.notificationsEnabled && (
+            <View className="mb-4">
+              <Text className="text-gray-600 font-medium mb-1">Reminder</Text>
+              <Text className="text-gray-700">
+                {habit.reminderMinutesBefore} minutes before preferred time
+              </Text>
+            </View>
+          )}
 
-      {/* Notes Section */}
-      {habit.notes && (
-        <View className="mb-6">
-          <Text className="font-semibold text-gray-700 mb-2">Notes</Text>
-          <View className="bg-gray-50 p-4 rounded-lg">
-            <Text className="text-gray-800">{habit.notes}</Text>
-          </View>
+          {habit.notes && (
+            <View className="mb-4">
+              <Text className="text-gray-600 font-medium mb-1">Notes</Text>
+              <Text className="text-gray-700">{habit.notes}</Text>
+            </View>
+          )}
         </View>
-      )}
 
-      {/* Action Buttons */}
-      <View className="flex-row space-x-4 mt-4">
-        <TouchableOpacity
-          className="flex-1 bg-blue-500 py-3 rounded-lg items-center"
-          onPress={handleEditHabit}
-        >
-          <Text className="font-medium text-white">Edit Habit</Text>
-        </TouchableOpacity>
+        {/* Action Buttons */}
+        <View className="flex-row space-x-3 mb-6">
+          <TouchableOpacity
+            className="flex-1 bg-blue-500 py-3 rounded-lg items-center"
+            onPress={handleEditHabit}
+          >
+            <Text className="font-medium text-white">Edit</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          className="flex-1 bg-red-500 py-3 rounded-lg items-center"
-          onPress={handleDeleteHabit}
-        >
-          <Text className="font-medium text-white">Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          <TouchableOpacity
+            className="flex-1 bg-red-500 py-3 rounded-lg items-center"
+            onPress={handleDeleteHabit}
+            disabled={deleteMutation.isPending}
+          >
+            <Text className="font-medium text-white">
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
