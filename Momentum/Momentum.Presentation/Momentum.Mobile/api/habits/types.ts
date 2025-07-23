@@ -95,6 +95,7 @@ export interface UpdateHabitDto {
 export interface GetHabitsParams {
   userId?: string;
   date?: number;
+  month?: string; // YYYY-MM format
 }
 
 // API Response types

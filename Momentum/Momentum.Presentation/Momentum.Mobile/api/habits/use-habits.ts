@@ -110,6 +110,11 @@ export const useGetUserHabits = createQuery<
       params.append("date", dateString);
     }
 
+    if (rest.month) {
+      // Pass month as YYYY-MM format
+      params.append("month", rest.month);
+    }
+
     const queryString = params.toString();
     const url = queryString
       ? `api/v1/users/${userId}/habits?${queryString}`

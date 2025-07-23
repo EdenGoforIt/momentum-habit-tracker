@@ -143,12 +143,10 @@ export const useGetHabitEntriesForHabit = (
 // Get Habit Entries by Habit ID (Direct API call)
 export const getHabitEntriesByHabitId = async (
   habitId: number,
-  startDate?: string,
-  endDate?: string
+  month?: string // YYYY-MM format
 ): Promise<HabitEntry[]> => {
   const params = new URLSearchParams();
-  if (startDate) params.append("startDate", startDate);
-  if (endDate) params.append("endDate", endDate);
+  if (month) params.append("month", month);
   
   const queryString = params.toString();
   const url = queryString
