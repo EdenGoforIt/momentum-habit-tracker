@@ -15,6 +15,7 @@ export const setToken = (value: TokenType) =>
 export const setUser = (user: UserDto) =>
   setItem<UserDto>(AUTH_STORAGE_KEYS.USER, user);
 export const getUser = () => getItem<UserDto>(AUTH_STORAGE_KEYS.USER);
+export const removeUser = () => removeItem(AUTH_STORAGE_KEYS.USER);
 export const getUserId = async (): Promise<string | undefined> => {
   const user = await getItem<UserDto>(AUTH_STORAGE_KEYS.USER);
   return user?.id;
