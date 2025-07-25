@@ -66,7 +66,17 @@ npx expo start -c
 
 **Back-end**
 ```
+open -a Docker
+
+docker compose up -d
+
+cd ../../Momentum.Api && docker compose up -d
+
+cd Momentum.Api && dotnet run
+
 docker start my-mssql-server
+
+docker start my-mssql-server && cd Momentum.Api && dotnet run
 ```
 
 ```
