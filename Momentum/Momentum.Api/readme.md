@@ -15,6 +15,8 @@ open -a Docker
 
 docker start my-mssql-server
 
+cd ../../Momentum.Api && dotnet run
+
 docker start my-mssql-server && cd ../../Momentum.Api && dotnet run
 
 cd Momentum.Api && dotnet run
@@ -33,15 +35,24 @@ npx expo run
 docker pull mcr.microsoft.com/mssql/server:2019-latest
 ```
 
+
+### If Can't connect due to network issue
+
+1. First connect to "master" db (In Rider)
+2. Create a new DB called Momentum
+3. Then reconnect
+
 ### 2. Run the container
 
 ```bash
+
 docker run --platform=linux/amd64 \
   -e "ACCEPT_EULA=Y" \
   -e "MSSQL_SA_PASSWORD=YourStrong@Passw0rd" \
   --name my-mssql-server \
   -p 1433:1433 \
   -d mcr.microsoft.com/mssql/server:2019-latest
+
 ```
 
 ### 3. Start the container
