@@ -68,9 +68,13 @@ export default function ProfileScreen() {
     );
   };
 
-  const handleContactSupport = () => {};
+  const handleContactSupport = () => {
+    router.push("/(protected)/profile/contact");
+  };
 
-  const handleUpdateProfile = () => {};
+  const handleUpdateProfile = () => {
+    router.push("/(protected)/profile/update");
+  };
 
   const menuItems = [
     {
@@ -80,32 +84,8 @@ export default function ProfileScreen() {
       onPress: handleUpdateProfile,
     },
     {
-      title: "My Data",
-      subtitle: "Export your records and data",
-      icon: "📊",
-      onPress: handleExportData,
-    },
-    {
-      title: "CPD Register",
-      subtitle: "View your professional development",
-      icon: "🎓",
-      onPress: () => {
-        // TODO: Navigate to CPD screen
-        console.log("Navigate to CPD");
-      },
-    },
-    {
-      title: "Self-Reflection",
-      subtitle: "Due diligence questionnaire",
-      icon: "🤔",
-      onPress: () => {
-        // TODO: Navigate to self-reflection screen
-        console.log("Navigate to self-reflection");
-      },
-    },
-    {
       title: "Contact Support",
-      subtitle: "Get help from GHSL team",
+      subtitle: "Get help",
       icon: "💬",
       onPress: handleContactSupport,
     },
@@ -212,14 +192,6 @@ export default function ProfileScreen() {
                   Constants.expoConfig?.android?.versionCode ??
                   "N/A"}
               </Text>
-            </View>
-            <View className="flex-row justify-between">
-              <TouchableOpacity className="pt-2">
-                <Text className="text-green-600">Privacy Policy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text className="text-green-600">Terms of Service</Text>
-              </TouchableOpacity>
             </View>
           </View>
         </View>
