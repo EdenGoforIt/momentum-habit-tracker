@@ -30,7 +30,6 @@ public class GetUserHabitsQueryHandler(IHabitRepository repository, IMapper mapp
             // ReSharper disable once ComplexConditionExpression
             query = query.Where(h =>
                 h!.StartDate <= request.Date &&
-                h.EndDate != null &&
                 (h.EndDate == null || h.EndDate >= request.Date));
         }
         else if (!string.IsNullOrEmpty(request.Month))
