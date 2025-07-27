@@ -41,8 +41,8 @@ export interface Habit {
   color?: string;
   priority: number;
   difficultyLevel: number;
-  startDate?: string;
-  endDate?: string;
+  startDate?: string; // ISO string (UTC)
+  endDate?: string; // ISO string (UTC)
   preferredTime?: string;
   isPublic: boolean;
   notificationsEnabled: boolean;
@@ -66,8 +66,8 @@ export interface CreateHabitDto {
   color?: string;
   priority?: number;
   difficultyLevel?: number;
-  startDate?: string;
-  endDate?: string | null;
+  startDate?: string; // ISO string (UTC)
+  endDate?: string | null; // ISO string (UTC)
   preferredTime?: string | null;
   isPublic?: boolean;
   notificationsEnabled?: boolean;
@@ -94,7 +94,7 @@ export interface UpdateHabitDto {
 
 export interface GetHabitsParams {
   userId?: string;
-  date?: number;
+  date?: number | string; // timestamp or YYYY-MM-DD string
   month?: string; // YYYY-MM format
 }
 

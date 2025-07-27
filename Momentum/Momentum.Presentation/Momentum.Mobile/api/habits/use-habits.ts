@@ -5,9 +5,9 @@ import { client } from "../common";
 import type {
   CreateHabitDto,
   GetHabitsParams,
+  Habit,
   HabitResponse,
-  HabitsResponse,
-  UpdateHabitDto,
+  UpdateHabitDto
 } from "./types";
 
 type Variables = CreateHabitDto;
@@ -51,7 +51,7 @@ export const useDeleteHabit = createMutation<
 >({
   mutationFn: async (variables) =>
     client({
-      url: `v1/habits/${variables.habitId}`,
+      url: `api/v1/habits/${variables.habitId}`,
       method: "DELETE",
     }).then((response) => response.data),
 });
@@ -67,7 +67,7 @@ export const useArchiveHabit = createMutation<
 >({
   mutationFn: async (variables) =>
     client({
-      url: `v1/habits/${variables.habitId}/archive`,
+      url: `api/v1/habits/${variables.habitId}/archive`,
       method: "POST",
     }).then((response) => response.data),
 });
@@ -83,7 +83,7 @@ export const useRestoreHabit = createMutation<
 >({
   mutationFn: async (variables) =>
     client({
-      url: `v1/habits/${variables.habitId}/restore`,
+      url: `api/v1/habits/${variables.habitId}/restore`,
       method: "POST",
     }).then((response) => response.data),
 });
@@ -93,7 +93,7 @@ export const useRestoreHabit = createMutation<
 // Modify the hook to spread extraParams into the variables:
 
 export const useGetUserHabits = createQuery<
-  HabitsResponse,
+  Habit[], // Backend returns array directly, not wrapped in HabitsResponse
   GetHabitsParams,
   AxiosError
 >({
@@ -105,9 +105,14 @@ export const useGetUserHabits = createQuery<
     const params = new URLSearchParams();
 
     if (rest.date) {
-      // Convert timestamp to YYYY-MM-DD format
-      const dateString = new Date(rest.date).toISOString().split('T')[0];
-      params.append("date", dateString);
+      // If it's already a date string (YYYY-MM-DD), use it directly
+      if (typeof rest.date === 'string') {
+        params.append("date", rest.date);
+      } else {
+        // Convert timestamp to UTC YYYY-MM-DD format (backend stores UTC dates)
+        const dateString = new Date(rest.date).toISOString().split('T')[0];
+        params.append("date", dateString);
+      }
     }
 
     if (rest.month) {
@@ -126,7 +131,7 @@ export const useGetUserHabits = createQuery<
 
 // Get Single Habit
 export const useGetHabit = createQuery<
-  HabitResponse,
+  Habit | HabitResponse,
   { habitId: number },
   AxiosError
 >({

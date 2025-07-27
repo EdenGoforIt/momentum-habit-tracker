@@ -4,155 +4,95 @@ import { createMutation, createQuery } from "react-query-kit";
 import { client } from "../common";
 import type { HabitEntry } from "./types";
 
-// Create Habit Entry (Mark as Complete)
-export interface CreateHabitEntryDto {
-  habitId: number;
-  completedAt?: string;
-  notes?: string;
-  value?: number;
-}
-
-type CreateEntryVariables = CreateHabitEntryDto;
-type CreateEntryResponse = { habitEntry: HabitEntry };
-
-export const useCreateHabitEntry = createMutation<
-  CreateEntryResponse,
-  CreateEntryVariables,
-  AxiosError
->({
-  mutationFn: async (variables) =>
-    client({
-      url: "v1/habit-entries",
-      method: "POST",
-      data: {
-        ...variables,
-        completedAt: variables.completedAt || new Date().toISOString(),
-      },
-    }).then((response) => response.data),
-});
-
 // Get Habit Entries
-export interface GetHabitEntriesParams {
-  habitId?: number;
-  userId?: string;
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  limit?: number;
-}
-
-type GetEntriesVariables = GetHabitEntriesParams;
-type GetEntriesResponse = {
-  habitEntries: HabitEntry[];
-  total: number;
-  page: number;
-  limit: number;
-};
-
 export const useGetHabitEntries = createQuery<
-  GetEntriesResponse,
-  GetEntriesVariables,
+  HabitEntry[],
+  { habitId: number; startDate?: string; endDate?: string },
   AxiosError
 >({
   queryKey: ["habitEntries"],
   fetcher: (variables) => {
+    const { habitId, startDate, endDate } = variables;
     const params = new URLSearchParams();
 
-    if (variables.habitId)
-      params.append("habitId", variables.habitId.toString());
-    if (variables.userId) params.append("userId", variables.userId);
-    if (variables.startDate) params.append("startDate", variables.startDate);
-    if (variables.endDate) params.append("endDate", variables.endDate);
-    if (variables.page) params.append("page", variables.page.toString());
-    if (variables.limit) params.append("limit", variables.limit.toString());
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
 
     const queryString = params.toString();
     const url = queryString
-      ? `v1/habit-entries?${queryString}`
-      : "v1/habit-entries";
+      ? `api/v1/habit-entries/habit/${habitId}?${queryString}`
+      : `api/v1/habit-entries/habit/${habitId}`;
 
     return client.get(url).then((response) => response.data);
   },
 });
 
-// Delete Habit Entry (Remove Completion)
-type DeleteEntryVariables = { entryId: number };
-type DeleteEntryResponse = { success: boolean };
-
-export const useDeleteHabitEntry = createMutation<
-  DeleteEntryResponse,
-  DeleteEntryVariables,
+// Create Habit Entry
+export const useCreateHabitEntry = createMutation<
+  HabitEntry,
+  Omit<HabitEntry, "id" | "createdAt" | "updatedAt">,
   AxiosError
 >({
   mutationFn: async (variables) =>
     client({
-      url: `v1/habit-entries/${variables.entryId}`,
-      method: "DELETE",
-    }).then((response) => response.data),
-});
-
-// Update Habit Entry
-export interface UpdateHabitEntryDto {
-  id: number;
-  notes?: string;
-  value?: number;
-  completedAt?: string;
-}
-
-type UpdateEntryVariables = UpdateHabitEntryDto;
-type UpdateEntryResponse = { habitEntry: HabitEntry };
-
-export const useUpdateHabitEntry = createMutation<
-  UpdateEntryResponse,
-  UpdateEntryVariables,
-  AxiosError
->({
-  mutationFn: async (variables) =>
-    client({
-      url: `v1/habit-entries/${variables.id}`,
-      method: "PUT",
+      url: "api/v1/habit-entries",
+      method: "POST",
       data: variables,
     }).then((response) => response.data),
 });
 
-// Get Today's Entries for User
-export const useGetTodaysEntries = (userId: string) => {
-  const today = new Date().toISOString().split("T")[0];
+// Update Habit Entry
+export const useUpdateHabitEntry = createMutation<
+  void,
+  { entryId: number; data: Partial<HabitEntry> },
+  AxiosError
+>({
+  mutationFn: async (variables) =>
+    client({
+      url: `api/v1/habit-entries/${variables.entryId}`,
+      method: "PUT",
+      data: variables.data,
+    }).then((response) => response.data),
+});
 
-  return useGetHabitEntries({
-    variables: {
-      userId,
-      startDate: `${today}T00:00:00Z`,
-      endDate: `${today}T23:59:59Z`,
-    },
-    enabled: !!userId,
-  });
-};
+// Toggle Habit Completion (convenience hook)
+export const useToggleHabitCompletion = createMutation<
+  HabitEntry,
+  { habitId: number; date: string; completed: boolean },
+  AxiosError
+>({
+  mutationFn: async (variables) => {
+    // First, try to find existing entry for this date
+    const entries = await client
+      .get(
+        `api/v1/habit-entries/habit/${variables.habitId}?startDate=${variables.date}&endDate=${variables.date}`
+      )
+      .then((response) => response.data);
 
-// Get Entries for Specific Habit
-export const useGetHabitEntriesForHabit = (
-  habitId: number,
-  options?: Partial<GetHabitEntriesParams>
-) => {
-  return useGetHabitEntries({
-    variables: { habitId, ...options },
-    enabled: !!habitId,
-  });
-};
-
-// Get Habit Entries by Habit ID (Direct API call)
-export const getHabitEntriesByHabitId = async (
-  habitId: number,
-  month?: string // YYYY-MM format
-): Promise<HabitEntry[]> => {
-  const params = new URLSearchParams();
-  if (month) params.append("month", month);
-  
-  const queryString = params.toString();
-  const url = queryString
-    ? `api/v1/habit-entries/habit/${habitId}?${queryString}`
-    : `api/v1/habit-entries/habit/${habitId}`;
-  
-  const response = await client.get(url);
-  return response.data;
-};
+    if (entries.length > 0) {
+      // Update existing entry
+      const entry = entries[0];
+      return client({
+        url: `api/v1/habit-entries/${entry.id}`,
+        method: "PUT",
+        data: {
+          ...entry,
+          completed: variables.completed,
+          completedAt: variables.completed ? new Date().toISOString() : null,
+        },
+      }).then((response) => response.data);
+    } else {
+      // Create new entry
+      return client({
+        url: "api/v1/habit-entries",
+        method: "POST",
+        data: {
+          habitId: variables.habitId,
+          date: variables.date,
+          completed: variables.completed,
+          completedAt: variables.completed ? new Date().toISOString() : null,
+        },
+      }).then((response) => response.data);
+    }
+  },
+});
