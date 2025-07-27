@@ -40,7 +40,6 @@ export default function ProfileScreen() {
             await signOut();
             // Navigation is handled by AuthProvider
           } catch (error) {
-            console.error("Sign out error:", error);
           }
         },
       },
@@ -57,7 +56,6 @@ export default function ProfileScreen() {
           text: "Export",
           onPress: () => {
             // TODO: Implement data export functionality
-            console.log("Exporting user data...");
             Alert.alert(
               "Export Started",
               "Your data export will be ready shortly. You will receive an email when complete."

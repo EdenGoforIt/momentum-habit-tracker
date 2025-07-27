@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 
+import { getNZToday } from "@/api/habits/date-utils";
 import type { CreateHabitDto, UpdateHabitDto } from "@/api/habits/types";
 import { HabitFrequency } from "@/api/habits/types";
 import { useGetCategories } from "@/api/habits/use-categories";
@@ -66,7 +67,7 @@ export default function AddHabit() {
   const [selectedIcon, setSelectedIcon] = useState("star-outline");
   const [selectedColor, setSelectedColor] = useState("#4ECDC4");
   const [selectedDays, setSelectedDays] = useState<Record<string, boolean>>({});
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(getNZToday());
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [hasEndDate, setHasEndDate] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -131,12 +132,16 @@ export default function AddHabit() {
 
   const handleDateChange = (event: any, selectedDate?: Date, type: 'start' | 'end' = 'start') => {
     if (type === 'start') {
-      setShowStartDatePicker(Platform.OS === "ios");
+      if (Platform.OS === 'android') {
+        setShowStartDatePicker(false);
+      }
       if (selectedDate) {
         setStartDate(selectedDate);
       }
     } else {
-      setShowEndDatePicker(Platform.OS === "ios");
+      if (Platform.OS === 'android') {
+        setShowEndDatePicker(false);
+      }
       if (selectedDate) {
         setEndDate(selectedDate);
       }
@@ -206,7 +211,6 @@ export default function AddHabit() {
           createdAt: new Date().toISOString(),
           archivedAt: null,
         };
-        console.log("habitData :", habitData);
 
         await createHabitMutation.mutateAsync(habitData);
         Alert.alert("Success", "Habit created successfully!", [
@@ -231,7 +235,7 @@ export default function AddHabit() {
     setSelectedIcon("star-outline");
     setSelectedColor("#4ECDC4");
     setSelectedDays({});
-    setStartDate(new Date());
+    setStartDate(getNZToday());
     setEndDate(null);
     setHasEndDate(false);
     setEnableReminder(false);
@@ -388,7 +392,7 @@ export default function AddHabit() {
               <Text className="font-semibold text-gray-700 mb-2">Appearance</Text>
               <View className="flex-row space-x-4">
                 <TouchableOpacity
-                  className="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-4 items-center"
+                  className="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-4 items-center mr-2"
                   onPress={() => setShowIconModal(true)}
                 >
                   <View
@@ -467,7 +471,7 @@ export default function AddHabit() {
                 ].map((f) => (
                   <TouchableOpacity
                     key={f.value}
-                    className={`flex-1 py-2 px-3 rounded-lg border ${
+                    className={`flex-1 py-2 px-3 rounded-lg border mr-2 ${
                       frequency === f.value
                         ? "border-blue-500 bg-blue-50"
                         : "border-gray-300 bg-white"
@@ -570,7 +574,7 @@ export default function AddHabit() {
                 ].map((p) => (
                   <TouchableOpacity
                     key={p.value}
-                    className={`flex-1 py-3 px-4 rounded-lg border ${
+                    className={`flex-1 py-3 px-4 rounded-lg border mr-2 ${
                       priority === p.value
                         ? "border-blue-500 bg-blue-50"
                         : "border-gray-300 bg-white"
@@ -699,7 +703,7 @@ export default function AddHabit() {
         <View className="flex-row space-x-4">
           {step > 1 && (
             <TouchableOpacity
-              className="flex-1 bg-gray-200 py-3 rounded-lg items-center"
+              className="flex-1 bg-gray-200 py-3 rounded-lg items-center mr-2"
               onPress={prevStep}
             >
               <Text className="font-medium text-gray-800">Back</Text>
@@ -723,24 +727,83 @@ export default function AddHabit() {
       </View>
 
       {/* Date Pickers */}
-      {showStartDatePicker && (
-        <DateTimePicker
-          value={startDate}
-          mode="date"
-          display="default"
-          onChange={(e, date) => handleDateChange(e, date, 'start')}
-          minimumDate={new Date()}
-        />
-      )}
+      {Platform.OS === 'ios' ? (
+        <>
+          {/* Start Date Picker Modal for iOS */}
+          <Modal visible={showStartDatePicker} animationType="slide" presentationStyle="formSheet">
+            <View className="bg-white" style={{ height: 350 }}>
+              <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
+                <TouchableOpacity onPress={() => setShowStartDatePicker(false)}>
+                  <Text className="text-blue-500 font-medium">Cancel</Text>
+                </TouchableOpacity>
+                <Text className="text-lg font-semibold">Select Start Date</Text>
+                <TouchableOpacity onPress={() => setShowStartDatePicker(false)}>
+                  <Text className="text-blue-500 font-medium">Done</Text>
+                </TouchableOpacity>
+              </View>
+              
+              <View className="justify-center items-center py-8">
+                <DateTimePicker
+                  value={startDate}
+                  mode="date"
+                  display="spinner"
+                  onChange={(e, date) => handleDateChange(e, date, 'start')}
+                  minimumDate={new Date()}
+                  style={{ width: 300, height: 200 }}
+                />
+              </View>
+            </View>
+          </Modal>
 
-      {showEndDatePicker && hasEndDate && (
-        <DateTimePicker
-          value={endDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={(e, date) => handleDateChange(e, date, 'end')}
-          minimumDate={startDate}
-        />
+          {/* End Date Picker Modal for iOS */}
+          <Modal visible={showEndDatePicker && hasEndDate} animationType="slide" presentationStyle="formSheet">
+            <View className="bg-white" style={{ height: 350 }}>
+              <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
+                <TouchableOpacity onPress={() => setShowEndDatePicker(false)}>
+                  <Text className="text-blue-500 font-medium">Cancel</Text>
+                </TouchableOpacity>
+                <Text className="text-lg font-semibold">Select End Date</Text>
+                <TouchableOpacity onPress={() => setShowEndDatePicker(false)}>
+                  <Text className="text-blue-500 font-medium">Done</Text>
+                </TouchableOpacity>
+              </View>
+              
+              <View className="justify-center items-center py-8">
+                <DateTimePicker
+                  value={endDate || new Date()}
+                  mode="date"
+                  display="spinner"
+                  onChange={(e, date) => handleDateChange(e, date, 'end')}
+                  minimumDate={startDate}
+                  style={{ width: 300, height: 200 }}
+                />
+              </View>
+            </View>
+          </Modal>
+        </>
+      ) : (
+        <>
+          {/* Android Date Pickers */}
+          {showStartDatePicker && (
+            <DateTimePicker
+              value={startDate}
+              mode="date"
+              display="default"
+              onChange={(e, date) => handleDateChange(e, date, 'start')}
+              minimumDate={new Date()}
+            />
+          )}
+
+          {showEndDatePicker && hasEndDate && (
+            <DateTimePicker
+              value={endDate || new Date()}
+              mode="date"
+              display="default"
+              onChange={(e, date) => handleDateChange(e, date, 'end')}
+              minimumDate={startDate}
+            />
+          )}
+        </>
       )}
 
       {/* Time Picker Modal */}

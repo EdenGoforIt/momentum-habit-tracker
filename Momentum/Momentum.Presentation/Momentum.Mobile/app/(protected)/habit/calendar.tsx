@@ -5,7 +5,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Modal,
   SafeAreaView,
   ScrollView,
   Text,
@@ -14,23 +13,21 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 
+import { getNZDateOnly } from "@/api/habits/date-utils";
 import type { HabitEntry } from "@/api/habits/types";
 import { getHabitEntriesByHabitId } from "@/api/habits/use-habit-entries";
-import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries-real";
+import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
 import { useGetUserHabits } from "@/api/habits/use-habits";
 import { useAuth } from "@/lib/auth";
 
 export default function HabitCalendar() {
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
+    getNZDateOnly(new Date())
   );
-  const [showHabitModal, setShowHabitModal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => {
-    const date = new Date();
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}`;
+    const nzDate = getNZDateOnly(new Date());
+    const [year, month] = nzDate.split('-');
+    return `${year}-${month}`;
   });
 
   const user = useAuth.use.user();
@@ -46,7 +43,6 @@ export default function HabitCalendar() {
     variables: { userId, month: currentMonth },
     enabled: !!userId,
   });
-
   const [habitEntriesData, setHabitEntriesData] = useState<
     Record<number, HabitEntry[]>
   >({});
@@ -54,9 +50,7 @@ export default function HabitCalendar() {
 
   const toggleHabitMutation = useToggleHabitCompletion();
 
-  const habits = Array.isArray(habitsData)
-    ? habitsData
-    : habitsData?.habits || [];
+  const habits = habitsData || [];
 
   // Fetch habit entries for all habits in the current month
   useEffect(() => {
@@ -75,10 +69,6 @@ export default function HabitCalendar() {
               );
               return { habitId: habit.id, entries };
             } catch (error) {
-              console.error(
-                `Failed to fetch entries for habit ${habit.id}:`,
-                error
-              );
               return { habitId: habit.id, entries: [] };
             }
           });
@@ -88,7 +78,6 @@ export default function HabitCalendar() {
             entriesMap[habitId] = entries;
           });
         } catch (error) {
-          console.error("Error fetching habit entries:", error);
         }
 
         setHabitEntriesData(entriesMap);
@@ -102,12 +91,10 @@ export default function HabitCalendar() {
   // Get habits for selected date (only habits active on this date)
   const selectedDateHabits = useMemo(() => {
     return habits.filter((habit) => {
-      const habitStartDate = new Date(habit.startDate)
-        .toISOString()
-        .split("T")[0];
+      const habitStartDate = getNZDateOnly(habit.startDate);
       const habitEndDate = habit.endDate
-        ? new Date(habit.endDate).toISOString().split("T")[0]
-        : habitStartDate;
+        ? getNZDateOnly(habit.endDate)
+        : getNZDateOnly(new Date()); // If no end date, consider it active until today
 
       // Check if selected date is within habit's active period
       return selectedDate >= habitStartDate && selectedDate <= habitEndDate;
@@ -173,13 +160,12 @@ export default function HabitCalendar() {
       // Check if any habits are active on this date
       let hasActiveHabits = false;
       habits.forEach((habit) => {
-        const habitStartDate = new Date(habit.startDate)
-          .toISOString()
-          .split("T")[0];
-        // If endDate is null, use startDate as endDate (single day habit)
+        // Use getNZDateOnly to handle the date conversion properly
+        const habitStartDate = getNZDateOnly(habit.startDate);
+        // If endDate is null, use today's date as endDate (ongoing habit)
         const habitEndDate = habit.endDate
-          ? new Date(habit.endDate).toISOString().split("T")[0]
-          : habitStartDate;
+          ? getNZDateOnly(habit.endDate)
+          : getNZDateOnly(new Date());
 
         // Habit is active if current date is between start and end dates (inclusive)
         if (dateStr >= habitStartDate && dateStr <= habitEndDate) {
@@ -225,13 +211,11 @@ export default function HabitCalendar() {
 
       // Refresh the entries for this habit
       const entries = await getHabitEntriesByHabitId(habitId, currentMonth);
-      console.log("Refreshed entries for habit", habitId, ":", entries);
       setHabitEntriesData((prev) => ({
         ...prev,
         [habitId]: entries,
       }));
     } catch (error: any) {
-      console.error("Toggle error:", error);
       Alert.alert(
         "Error",
         error?.response?.data?.message || "Failed to update habit completion"
@@ -297,7 +281,7 @@ export default function HabitCalendar() {
           <Text className="text-xl font-bold text-gray-800">
             Habit Calendar
           </Text>
-          <TouchableOpacity onPress={() => setShowHabitModal(true)}>
+          <TouchableOpacity onPress={() => router.push("/(protected)/habit/add")}>
             <Ionicons name="add-circle" size={24} color="#4a90e2" />
           </TouchableOpacity>
         </View>
@@ -520,46 +504,6 @@ export default function HabitCalendar() {
         </View>
       </ScrollView>
 
-      {/* Add Habit Modal */}
-      <Modal
-        visible={showHabitModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-      >
-        <View className="flex-1 bg-white">
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
-            <TouchableOpacity onPress={() => setShowHabitModal(false)}>
-              <Text className="text-blue-500 font-medium">Cancel</Text>
-            </TouchableOpacity>
-            <Text className="text-lg font-semibold">Quick Add</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setShowHabitModal(false);
-                router.push("/(protected)/habit/add");
-              }}
-            >
-              <Text className="text-blue-500 font-medium">Full Form</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView className="flex-1 p-4">
-            <Text className="text-lg font-semibold mb-4">
-              Add Habit for Today
-            </Text>
-            <TouchableOpacity
-              className="bg-blue-500 py-4 rounded-lg items-center"
-              onPress={() => {
-                setShowHabitModal(false);
-                router.push("/(protected)/habit/add");
-              }}
-            >
-              <Text className="text-white font-medium text-lg">
-                Create New Habit
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </Modal>
 
       {/* Tab Navigation */}
       <TabNavigation />

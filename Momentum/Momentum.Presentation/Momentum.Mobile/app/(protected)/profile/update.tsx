@@ -53,16 +53,12 @@ export default function UpdateProfile() {
     setIsLoading(true);
 
     try {
-      console.log("Updating user with ID:", user.id);
-      console.log("Current user object:", user);
-      
       const updatedUser = await updateUserMutation.mutateAsync({
         id: user.id,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
 
-      console.log("Update successful:", updatedUser);
 
       // Update the user in the auth store
       setUser(updatedUser);
@@ -71,8 +67,6 @@ export default function UpdateProfile() {
         { text: "OK", onPress: () => router.push("/(protected)/profile") },
       ]);
     } catch (error: any) {
-      console.error("Update error:", error);
-      console.error("Error response:", error?.response?.data);
       
       const errorMessage = error?.response?.data?.message || 
                           error?.response?.data?.title ||
@@ -201,7 +195,6 @@ export default function UpdateProfile() {
                             try {
                               await signOut();
                             } catch (error) {
-                              console.error("Sign out error:", error);
                             }
                           },
                         },

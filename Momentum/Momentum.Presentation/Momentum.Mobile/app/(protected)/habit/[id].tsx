@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -11,9 +11,10 @@ import {
   View,
 } from "react-native";
 
-import { useGetHabit, useDeleteHabit } from "@/api/habits/use-habits";
-import { useToggleHabitCompletion, useGetHabitEntries } from "@/api/habits/use-habit-entries-real";
+import { getNZDateOnly } from "@/api/habits/date-utils";
 import { HabitFrequency } from "@/api/habits/types";
+import { useGetHabitEntries, useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
+import { useDeleteHabit, useGetHabit } from "@/api/habits/use-habits";
 
 // Days of week for showing schedule
 const DAYS_OF_WEEK = [
@@ -29,7 +30,7 @@ const DAYS_OF_WEEK = [
 export default function HabitDetail() {
   const { id } = useLocalSearchParams();
   const habitId = Number(id);
-  const [todaysDate] = useState(new Date().toISOString().split("T")[0]);
+  const [todaysDate] = useState(getNZDateOnly(new Date()));
   
   // Fetch habit details
   const { data: habitData, isPending: habitLoading, isError: habitError } = useGetHabit({
@@ -41,7 +42,7 @@ export default function HabitDetail() {
   const { data: entriesData } = useGetHabitEntries({
     variables: { 
       habitId,
-      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // Last 30 days
+      startDate: getNZDateOnly(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)), // Last 30 days
       endDate: todaysDate,
     },
     enabled: !!habitId && !isNaN(habitId),
@@ -169,7 +170,7 @@ export default function HabitDetail() {
     );
   }
 
-  if (habitError || !habitData?.habit) {
+  if (habitError || !habitData) {
     return (
       <SafeAreaView className="flex-1 bg-white">
         <View className="flex-1 justify-center items-center px-6">
@@ -187,10 +188,25 @@ export default function HabitDetail() {
     );
   }
 
-  const habit = habitData.habit;
+  // Handle both direct habit response and wrapped response
+  const habit = habitData && 'habit' in habitData ? habitData.habit : habitData;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="p-2"
+        >
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        
+        <Text className="text-lg font-semibold text-gray-800 flex-1 text-center mr-10">
+          Habit Details
+        </Text>
+      </View>
+
       <ScrollView className="flex-1 px-4 py-6">
         {/* Habit Header */}
         <View className="flex-row items-center justify-between mb-6">
@@ -202,20 +218,6 @@ export default function HabitDetail() {
               Started {formatDate(habit.startDate || habit.createdAt)}
             </Text>
           </View>
-
-          <TouchableOpacity
-            className={`w-14 h-14 rounded-full flex items-center justify-center ${
-              isCompletedToday ? "bg-green-500" : "bg-gray-200"
-            }`}
-            onPress={handleToggleCompletion}
-            disabled={toggleCompletionMutation.isPending}
-          >
-            {toggleCompletionMutation.isPending ? (
-              <ActivityIndicator size="small" color="white" />
-            ) : isCompletedToday ? (
-              <Ionicons name="checkmark" size={28} color="white" />
-            ) : null}
-          </TouchableOpacity>
         </View>
 
         {/* Stats Section */}
@@ -316,7 +318,7 @@ export default function HabitDetail() {
         {/* Action Buttons */}
         <View className="flex-row space-x-3 mb-6">
           <TouchableOpacity
-            className="flex-1 bg-blue-500 py-3 rounded-lg items-center"
+            className="flex-1 bg-blue-500 py-3 rounded-lg items-center mr-2"
             onPress={handleEditHabit}
           >
             <Text className="font-medium text-white">Edit</Text>
