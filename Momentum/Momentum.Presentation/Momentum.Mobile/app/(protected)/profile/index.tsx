@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Header from "@/components/ui/Header";
 import { useAuth } from "@/lib/auth";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
@@ -91,9 +92,10 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      {/* Header with Close Button */}
-      <View className="bg-white px-4 py-4 border-b border-gray-200">
-        <View className="flex-row justify-end mb-4">
+      <Header 
+        title="Profile" 
+        showMenu={false} 
+        right={
           <TouchableOpacity
             onPress={() => router.back()}
             accessibilityLabel="Close"
@@ -101,8 +103,11 @@ export default function ProfileScreen() {
           >
             <Ionicons name="close" size={24} color="#374151" />
           </TouchableOpacity>
-        </View>
-
+        }
+      />
+      
+      {/* Profile Info */}
+      <View className="bg-white px-4 py-6 border-b border-gray-200">
         <View className="items-center">
           {/* Profile Avatar */}
           <View className="w-20 h-20 bg-green-600 rounded-full items-center justify-center mb-4">

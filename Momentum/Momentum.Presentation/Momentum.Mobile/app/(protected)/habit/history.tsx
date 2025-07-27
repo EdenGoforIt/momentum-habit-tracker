@@ -1,6 +1,6 @@
 import { TabNavigation } from "@/components/common";
+import Header from "@/components/ui/Header";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -209,30 +209,28 @@ export default function HabitHistory() {
   if (habitsLoading) {
     return (
       <SafeAreaView className="flex-1 bg-white">
+        <Header title="Habit History" showMenu={true} />
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#4a90e2" />
           <Text className="mt-4 text-gray-600">Loading habit history...</Text>
         </View>
+        <TabNavigation />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Header */}
-      <View className="px-4 py-6 bg-blue-50">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="w-6" />
-          <Text className="text-xl font-bold text-gray-800">Habit History</Text>
-          <TouchableOpacity
-            onPress={() => router.push("/(protected)/habit/stats")}
-          >
-            <Ionicons name="stats-chart" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
+      <Header 
+        title="Habit History" 
+        showMenu={true}
+      />
+      
+      {/* Filter section */}
+      <View className="px-4 py-4">
 
         {/* Filter Tabs */}
-        <View className="flex-row bg-white rounded-lg p-1" key={`filter-container-${selectedFilter}`}>
+        <View className="flex-row bg-gray-100 rounded-lg p-1" key={`filter-container-${selectedFilter}`}>
           {(["all", "completed"] as const).map((filter) => {
             const isSelected = selectedFilter === filter;
             return (

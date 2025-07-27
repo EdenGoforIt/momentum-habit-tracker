@@ -1,4 +1,5 @@
 import { TabNavigation } from "@/components/common";
+import Header from "@/components/ui/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
@@ -15,9 +16,9 @@ import { Calendar } from "react-native-calendars";
 
 import { getNZDateOnly } from "@/api/habits/date-utils";
 import type { HabitEntry } from "@/api/habits/types";
-import { getHabitEntriesByHabitId } from "@/api/habits/use-habit-entries";
 import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
 import { useGetUserHabits } from "@/api/habits/use-habits";
+import { client } from "@/api/common";
 import { useAuth } from "@/lib/auth";
 
 export default function HabitCalendar() {
@@ -63,10 +64,12 @@ export default function HabitCalendar() {
           // Fetch entries for all habits in parallel
           const promises = habits.map(async (habit) => {
             try {
-              const entries = await getHabitEntriesByHabitId(
-                habit.id,
-                currentMonth
+              const startDate = `${currentMonth}-01`;
+              const endDate = `${currentMonth}-31`;
+              const response = await client.get(
+                `api/v1/habit-entries/habit/${habit.id}?startDate=${startDate}&endDate=${endDate}`
               );
+              const entries = response.data;
               return { habitId: habit.id, entries };
             } catch (error) {
               return { habitId: habit.id, entries: [] };
@@ -210,11 +213,20 @@ export default function HabitCalendar() {
       });
 
       // Refresh the entries for this habit
-      const entries = await getHabitEntriesByHabitId(habitId, currentMonth);
-      setHabitEntriesData((prev) => ({
-        ...prev,
-        [habitId]: entries,
-      }));
+      try {
+        const startDate = `${currentMonth}-01`;
+        const endDate = `${currentMonth}-31`;
+        const response = await client.get(
+          `api/v1/habit-entries/habit/${habitId}?startDate=${startDate}&endDate=${endDate}`
+        );
+        const entries = response.data;
+        setHabitEntriesData((prev) => ({
+          ...prev,
+          [habitId]: entries,
+        }));
+      } catch (error) {
+        console.error('Failed to refresh habit entries:', error);
+      }
     } catch (error: any) {
       Alert.alert(
         "Error",
@@ -274,19 +286,13 @@ export default function HabitCalendar() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Header */}
-      <View className="px-4 py-6 bg-blue-50">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="w-6" />
-          <Text className="text-xl font-bold text-gray-800">
-            Habit Calendar
-          </Text>
-          <TouchableOpacity onPress={() => router.push("/(protected)/habit/add")}>
-            <Ionicons name="add-circle" size={24} color="#4a90e2" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Streak info */}
+      <Header 
+        title="Habit Calendar" 
+        showMenu={true}
+      />
+      
+      {/* Streak info */}
+      <View className="px-4 py-4 bg-blue-50">
         <View className="bg-white rounded-lg p-4">
           <View className="flex-row items-center justify-between">
             <View>
@@ -386,14 +392,23 @@ export default function HabitCalendar() {
 
         {/* Selected Date Habits */}
         <View className="px-4 py-4">
-          <Text className="text-lg font-semibold text-gray-800 mb-3">
-            Habits for{" "}
-            {new Date(selectedDate).toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "short",
-              day: "numeric",
-            })}
-          </Text>
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              Habits for{" "}
+              {new Date(selectedDate).toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "short",
+                day: "numeric",
+              })}
+            </Text>
+            <TouchableOpacity
+              className="flex-row items-center"
+              onPress={() => router.push("/(protected)/habit/add")}
+            >
+              <Ionicons name="add-circle" size={18} color="#4a90e2" />
+              <Text className="text-blue-500 font-medium ml-1">Add New</Text>
+            </TouchableOpacity>
+          </View>
 
           {selectedDateHabits.length > 0 ? (
             selectedDateHabits.map((habit) => {
