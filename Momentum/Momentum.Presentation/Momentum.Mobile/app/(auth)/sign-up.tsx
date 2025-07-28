@@ -107,7 +107,6 @@ export default function SignUp() {
         });
 
         const data = await response.json();
-        console.log("Response data:", JSON.stringify(data));
 
         if (response.ok || response.status === 200) {
           Alert.alert(
@@ -140,7 +139,6 @@ export default function SignUp() {
           );
         }
       } catch (error) {
-        console.error("Registration error:", error);
         Alert.alert(
           "Connection Error",
           "Unable to connect to the server. Please check your internet connection and try again."
