@@ -1,5 +1,6 @@
 import { useGetUserHabits } from "@/api";
-import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries-real";
+import { useToggleHabitCompletion, useGetHabitEntries } from "@/api/habits/use-habit-entries";
+import { client } from "@/api/common";
 import { Header, TabNavigation } from "@/components/common";
 import { useAuth, useIsAuthenticated } from "@/lib";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,6 +27,7 @@ export default function Home() {
   const [quote, setQuote] = useState("");
   const [todaysDateString] = useState(new Date().toISOString().split("T")[0]);
   const [todaysTimestamp] = useState(new Date().getTime());
+  const [habitCompletions, setHabitCompletions] = useState<Record<number, boolean>>({});
   const { user } = useAuth();
   const isAuthenticated = useIsAuthenticated();
   const userId = user?.id;
@@ -47,15 +49,13 @@ export default function Home() {
 
   // Process habits data to include today's completion status
   const todayHabits = useMemo(() => {
-    if (!habitsData?.habits) return [];
+    if (!habitsData || !Array.isArray(habitsData)) return [];
 
-    return habitsData.habits.map((habit) => {
-      // For now, we'll use a basic structure.
-      // In a real implementation, you'd fetch habit entries for today to determine completion status
+    return habitsData.map((habit: any) => {
       return {
         id: habit.id,
         title: habit.name,
-        completed: false, // TODO: This should be determined by checking today's habit entries
+        completed: habitCompletions[habit.id] || false,
         time: habit.preferredTime
           ? new Date(habit.preferredTime).toLocaleTimeString("en-US", {
               hour: "2-digit",
@@ -65,13 +65,13 @@ export default function Home() {
         description: habit.description,
       };
     });
-  }, [habitsData]);
+  }, [habitsData, habitCompletions]);
 
   // Calculate stats from habits data
   const stats = useMemo(() => {
-    const totalHabits = habitsData?.habits?.length || 0;
+    const totalHabits = Array.isArray(habitsData) ? habitsData.length : 0;
     const completedToday = todayHabits.filter(
-      (habit) => habit.completed
+      (habit: any) => habit.completed
     ).length;
     const completionRate =
       totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
@@ -96,24 +96,65 @@ export default function Home() {
     }
   }, [userId, isAuthenticated]);
 
+  // Fetch habit entries for today to determine completion status
+  useEffect(() => {
+    if (!habitsData || !Array.isArray(habitsData)) return;
+
+    const fetchHabitEntries = async () => {
+      const completions: Record<number, boolean> = {};
+      
+      for (const habit of habitsData) {
+        try {
+          const response = await client.get(
+            `api/v1/habit-entries/habit/${habit.id}?startDate=${todaysDateString}&endDate=${todaysDateString}`
+          );
+          const entries = response.data;
+          completions[habit.id] = entries.length > 0 && entries[0].completed;
+        } catch (error) {
+          console.error(`Failed to fetch entries for habit ${habit.id}:`, error);
+          completions[habit.id] = false;
+        }
+      }
+      
+      setHabitCompletions(completions);
+    };
+
+    fetchHabitEntries();
+  }, [habitsData, todaysDateString]);
+
   const toggleHabitCompletion = async (habitId: number) => {
     try {
-      const habit = todayHabits.find((h) => h.id === habitId);
+      const habit = todayHabits.find((h: any) => h.id === habitId);
       if (!habit) return;
+
+      const newCompletedStatus = !habit.completed;
+      
+      // Optimistically update local state
+      setHabitCompletions(prev => ({
+        ...prev,
+        [habitId]: newCompletedStatus
+      }));
 
       await toggleHabitMutation.mutateAsync({
         habitId,
         date: todaysDateString,
-        completed: !habit.completed,
+        completed: newCompletedStatus,
       });
 
-      // The query will refetch automatically due to mutation
     } catch (error) {
       console.error("Failed to toggle habit completion:", error);
+      // Revert local state on error
+      const habit = todayHabits.find((h: any) => h.id === habitId);
+      if (habit) {
+        setHabitCompletions(prev => ({
+          ...prev,
+          [habitId]: habit.completed
+        }));
+      }
     }
   };
 
-  const completedCount = todayHabits.filter((habit) => habit.completed).length;
+  const completedCount = todayHabits.filter((habit: any) => habit.completed).length;
   const totalHabits = todayHabits.length;
   const completionPercentage =
     totalHabits > 0 ? Math.round((completedCount / totalHabits) * 100) : 0;
@@ -200,7 +241,7 @@ export default function Home() {
           </View>
 
           {todayHabits.length > 0 ? (
-            todayHabits.map((habit) => (
+            todayHabits.map((habit: any) => (
               <TouchableOpacity
                 key={habit.id}
                 className="flex-row items-center py-3 border-b border-gray-100"

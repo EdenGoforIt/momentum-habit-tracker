@@ -7,7 +7,6 @@ interface IHomeProps {}
 export default function Home() {
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const isAuthenticated = useIsAuthenticated();
-  console.log('isAuthenticated :', isAuthenticated);
   
   useEffect(() => {
     setShouldRedirect(true);
