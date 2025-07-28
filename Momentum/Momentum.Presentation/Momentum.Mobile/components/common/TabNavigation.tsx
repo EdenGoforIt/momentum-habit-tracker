@@ -56,7 +56,7 @@ export default function TabNavigation() {
           <TouchableOpacity
             key={tab.name}
             className="flex-1 items-center py-2"
-            onPress={() => router.push(tab.route as any)}
+            onPress={() => router.replace(tab.route as any)}
           >
             <Ionicons
               name={isActive ? tab.icon : `${tab.icon}-outline` as any}
