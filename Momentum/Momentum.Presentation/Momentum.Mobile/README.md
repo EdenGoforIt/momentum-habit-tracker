@@ -100,3 +100,5 @@ Simulator -> device -> erase all contents and settings
 ## Resources
 
 [](https://github.dev/obytes/react-native-template-obytes/tree/master/src)
+
+[](https://vercel.com/templates/react)
