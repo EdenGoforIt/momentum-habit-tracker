@@ -25,13 +25,9 @@ export const useAuthFlow = () => {
 
       // Fetch user profile
       const userResult = await userFetcher();
-      console.log("User profile fetched:", userResult);
 
       if (userResult.data) {
         setUser(userResult.data as UserDto);
-        console.log("User profile fetched:", userResult.data);
-      } else {
-        console.warn("User fetch succeeded but no data returned");
       }
 
       // TODO: remove
@@ -40,7 +36,6 @@ export const useAuthFlow = () => {
       // Navigate to protected area
       router.replace(redirectPath as any);
     } catch (error) {
-      console.error("Auth flow error:", error);
       showErrorAlert(error);
       // Still navigate on user fetch failure since login was successful
       router.replace(redirectPath as any);
@@ -55,11 +50,9 @@ export const useAuthFlow = () => {
     setIsLoading(true);
     try {
       const loginData = await authAction();
-      console.log("Auth action successful:", loginData);
 
       await handleAuthSuccess(loginData, userFetcher, redirectPath);
     } catch (error) {
-      console.error("Authentication error:", error);
       showErrorAlert(error);
     } finally {
       setIsLoading(false);
