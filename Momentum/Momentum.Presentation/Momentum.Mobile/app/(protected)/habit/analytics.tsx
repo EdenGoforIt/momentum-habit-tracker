@@ -31,7 +31,7 @@ export default function HabitAnalytics() {
     enabled: !!habitId
   });
 
-  const habit = habitData?.habit;
+  const habit = habitData ? ('habit' in habitData ? habitData.habit : habitData) : undefined;
 
   // Calculate date ranges based on selected period
   const dateRange = useMemo(() => {
