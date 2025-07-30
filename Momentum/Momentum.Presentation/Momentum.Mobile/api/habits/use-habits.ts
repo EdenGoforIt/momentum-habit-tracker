@@ -24,7 +24,8 @@ export const useCreateHabit = createMutation<Response, Variables, AxiosError>({
 });
 
 // Update Habit
-type UpdateHabitVariables = UpdateHabitDto;
+// Note: Backend expects full HabitDto, not just UpdateHabitDto
+type UpdateHabitVariables = any; // Using any because backend expects full HabitDto
 type UpdateHabitResponse = HabitResponse;
 
 export const useUpdateHabit = createMutation<
