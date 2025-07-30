@@ -65,7 +65,8 @@ npx expo start -c
 # how to run the backend
 
 **Back-end**
-```
+
+```bash
 open -a Docker
 
 docker compose up -d
@@ -79,7 +80,7 @@ docker start my-mssql-server
 docker start my-mssql-server && cd Momentum.Api && dotnet run
 ```
 
-```
+```bash
 docker start my-mssql-server && cd ../../Momentum.Api && dotnet run
 ```
 

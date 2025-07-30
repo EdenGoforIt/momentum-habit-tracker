@@ -13,34 +13,30 @@ import {
 
 import { getNZDateOnly } from "@/api/habits/date-utils";
 import { HabitFrequency } from "@/api/habits/types";
-import { useGetHabitEntries, useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
+import {
+  useGetHabitEntries,
+  useToggleHabitCompletion,
+} from "@/api/habits/use-habit-entries";
 import { useDeleteHabit, useGetHabit } from "@/api/habits/use-habits";
-
-// Days of week for showing schedule
-const DAYS_OF_WEEK = [
-  { key: "monday", label: "Mon" },
-  { key: "tuesday", label: "Tue" },
-  { key: "wednesday", label: "Wed" },
-  { key: "thursday", label: "Thu" },
-  { key: "friday", label: "Fri" },
-  { key: "saturday", label: "Sat" },
-  { key: "sunday", label: "Sun" },
-];
 
 export default function HabitDetail() {
   const { id } = useLocalSearchParams();
   const habitId = Number(id);
   const [todaysDate] = useState(getNZDateOnly(new Date()));
-  
+
   // Fetch habit details
-  const { data: habitData, isPending: habitLoading, isError: habitError } = useGetHabit({
+  const {
+    data: habitData,
+    isPending: habitLoading,
+    isError: habitError,
+  } = useGetHabit({
     variables: { habitId },
     enabled: !!habitId && !isNaN(habitId),
   });
 
   // Fetch habit entries for statistics
   const { data: entriesData } = useGetHabitEntries({
-    variables: { 
+    variables: {
       habitId,
       startDate: getNZDateOnly(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)), // Last 30 days
       endDate: todaysDate,
@@ -55,10 +51,10 @@ export default function HabitDetail() {
   // Calculate stats from entries
   const stats = useMemo(() => {
     if (!entriesData) return { streak: 0, totalCompletions: 0 };
-    
-    const completedEntries = entriesData.filter(entry => entry.completed);
+
+    const completedEntries = entriesData.filter((entry) => entry.completed);
     const totalCompletions = completedEntries.length;
-    
+
     // Calculate current streak
     let streak = 0;
     const today = new Date();
@@ -66,22 +62,23 @@ export default function HabitDetail() {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split("T")[0];
-      
-      const entry = entriesData.find(e => e.date === dateStr);
+
+      const entry = entriesData.find((e) => e.date === dateStr);
       if (entry?.completed) {
         streak++;
-      } else if (i > 0) { // Don't break on today if not completed yet
+      } else if (i > 0) {
+        // Don't break on today if not completed yet
         break;
       }
     }
-    
+
     return { streak, totalCompletions };
   }, [entriesData]);
 
   // Check if habit is completed today
   const isCompletedToday = useMemo(() => {
     if (!entriesData) return false;
-    const todayEntry = entriesData.find(entry => entry.date === todaysDate);
+    const todayEntry = entriesData.find((entry) => entry.date === todaysDate);
     return todayEntry?.completed || false;
   }, [entriesData, todaysDate]);
 
@@ -189,19 +186,16 @@ export default function HabitDetail() {
   }
 
   // Handle both direct habit response and wrapped response
-  const habit = habitData && 'habit' in habitData ? habitData.habit : habitData;
+  const habit = habitData && "habit" in habitData ? habitData.habit : habitData;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="p-2"
-        >
+        <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        
+
         <Text className="text-lg font-semibold text-gray-800 flex-1 text-center mr-10">
           Habit Details
         </Text>
@@ -252,7 +246,9 @@ export default function HabitDetail() {
 
           {habit.description && (
             <View className="mb-4">
-              <Text className="text-gray-600 font-medium mb-1">Description</Text>
+              <Text className="text-gray-600 font-medium mb-1">
+                Description
+              </Text>
               <Text className="text-gray-700">{habit.description}</Text>
             </View>
           )}
@@ -261,9 +257,9 @@ export default function HabitDetail() {
             <View className="mb-4">
               <Text className="text-gray-600 font-medium mb-1">Category</Text>
               <View className="flex-row items-center">
-                <View 
-                  className="w-4 h-4 rounded-full mr-2" 
-                  style={{ backgroundColor: habit.category.color || '#ccc' }}
+                <View
+                  className="w-4 h-4 rounded-full mr-2"
+                  style={{ backgroundColor: habit.category.color || "#ccc" }}
                 />
                 <Text className="text-gray-700">{habit.category.name}</Text>
               </View>
@@ -272,15 +268,23 @@ export default function HabitDetail() {
 
           {habit.preferredTime && (
             <View className="mb-4">
-              <Text className="text-gray-600 font-medium mb-1">Preferred Time</Text>
-              <Text className="text-gray-700">{formatTime(habit.preferredTime)}</Text>
+              <Text className="text-gray-600 font-medium mb-1">
+                Preferred Time
+              </Text>
+              <Text className="text-gray-700">
+                {formatTime(habit.preferredTime)}
+              </Text>
             </View>
           )}
 
           <View className="mb-4">
             <Text className="text-gray-600 font-medium mb-1">Priority</Text>
             <Text className="text-gray-700">
-              {habit.priority === 1 ? "High" : habit.priority === 2 ? "Medium" : "Low"}
+              {habit.priority === 1
+                ? "High"
+                : habit.priority === 2
+                ? "Medium"
+                : "Low"}
             </Text>
           </View>
 
@@ -290,7 +294,9 @@ export default function HabitDetail() {
               {[1, 2, 3, 4, 5].map((level) => (
                 <Ionicons
                   key={level}
-                  name={level <= habit.difficultyLevel ? "star" : "star-outline"}
+                  name={
+                    level <= habit.difficultyLevel ? "star" : "star-outline"
+                  }
                   size={20}
                   color={level <= habit.difficultyLevel ? "#fbbf24" : "#d1d5db"}
                 />
