@@ -42,7 +42,7 @@ export const useUpdateHabit = createMutation<
 });
 
 // Delete Habit
-type DeleteHabitVariables = { habitId: number };
+type DeleteHabitVariables = { habitId: number; userId: string };
 type DeleteHabitResponse = { success: boolean };
 
 export const useDeleteHabit = createMutation<
@@ -52,7 +52,7 @@ export const useDeleteHabit = createMutation<
 >({
   mutationFn: async (variables) =>
     client({
-      url: `api/v1/habits/${variables.habitId}`,
+      url: `api/v1/habits/${variables.habitId}?userId=${variables.userId}`,
       method: "DELETE",
     }).then((response) => response.data),
 });
