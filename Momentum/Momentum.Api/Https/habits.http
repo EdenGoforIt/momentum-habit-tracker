@@ -30,3 +30,7 @@ Accept: application/json
 ### Get Habit
 GET {{url}}/1
 Accept: application/json
+
+### Delete Habit
+DELETE {{url}}/1?userId=74ea04cf-51c1-475a-bafc-d6c7c252ca2b
+Accept: application/json
