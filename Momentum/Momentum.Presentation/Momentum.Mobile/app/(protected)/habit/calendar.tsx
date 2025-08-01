@@ -17,7 +17,7 @@ import { Calendar } from "react-native-calendars";
 import { getNZDateOnly } from "@/api/habits/date-utils";
 import type { HabitEntry } from "@/api/habits/types";
 import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
-import { useGetUserHabits } from "@/api/habits/use-habits";
+import { useGetUserHabits, useDeleteHabit } from "@/api/habits/use-habits";
 import { client } from "@/api/common";
 import { useAuth } from "@/lib/auth";
 
@@ -50,6 +50,7 @@ export default function HabitCalendar() {
   const [entriesLoading, setEntriesLoading] = useState(false);
 
   const toggleHabitMutation = useToggleHabitCompletion();
+  const deleteHabitMutation = useDeleteHabit();
 
   const habits = habitsData || [];
 
@@ -235,6 +236,31 @@ export default function HabitCalendar() {
     }
   };
 
+  const handleDeleteHabit = (habitId: number, habitName: string) => {
+    Alert.alert(
+      "Delete Habit",
+      `Are you sure you want to delete "${habitName}"? This action cannot be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteHabitMutation.mutateAsync({ habitId });
+              // The habit list will refresh automatically due to query invalidation
+            } catch (error: any) {
+              Alert.alert(
+                "Error",
+                error?.response?.data?.message || "Failed to delete habit"
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const getStreakInfo = () => {
     if (habits.length === 0) return { currentStreak: 0 };
 
@@ -410,6 +436,12 @@ export default function HabitCalendar() {
             </TouchableOpacity>
           </View>
 
+          {selectedDateHabits.length > 0 && (
+            <Text className="text-xs text-gray-500 mb-2 text-center">
+              Tap to toggle completion • Long press to delete
+            </Text>
+          )}
+
           {selectedDateHabits.length > 0 ? (
             selectedDateHabits.map((habit) => {
               const isCompleted = completedHabits.includes(habit.id);
@@ -417,10 +449,11 @@ export default function HabitCalendar() {
                 <TouchableOpacity
                   key={habit.id}
                   className={`flex-row items-center py-4 border-b border-gray-100 ${
-                    toggleHabitMutation.isPending ? "opacity-50" : ""
+                    toggleHabitMutation.isPending || deleteHabitMutation.isPending ? "opacity-50" : ""
                   }`}
                   onPress={() => toggleHabitCompletion(habit.id)}
-                  disabled={toggleHabitMutation.isPending}
+                  onLongPress={() => handleDeleteHabit(habit.id, habit.name)}
+                  disabled={toggleHabitMutation.isPending || deleteHabitMutation.isPending}
                 >
                   <View
                     className={`w-12 h-12 rounded-full items-center justify-center mr-4`}
