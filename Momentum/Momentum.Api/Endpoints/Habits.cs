@@ -13,6 +13,7 @@ using Momentum.Application.Habits.Create;
 using Momentum.Application.Habits.GetHabit;
 using Momentum.Application.Habits.Patch;
 using Momentum.Application.Habits.Update;
+using Momentum.Application.Habits.Delete;
 using Momentum.Domain.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
@@ -30,7 +31,8 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
             .MapGet(GetHabit, "{habitId}", Tags.Habits, ApiVersioning.V1)
             .MapPost(CreateHabit, string.Empty, Tags.Habits, ApiVersioning.V1)
             .MapPut(UpdateHabit, "{habitId}", Tags.Habits)
-            .MapPatch(PatchHabit, "{habitId}", Tags.Habits, ApiVersioning.V1);
+            .MapPatch(PatchHabit, "{habitId}", Tags.Habits, ApiVersioning.V1)
+            .MapDelete(DeleteHabit, "{habitId}", Tags.Habits, ApiVersioning.V1);
     }
 
     private async Task<IResult> GetHabit(ISender sender, [AsParameters] GetHabitQuery query)
@@ -137,6 +139,24 @@ internal sealed class Habits(IErrorHandler errorHandler) : EndpointGroupBase
                 },
                 habitDto
             );
+        }
+
+        return errorHandler.HandleError(result.Error);
+    }
+
+    private async Task<IResult> DeleteHabit(ISender sender, long habitId, string userId)
+    {
+        var command = new DeleteHabitCommand
+        {
+            HabitId = habitId,
+            UserId = userId
+        };
+
+        Result<bool, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
+
+        if (result.IsSuccess)
+        {
+            return Results.NoContent();
         }
 
         return errorHandler.HandleError(result.Error);
