@@ -247,7 +247,7 @@ export default function HabitCalendar() {
           style: "destructive",
           onPress: async () => {
             try {
-              await deleteHabitMutation.mutateAsync({ habitId });
+              await deleteHabitMutation.mutateAsync({ habitId, userId });
               // The habit list will refresh automatically due to query invalidation
             } catch (error: any) {
               Alert.alert(
