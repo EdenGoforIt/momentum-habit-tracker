@@ -1,6 +1,6 @@
 import { useGetUserHabits } from "@/api";
-import { useToggleHabitCompletion, useGetHabitEntries } from "@/api/habits/use-habit-entries";
 import { client } from "@/api/common";
+import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
 import { Header, TabNavigation } from "@/components/common";
 import { useAuth, useIsAuthenticated } from "@/lib";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,7 +27,9 @@ export default function Home() {
   const [quote, setQuote] = useState("");
   const [todaysDateString] = useState(new Date().toISOString().split("T")[0]);
   const [todaysTimestamp] = useState(new Date().getTime());
-  const [habitCompletions, setHabitCompletions] = useState<Record<number, boolean>>({});
+  const [habitCompletions, setHabitCompletions] = useState<
+    Record<number, boolean>
+  >({});
   const { user } = useAuth();
   const isAuthenticated = useIsAuthenticated();
   const userId = user?.id;
@@ -102,7 +104,7 @@ export default function Home() {
 
     const fetchHabitEntries = async () => {
       const completions: Record<number, boolean> = {};
-      
+
       for (const habit of habitsData) {
         try {
           const response = await client.get(
@@ -111,11 +113,14 @@ export default function Home() {
           const entries = response.data;
           completions[habit.id] = entries.length > 0 && entries[0].completed;
         } catch (error) {
-          console.error(`Failed to fetch entries for habit ${habit.id}:`, error);
+          console.error(
+            `Failed to fetch entries for habit ${habit.id}:`,
+            error
+          );
           completions[habit.id] = false;
         }
       }
-      
+
       setHabitCompletions(completions);
     };
 
@@ -128,11 +133,11 @@ export default function Home() {
       if (!habit) return;
 
       const newCompletedStatus = !habit.completed;
-      
+
       // Optimistically update local state
-      setHabitCompletions(prev => ({
+      setHabitCompletions((prev) => ({
         ...prev,
-        [habitId]: newCompletedStatus
+        [habitId]: newCompletedStatus,
       }));
 
       await toggleHabitMutation.mutateAsync({
@@ -140,21 +145,22 @@ export default function Home() {
         date: todaysDateString,
         completed: newCompletedStatus,
       });
-
     } catch (error) {
       console.error("Failed to toggle habit completion:", error);
       // Revert local state on error
       const habit = todayHabits.find((h: any) => h.id === habitId);
       if (habit) {
-        setHabitCompletions(prev => ({
+        setHabitCompletions((prev) => ({
           ...prev,
-          [habitId]: habit.completed
+          [habitId]: habit.completed,
         }));
       }
     }
   };
 
-  const completedCount = todayHabits.filter((habit: any) => habit.completed).length;
+  const completedCount = todayHabits.filter(
+    (habit: any) => habit.completed
+  ).length;
   const totalHabits = todayHabits.length;
   const completionPercentage =
     totalHabits > 0 ? Math.round((completedCount / totalHabits) * 100) : 0;
@@ -289,7 +295,7 @@ export default function Home() {
                 onPress={() => router.push("/(protected)/habit/add")}
               >
                 <Text className="text-white font-medium">
-                  Add Your First Habit
+                  Add Your Habits for Today
                 </Text>
               </TouchableOpacity>
             </View>
@@ -415,24 +421,29 @@ export default function Home() {
           </View>
 
           <View className="flex-row justify-between">
-            {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
-              <View key={index} className="items-center">
-                <Text className="text-gray-500 mb-2">{day}</Text>
-                <View
-                  className={`w-10 h-10 rounded-full items-center justify-center ${
-                    index === 3
-                      ? "bg-blue-500"
-                      : index < 3
-                      ? "bg-green-500"
-                      : "bg-gray-200"
-                  }`}
-                >
-                  {index <= 3 && (
-                    <Ionicons name="checkmark" size={18} color="white" />
-                  )}
+            {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => {
+              const today = new Date();
+              const currentDayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1; // Convert Sunday=0 to Sunday=6
+              
+              return (
+                <View key={index} className="items-center">
+                  <Text className="text-gray-500 mb-2">{day}</Text>
+                  <View
+                    className={`w-10 h-10 rounded-full items-center justify-center ${
+                      index === currentDayIndex
+                        ? "bg-blue-500"
+                        : index < currentDayIndex
+                        ? "bg-green-500"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    {index <= currentDayIndex && (
+                      <Ionicons name="checkmark" size={18} color="white" />
+                    )}
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
           </View>
         </View>
       </ScrollView>
