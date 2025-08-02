@@ -18,11 +18,15 @@ import {
   useToggleHabitCompletion,
 } from "@/api/habits/use-habit-entries";
 import { useDeleteHabit, useGetHabit } from "@/api/habits/use-habits";
+import { useAuth } from "@/lib/auth";
 
 export default function HabitDetail() {
   const { id } = useLocalSearchParams();
   const habitId = Number(id);
   const [todaysDate] = useState(getNZDateOnly(new Date()));
+  
+  const user = useAuth.use.user();
+  const userId = user?.id || "";
 
   // Fetch habit details
   const {
@@ -112,7 +116,7 @@ export default function HabitDetail() {
           style: "destructive",
           onPress: async () => {
             try {
-              await deleteMutation.mutateAsync({ habitId });
+              await deleteMutation.mutateAsync({ habitId, userId });
               router.back();
             } catch (error) {
               Alert.alert("Error", "Failed to delete habit");
