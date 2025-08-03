@@ -20,8 +20,7 @@ cd ../../Momentum.Api && dotnet run
 docker start my-mssql-server && cd ../../Momentum.Api && dotnet run
 
 cd Momentum.Api && dotnet run
-
-npx expo run 
+npx expo start -c
 
 ```
 
@@ -34,7 +33,6 @@ npx expo run
 ```bash
 docker pull mcr.microsoft.com/mssql/server:2019-latest
 ```
-
 
 ### If Can't connect due to network issue
 
@@ -104,9 +102,8 @@ You can use **Azure Data Studio** or any SQL client to connect:
 
 ---
 
-
-
 ## Use Docker Compose (Optional)
+
 ```asm
 docker compose up -d
 ```
