@@ -125,6 +125,22 @@ internal sealed class Users(IErrorHandler errorHandler) : EndpointGroupBase
 
         Result<Unit, IDomainError> result = await sender.Send(command).ConfigureAwait(false);
 
-        return result.IsSuccess ? Results.NoContent() : errorHandler.HandleError(result.Error);
+        if (result.IsSuccess)
+        {
+            // Fetch the updated user data to return it
+            Result<UserDto, IDomainError> updatedUserResult = await sender.Send(new GetUserQuery
+            {
+                Id = id
+            }).ConfigureAwait(false);
+
+            if (updatedUserResult.IsSuccess)
+            {
+                return Results.Ok(updatedUserResult.Value);
+            }
+            
+            return errorHandler.HandleError(updatedUserResult.Error);
+        }
+
+        return errorHandler.HandleError(result.Error);
     }
 }
