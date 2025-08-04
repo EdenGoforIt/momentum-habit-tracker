@@ -27,7 +27,7 @@ public class GetUserQueryHandler(UserManager<User> userManager, IMapper mapper) 
 
         if (user is null)
         {
-            throw new NotFoundException(request.Id, nameof(User));
+            return DomainError.NotFound($"User with ID '{request.Id}' not found. Please sign out and sign back in.");
         }
 
         var userDto = _mapper.Map<UserDto>(user);
