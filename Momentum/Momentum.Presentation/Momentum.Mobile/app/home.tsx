@@ -93,6 +93,8 @@ export default function Home() {
 
   useEffect(() => {
     // Redirect to sign-in if user.id is null or user is not authenticated
+    console.log("userId :", userId);
+    console.log("isAuthenticated :", isAuthenticated);
     if (!isAuthenticated || !userId) {
       router.replace("/sign-in");
     }
@@ -423,8 +425,9 @@ export default function Home() {
           <View className="flex-row justify-between">
             {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => {
               const today = new Date();
-              const currentDayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1; // Convert Sunday=0 to Sunday=6
-              
+              const currentDayIndex =
+                today.getDay() === 0 ? 6 : today.getDay() - 1; // Convert Sunday=0 to Sunday=6
+
               return (
                 <View key={index} className="items-center">
                   <Text className="text-gray-500 mb-2">{day}</Text>
