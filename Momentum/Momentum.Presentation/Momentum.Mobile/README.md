@@ -77,6 +77,8 @@ dotnet run
 
 docker start my-mssql-server
 
+npx expo start -c
+
 docker start my-mssql-server && cd Momentum.Api && dotnet run
 ```
 
