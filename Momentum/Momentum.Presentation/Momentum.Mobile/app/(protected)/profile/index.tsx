@@ -21,9 +21,7 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
 
   const userData = {
-    username:
-      user?.userName?.split("@")[0] ||
-      "user",
+    username: user?.userName?.split("@")[0] || "user",
     email: user?.email,
     displayName: user?.firstName || "User",
     givenName: user?.firstName || "",
@@ -40,8 +38,7 @@ export default function ProfileScreen() {
           try {
             await signOut();
             // Navigation is handled by AuthProvider
-          } catch (error) {
-          }
+          } catch (error) {}
         },
       },
     ]);
@@ -79,22 +76,22 @@ export default function ProfileScreen() {
     {
       title: "Update Profile",
       subtitle: "Update your profile details",
-      icon: "👤",
+      icon: "person-outline" as const,
       onPress: handleUpdateProfile,
     },
     {
       title: "Contact Support",
       subtitle: "Get help",
-      icon: "💬",
+      icon: "chatbubble-outline" as const,
       onPress: handleContactSupport,
     },
   ];
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header 
-        title="Profile" 
-        showMenu={false} 
+      <Header
+        title="Profile"
+        showMenu={false}
         right={
           <TouchableOpacity
             onPress={() => router.back()}
@@ -105,9 +102,9 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         }
       />
-      
+
       {/* Profile Info */}
-      <View className="bg-white px-4 py-6 border-b border-gray-200">
+      <View className="bg-white px-4 pt-2 pb-2 border-b border-gray-200">
         <View className="items-center">
           {/* Profile Avatar */}
           <View className="w-20 h-20 bg-green-600 rounded-full items-center justify-center mb-4">
@@ -163,11 +160,22 @@ export default function ProfileScreen() {
               }`}
             >
               <View className="flex-row items-center">
-                {item.icon && <Text className="text-xl mr-3">{item.icon}</Text>}
+                {item.icon && (
+                  <Ionicons
+                    name={item.icon}
+                    size={24}
+                    color="#374151"
+                    style={{ marginRight: 12 }}
+                  />
+                )}
                 <View className="flex-1">
-                  <Text className={`font-medium text-gray-900`}>{item.title}</Text>
+                  <Text className={`font-medium text-gray-900`}>
+                    {item.title}
+                  </Text>
                   {item.subtitle && (
-                    <Text className="text-sm text-gray-500 mt-1">{item.subtitle}</Text>
+                    <Text className="text-sm text-gray-500 mt-1">
+                      {item.subtitle}
+                    </Text>
                   )}
                 </View>
                 <Text className="text-gray-400">›</Text>
@@ -200,7 +208,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Sign Out Button */}
-        <View className="mx-4 mb-6">
+        <View className="mx-4 mb-2">
           <Button variant="danger" onPress={handleSignOut} title="Sign Out" />
         </View>
       </ScrollView>

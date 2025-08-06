@@ -59,19 +59,25 @@ export default function UpdateProfile() {
         lastName: lastName.trim(),
       });
 
-
-      // Update the user in the auth store
-      setUser(updatedUser);
+      // Update the user in the auth store with merged data to preserve all fields
+      const mergedUser = {
+        ...user,
+        ...updatedUser,
+        firstName: updatedUser.firstName || firstName.trim(),
+        lastName: updatedUser.lastName || lastName.trim(),
+      };
+      
+      setUser(mergedUser);
 
       Alert.alert("Success", "Profile updated successfully!", [
-        { text: "OK", onPress: () => router.push("/(protected)/profile") },
+        { text: "OK", onPress: () => router.push("/home") },
       ]);
     } catch (error: any) {
-      
-      const errorMessage = error?.response?.data?.message || 
-                          error?.response?.data?.title ||
-                          "Failed to update profile. Please try again.";
-      
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.title ||
+        "Failed to update profile. Please try again.";
+
       Alert.alert("Error", errorMessage);
     } finally {
       setIsLoading(false);
@@ -97,7 +103,9 @@ export default function UpdateProfile() {
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color="#333" />
             </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-800">Edit Profile</Text>
+            <Text className="text-xl font-bold text-gray-800">
+              Edit Profile
+            </Text>
             <View className="w-6" />
           </View>
         </View>
@@ -107,7 +115,9 @@ export default function UpdateProfile() {
           <View className="items-center mb-8">
             <View className="w-24 h-24 rounded-full bg-blue-500 items-center justify-center">
               <Text className="text-white text-3xl font-bold">
-                {firstName.charAt(0).toUpperCase() || user?.firstName?.charAt(0).toUpperCase() || "U"}
+                {firstName.charAt(0).toUpperCase() ||
+                  user?.firstName?.charAt(0).toUpperCase() ||
+                  "U"}
               </Text>
             </View>
             <Text className="text-gray-600 mt-2">{user?.email}</Text>
@@ -149,7 +159,9 @@ export default function UpdateProfile() {
 
             {/* Email (Read-only) */}
             <View className="mb-4">
-              <Text className="text-sm font-medium text-gray-700 mb-2">Email</Text>
+              <Text className="text-sm font-medium text-gray-700 mb-2">
+                Email
+              </Text>
               <View className="bg-gray-100 border border-gray-200 rounded-lg px-4 py-3">
                 <Text className="text-base text-gray-600">{user?.email}</Text>
               </View>
@@ -164,49 +176,12 @@ export default function UpdateProfile() {
             <Ionicons name="information-circle" size={20} color="#3b82f6" />
             <View className="flex-1 ml-2">
               <Text className="text-sm text-blue-800">
-                Only your first name and last name can be updated. For other changes, please contact support.
+                Only your first name and last name can be updated. For other
+                changes, please contact support.
               </Text>
             </View>
           </View>
 
-          {/* Error Notice for Invalid User */}
-          {user?.id === "74ea04cf-51c1-475a-bafc-d6c7c252ca2b" && (
-            <View className="bg-red-50 rounded-lg p-4 mt-4 flex-row">
-              <Ionicons name="warning" size={20} color="#dc2626" />
-              <View className="flex-1 ml-2">
-                <Text className="text-sm font-medium text-red-800 mb-1">
-                  Account Issue Detected
-                </Text>
-                <Text className="text-sm text-red-700">
-                  Your account data is out of sync. Please sign out and sign back in to refresh your session.
-                </Text>
-                <TouchableOpacity
-                  className="mt-2 bg-red-600 px-3 py-2 rounded"
-                  onPress={() => {
-                    Alert.alert(
-                      "Sign Out Required",
-                      "Your account needs to be refreshed. Would you like to sign out now?",
-                      [
-                        { text: "Cancel", style: "cancel" },
-                        {
-                          text: "Sign Out",
-                          style: "destructive",
-                          onPress: async () => {
-                            try {
-                              await signOut();
-                            } catch (error) {
-                            }
-                          },
-                        },
-                      ]
-                    );
-                  }}
-                >
-                  <Text className="text-white text-sm font-medium">Sign Out</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
         </ScrollView>
 
         {/* Bottom Buttons */}
@@ -222,12 +197,12 @@ export default function UpdateProfile() {
 
             <TouchableOpacity
               className={`flex-1 py-3 rounded-lg items-center ${
-                hasChanges() && !isLoading && user?.id !== "74ea04cf-51c1-475a-bafc-d6c7c252ca2b"
+                hasChanges() && !isLoading
                   ? "bg-blue-500"
                   : "bg-gray-300"
               }`}
               onPress={handleSave}
-              disabled={!hasChanges() || isLoading || user?.id === "74ea04cf-51c1-475a-bafc-d6c7c252ca2b"}
+              disabled={!hasChanges() || isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator size="small" color="white" />
