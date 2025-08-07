@@ -132,7 +132,7 @@ export default function HabitForm({
   // Load habit data for editing
   useEffect(() => {
     if (isEditMode && habitData) {
-      const habit: Habit = 'habit' in habitData ? habitData.habit : habitData;
+      const habit: Habit = "habit" in habitData ? habitData.habit : habitData;
       setHabitName(habit.name);
       setHabitDescription(habit.description || "");
       setSelectedCategory(habit.categoryId || null);
@@ -217,8 +217,9 @@ export default function HabitForm({
 
     try {
       if (isEditMode && habitData) {
-        const originalHabit: Habit = 'habit' in habitData ? habitData.habit : habitData;
-        
+        const originalHabit: Habit =
+          "habit" in habitData ? habitData.habit : habitData;
+
         const updateData: any = {
           id: originalHabit.id,
           name: habitName.trim(),
@@ -231,7 +232,9 @@ export default function HabitForm({
           difficultyLevel: difficulty,
           startDate: startDate.toISOString(),
           endDate: hasEndDate && endDate ? endDate.toISOString() : null,
-          preferredTime: enableReminder ? reminderTime.toTimeString().slice(0, 8) : null,
+          preferredTime: enableReminder
+            ? reminderTime.toTimeString().slice(0, 8)
+            : null,
           isPublic: isPublic || false,
           notificationsEnabled: enableReminder || false,
           reminderMinutesBefore: enableReminder ? reminderMinutesBefore : 0,
@@ -239,9 +242,9 @@ export default function HabitForm({
           notes: notes.trim() || "",
           createdAt: originalHabit.createdAt || new Date().toISOString(),
           archivedAt: originalHabit.archivedAt || null,
-          categoryId: selectedCategory
+          categoryId: selectedCategory,
         };
-        
+
         await onSubmit(updateData);
       } else {
         const habitData: CreateHabitDto = {
@@ -504,7 +507,13 @@ export default function HabitForm({
                   <Text className="font-semibold text-gray-700">End Date</Text>
                   <Switch
                     value={hasEndDate}
-                    onValueChange={setHasEndDate}
+                    onValueChange={(value) => {
+                      setHasEndDate(value);
+                      // When end date is enabled, set frequency to Daily
+                      if (value) {
+                        setFrequency(HabitFrequency.Daily);
+                      }
+                    }}
                     trackColor={{ false: "#767577", true: "#81b0ff" }}
                     thumbColor={hasEndDate ? "#4a90e2" : "#f4f3f4"}
                   />
@@ -526,7 +535,7 @@ export default function HabitForm({
               {/* Frequency */}
               <View className="mb-6">
                 <Text className="font-semibold text-gray-700 mb-2">
-                  Frequency
+                  Frequency {hasEndDate && "(Daily until End Date)"}
                 </Text>
                 <View className="flex-row space-x-2">
                   {[
@@ -540,14 +549,19 @@ export default function HabitForm({
                       className={`flex-1 py-2 px-3 rounded-lg border mr-2 ${
                         frequency === f.value
                           ? "border-blue-500 bg-blue-50"
+                          : hasEndDate
+                          ? "border-gray-200 bg-gray-100"
                           : "border-gray-300 bg-white"
                       }`}
-                      onPress={() => setFrequency(f.value)}
+                      onPress={() => !hasEndDate && setFrequency(f.value)}
+                      disabled={hasEndDate}
                     >
                       <Text
                         className={`text-center ${
                           frequency === f.value
                             ? "text-blue-700"
+                            : hasEndDate
+                            ? "text-gray-400"
                             : "text-gray-600"
                         }`}
                       >
@@ -558,86 +572,96 @@ export default function HabitForm({
                 </View>
               </View>
 
-              {/* Repeat Days */}
-              <View className="mb-6">
-                <Text className="font-semibold text-gray-700 mb-2">
-                  Repeat on
-                </Text>
-                <View className="flex-row justify-between">
-                  {DAYS_OF_WEEK.map((day) => (
-                    <TouchableOpacity
-                      key={day.key}
-                      className={`w-12 h-12 rounded-full items-center justify-center ${
-                        selectedDays[day.key] ? "bg-blue-500" : "bg-gray-200"
-                      }`}
-                      onPress={() => toggleDay(day.key)}
-                    >
-                      <Text
-                        className={`font-medium ${
-                          selectedDays[day.key] ? "text-white" : "text-gray-600"
-                        }`}
+              {/* Repeat Days - Hidden when end date is set */}
+              {!hasEndDate && (
+                <>
+                  <View className="mb-6">
+                    <Text className="font-semibold text-gray-700 mb-2">
+                      Repeat on
+                    </Text>
+                    <View className="flex-row justify-between">
+                      {DAYS_OF_WEEK.map((day) => (
+                        <TouchableOpacity
+                          key={day.key}
+                          className={`w-12 h-12 rounded-full items-center justify-center ${
+                            selectedDays[day.key]
+                              ? "bg-blue-500"
+                              : "bg-gray-200"
+                          }`}
+                          onPress={() => toggleDay(day.key)}
+                        >
+                          <Text
+                            className={`font-medium ${
+                              selectedDays[day.key]
+                                ? "text-white"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {day.label}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+
+                    {/* Quick selections */}
+                    <View className="flex-row mt-3 space-x-2">
+                      <TouchableOpacity
+                        className="bg-blue-50 px-3 py-1 rounded-full"
+                        onPress={() => {
+                          const weekdays = {
+                            monday: true,
+                            tuesday: true,
+                            wednesday: true,
+                            thursday: true,
+                            friday: true,
+                          };
+                          setSelectedDays({ ...selectedDays, ...weekdays });
+                        }}
                       >
-                        {day.label}
+                        <Text className="text-blue-600 text-sm">Weekdays</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        className="bg-purple-50 px-3 py-1 rounded-full"
+                        onPress={() => {
+                          const everyday = DAYS_OF_WEEK.reduce(
+                            (acc, day) => ({
+                              ...acc,
+                              [day.key]: true,
+                            }),
+                            {}
+                          );
+                          setSelectedDays(everyday);
+                        }}
+                      >
+                        <Text className="text-purple-600 text-sm">
+                          Every Day
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        className="bg-gray-50 px-3 py-1 rounded-full"
+                        onPress={() => setSelectedDays({})}
+                      >
+                        <Text className="text-gray-600 text-sm">Clear</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Selected days preview */}
+                  {Object.values(selectedDays).some(Boolean) && (
+                    <View className="mb-6 p-4 bg-blue-50 rounded-lg">
+                      <Text className="font-medium text-blue-800 mb-1">
+                        Selected Days:
                       </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
-                {/* Quick selections */}
-                <View className="flex-row mt-3 space-x-2">
-                  <TouchableOpacity
-                    className="bg-blue-50 px-3 py-1 rounded-full"
-                    onPress={() => {
-                      const weekdays = {
-                        monday: true,
-                        tuesday: true,
-                        wednesday: true,
-                        thursday: true,
-                        friday: true,
-                      };
-                      setSelectedDays({ ...selectedDays, ...weekdays });
-                    }}
-                  >
-                    <Text className="text-blue-600 text-sm">Weekdays</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    className="bg-purple-50 px-3 py-1 rounded-full"
-                    onPress={() => {
-                      const everyday = DAYS_OF_WEEK.reduce(
-                        (acc, day) => ({
-                          ...acc,
-                          [day.key]: true,
-                        }),
-                        {}
-                      );
-                      setSelectedDays(everyday);
-                    }}
-                  >
-                    <Text className="text-purple-600 text-sm">Every Day</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    className="bg-gray-50 px-3 py-1 rounded-full"
-                    onPress={() => setSelectedDays({})}
-                  >
-                    <Text className="text-gray-600 text-sm">Clear</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Selected days preview */}
-              {Object.values(selectedDays).some(Boolean) && (
-                <View className="mb-6 p-4 bg-blue-50 rounded-lg">
-                  <Text className="font-medium text-blue-800 mb-1">
-                    Selected Days:
-                  </Text>
-                  <Text className="text-blue-600">
-                    {DAYS_OF_WEEK.filter((day) => selectedDays[day.key])
-                      .map((day) => day.full)
-                      .join(", ")}
-                  </Text>
-                </View>
+                      <Text className="text-blue-600">
+                        {DAYS_OF_WEEK.filter((day) => selectedDays[day.key])
+                          .map((day) => day.full)
+                          .join(", ")}
+                      </Text>
+                    </View>
+                  )}
+                </>
               )}
             </View>
           )}
