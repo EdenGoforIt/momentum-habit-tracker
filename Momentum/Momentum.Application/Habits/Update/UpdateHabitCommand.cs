@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Momentum.Application.Abstractions;
 using Momentum.Application.Dtos.Habit;
 using Momentum.Domain.Entities.Habits;
@@ -19,18 +20,34 @@ public class UpdateHabitCommandHandler(IHabitRepository repository, IMapper mapp
         CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(UpdateHabitCommand));
-        var habitEntity = mapper.Map<Habit>(request.HabitDto);
 
-        if (await repository.DoesHabitBelongToUserAsync(request.HabitId, request.HabitDto.UserId, cancellationToken)
+        if (!await repository.DoesHabitBelongToUserAsync(request.HabitId, request.HabitDto.UserId, cancellationToken)
                 .ConfigureAwait(true))
         {
             return Result.Failure<long, IDomainError>(DomainError.Conflict(
-                $"The habit with Id {request.HabitId} already exists for the user with Id {request.HabitDto.UserId}."));
+                $"The habit with Id {request.HabitId} does not belong to the user with Id {request.HabitDto.UserId}."));
         }
 
-        repository.Update(habitEntity);
+        var existingHabit = await repository.GetById(request.HabitId)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        
+        if (existingHabit == null)
+        {
+            return Result.Failure<long, IDomainError>(DomainError.NotFound(
+                $"Habit with Id {request.HabitId} not found."));
+        }
+
+        // Map the DTO properties onto the existing entity
+        // Note: The ID is preserved because we're mapping onto existing entity
+        mapper.Map(request.HabitDto, existingHabit);
+        
+        // Ensure the ID is preserved (mapper ignores ID by design)
+        existingHabit.Id = request.HabitId;
+        
+        repository.Update(existingHabit);
         await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return Result.Success<long, IDomainError>(habitEntity.Id);
+        return Result.Success<long, IDomainError>(existingHabit.Id);
     }
 }
