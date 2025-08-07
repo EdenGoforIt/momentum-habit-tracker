@@ -31,6 +31,34 @@ Accept: application/json
 GET {{url}}/1
 Accept: application/json
 
+### Update Habit
+PUT {{url}}/10002
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": 30010,
+  "name": "Test2 Updated",
+  "description": "Test Updated Description",
+  "userId": "74ea04cf-51c1-475a-bafc-d6c7c252ca2b",
+  "frequency": 0,
+  "iconName": "star-outline",
+  "color": "#4ECDC4",
+  "priority": 2,
+  "difficultyLevel": 3,
+  "startDate": "2025-07-18T13:20:31.532Z",
+  "endDate": null,
+  "preferredTime": null,
+  "isPublic": false,
+  "notificationsEnabled": false,
+  "reminderMinutesBefore": 0,
+  "sortOrder": 0,
+  "notes": "",
+  "createdAt": "2025-07-19T01:22:36.659",
+  "archivedAt": null,
+  "categoryId": 1
+}
+
 ### Delete Habit
 DELETE {{url}}/1?userId=74ea04cf-51c1-475a-bafc-d6c7c252ca2b
 Accept: application/json
