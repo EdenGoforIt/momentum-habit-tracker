@@ -7,7 +7,6 @@ import type {
   GetHabitsParams,
   Habit,
   HabitResponse,
-  UpdateHabitDto
 } from "./types";
 
 type Variables = CreateHabitDto;
@@ -107,11 +106,11 @@ export const useGetUserHabits = createQuery<
 
     if (rest.date) {
       // If it's already a date string (YYYY-MM-DD), use it directly
-      if (typeof rest.date === 'string') {
+      if (typeof rest.date === "string") {
         params.append("date", rest.date);
       } else {
         // Convert timestamp to UTC YYYY-MM-DD format (backend stores UTC dates)
-        const dateString = new Date(rest.date).toISOString().split('T')[0];
+        const dateString = new Date(rest.date).toISOString().split("T")[0];
         params.append("date", dateString);
       }
     }
@@ -138,6 +137,8 @@ export const useGetHabit = createQuery<
 >({
   queryKey: ["habit"],
   fetcher: (variables) => {
-    return client.get(`api/v1/habits/${variables.habitId}`).then((response) => response.data);
+    return client
+      .get(`api/v1/habits/${variables.habitId}`)
+      .then((response) => response.data);
   },
 });
