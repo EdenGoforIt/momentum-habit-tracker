@@ -4,8 +4,8 @@ import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
 import { Header, TabNavigation } from "@/components/common";
 import { useAuth, useIsAuthenticated } from "@/lib";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Motivational quotes
 const QUOTES = [
@@ -24,6 +25,7 @@ const QUOTES = [
 ];
 
 export default function Home() {
+  const queryClient = useQueryClient();
   const [quote, setQuote] = useState("");
   const [todaysDateString] = useState(new Date().toISOString().split("T")[0]);
   const [todaysTimestamp] = useState(new Date().getTime());
@@ -93,12 +95,18 @@ export default function Home() {
 
   useEffect(() => {
     // Redirect to sign-in if user.id is null or user is not authenticated
-    console.log("userId :", userId);
-    console.log("isAuthenticated :", isAuthenticated);
     if (!isAuthenticated || !userId) {
       router.replace("/sign-in");
     }
   }, [userId, isAuthenticated]);
+
+  // Refetch habits when the screen comes into focus (e.g., after updating a habit)
+  useFocusEffect(
+    useCallback(() => {
+      // Invalidate queries to force refetch when screen is focused
+      queryClient.invalidateQueries({ queryKey: ["userHabits"] });
+    }, [queryClient])
+  );
 
   // Fetch habit entries for today to determine completion status
   useEffect(() => {
