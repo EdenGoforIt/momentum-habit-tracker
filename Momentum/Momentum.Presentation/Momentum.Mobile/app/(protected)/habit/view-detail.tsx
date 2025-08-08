@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { getNZDateOnly } from "@/api/habits/date-utils";
 import { HabitFrequency } from "@/api/habits/types";
@@ -24,6 +25,7 @@ export default function HabitDetail() {
   const { id } = useLocalSearchParams();
   const habitId = Number(id);
   const [todaysDate] = useState(getNZDateOnly(new Date()));
+  const queryClient = useQueryClient();
   
   const user = useAuth.use.user();
   const userId = user?.id || "";
@@ -99,10 +101,7 @@ export default function HabitDetail() {
   };
 
   const handleEditHabit = () => {
-    router.push({
-      pathname: "/(protected)/habit/add",
-      params: { habitId: habitId.toString(), isEdit: "true" },
-    });
+    router.push(`/(protected)/habit/${habitId}`);
   };
 
   const handleDeleteHabit = () => {
@@ -117,6 +116,10 @@ export default function HabitDetail() {
           onPress: async () => {
             try {
               await deleteMutation.mutateAsync({ habitId, userId });
+              // Invalidate all habit-related queries to force refetch
+              await queryClient.invalidateQueries({ queryKey: ["userHabits"] });
+              await queryClient.invalidateQueries({ queryKey: ["habit"] });
+              await queryClient.invalidateQueries({ queryKey: ["habitEntries"] });
               router.back();
             } catch (error) {
               Alert.alert("Error", "Failed to delete habit");
