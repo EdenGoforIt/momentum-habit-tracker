@@ -17,11 +17,13 @@ export default function EditHabit() {
   const { data: habitData, isLoading: habitLoading } = useGetHabit({
     variables: { habitId: habitId! },
     enabled: !!habitId,
-  }) as { data: Habit | HabitResponse | undefined, isLoading: boolean };
+  }) as { data: Habit | HabitResponse | undefined; isLoading: boolean };
   const updateHabitMutation = useUpdateHabit();
 
   const handleUpdate = async (data: any) => {
     try {
+      console.log("data :", data);
+
       await updateHabitMutation.mutateAsync(data);
       Alert.alert("Success", "Habit updated successfully!", [
         { text: "OK", onPress: () => router.back() },
