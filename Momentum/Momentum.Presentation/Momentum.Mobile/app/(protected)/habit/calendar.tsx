@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { getNZDateOnly } from "@/api/habits/date-utils";
 import type { HabitEntry } from "@/api/habits/types";
@@ -22,6 +23,7 @@ import { client } from "@/api/common";
 import { useAuth } from "@/lib/auth";
 
 export default function HabitCalendar() {
+  const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(
     getNZDateOnly(new Date())
   );
@@ -248,7 +250,10 @@ export default function HabitCalendar() {
           onPress: async () => {
             try {
               await deleteHabitMutation.mutateAsync({ habitId, userId });
-              // The habit list will refresh automatically due to query invalidation
+              // Invalidate all habit-related queries to force refetch
+              await queryClient.invalidateQueries({ queryKey: ["userHabits"] });
+              await queryClient.invalidateQueries({ queryKey: ["habit"] });
+              await queryClient.invalidateQueries({ queryKey: ["habitEntries"] });
             } catch (error: any) {
               Alert.alert(
                 "Error",
