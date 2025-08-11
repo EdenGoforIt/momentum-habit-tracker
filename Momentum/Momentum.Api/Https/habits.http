@@ -32,13 +32,13 @@ GET {{url}}/1
 Accept: application/json
 
 ### Update Habit
-PUT {{url}}/10002
+PUT {{url}}/30013
 Content-Type: application/json
 Accept: application/json
 
 {
-  "id": 30010,
-  "name": "Test2 Updated",
+  "id": 30013,
+  "name": "Test2 Updated22",
   "description": "Test Updated Description",
   "userId": "74ea04cf-51c1-475a-bafc-d6c7c252ca2b",
   "frequency": 0,
