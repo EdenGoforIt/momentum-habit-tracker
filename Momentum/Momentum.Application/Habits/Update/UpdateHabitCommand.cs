@@ -42,9 +42,6 @@ public class UpdateHabitCommandHandler(IHabitRepository repository, IMapper mapp
         // Note: The ID is preserved because we're mapping onto existing entity
         mapper.Map(request.HabitDto, existingHabit);
         
-        // Ensure the ID is preserved (mapper ignores ID by design)
-        existingHabit.Id = request.HabitId;
-        
         repository.Update(existingHabit);
         await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
