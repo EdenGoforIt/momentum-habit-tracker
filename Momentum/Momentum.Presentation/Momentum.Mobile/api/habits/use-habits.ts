@@ -24,7 +24,7 @@ export const useCreateHabit = createMutation<Response, Variables, AxiosError>({
 
 // Update Habit
 // Note: Backend expects full HabitDto, not just UpdateHabitDto
-type UpdateHabitVariables = any; // Using any because backend expects full HabitDto
+type UpdateHabitVariables = { id: number; data: any }; // Separate id and data
 type UpdateHabitResponse = HabitResponse;
 
 export const useUpdateHabit = createMutation<
@@ -32,12 +32,13 @@ export const useUpdateHabit = createMutation<
   UpdateHabitVariables,
   AxiosError
 >({
-  mutationFn: async (variables) =>
-    client({
+  mutationFn: async (variables) => {
+    return client({
       url: `api/v1/habits/${variables.id}`,
       method: "PUT",
-      data: variables,
-    }).then((response) => response.data),
+      data: variables.data,
+    }).then((response) => response.data);
+  },
 });
 
 // Delete Habit
