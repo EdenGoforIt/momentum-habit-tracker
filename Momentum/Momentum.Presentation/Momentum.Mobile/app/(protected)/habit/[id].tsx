@@ -22,9 +22,10 @@ export default function EditHabit() {
 
   const handleUpdate = async (data: any) => {
     try {
-      console.log("data :", data);
-
-      await updateHabitMutation.mutateAsync(data);
+      await updateHabitMutation.mutateAsync({
+        id: habitId!,
+        data: data,
+      });
       Alert.alert("Success", "Habit updated successfully!", [
         { text: "OK", onPress: () => router.back() },
       ]);
