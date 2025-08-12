@@ -4,6 +4,7 @@ import { useToggleHabitCompletion } from "@/api/habits/use-habit-entries";
 import { Header, TabNavigation } from "@/components/common";
 import { useAuth, useIsAuthenticated } from "@/lib";
 import { Ionicons } from "@expo/vector-icons";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -13,7 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useQueryClient } from "@tanstack/react-query";
 
 // Motivational quotes
 const QUOTES = [
@@ -459,15 +459,6 @@ export default function Home() {
         </View>
       </ScrollView>
 
-      {/* Floating action button */}
-      <TouchableOpacity
-        className="absolute bottom-20 right-6 bg-blue-500 w-14 h-14 rounded-full items-center justify-center shadow-md"
-        onPress={() => router.push("/(protected)/habit/add")}
-      >
-        <Ionicons name="add" size={30} color="white" />
-      </TouchableOpacity>
-
-      {/* Tab Navigation */}
       <TabNavigation />
     </SafeAreaView>
   );
