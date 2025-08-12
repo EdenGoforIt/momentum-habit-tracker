@@ -133,6 +133,21 @@ export default function HabitHistory() {
     // Use real completion data from API (same as home.tsx)
     habits.forEach((habit) => {
       Object.keys(dateMap).forEach((date) => {
+        // Check if habit was active on this date
+        const habitStartDate = habit.startDate ? new Date(habit.startDate) : null;
+        const habitEndDate = habit.endDate ? new Date(habit.endDate) : null;
+        const currentDateObj = new Date(date);
+        
+        // Skip if habit hasn't started yet on this date
+        if (habitStartDate && currentDateObj < habitStartDate) {
+          return;
+        }
+        
+        // Skip if habit has already ended before this date
+        if (habitEndDate && currentDateObj > habitEndDate) {
+          return;
+        }
+        
         // Get completion status from our fetched data
         const completed = habitCompletionData[date]?.[habit.id] || false;
 
