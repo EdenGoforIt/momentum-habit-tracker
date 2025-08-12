@@ -15,7 +15,7 @@ import {
 } from "react-native";
 
 import { useUpdateUser } from "@/api/users/use-users";
-import { signOut, useAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 
 export default function UpdateProfile() {
   const { user, setUser } = useAuth();
@@ -66,11 +66,11 @@ export default function UpdateProfile() {
         firstName: updatedUser.firstName || firstName.trim(),
         lastName: updatedUser.lastName || lastName.trim(),
       };
-      
+
       setUser(mergedUser);
 
       Alert.alert("Success", "Profile updated successfully!", [
-        { text: "OK", onPress: () => router.push("/home") },
+        { text: "OK", onPress: () => router.back() },
       ]);
     } catch (error: any) {
       const errorMessage =
@@ -181,7 +181,6 @@ export default function UpdateProfile() {
               </Text>
             </View>
           </View>
-
         </ScrollView>
 
         {/* Bottom Buttons */}
@@ -197,9 +196,7 @@ export default function UpdateProfile() {
 
             <TouchableOpacity
               className={`flex-1 py-3 rounded-lg items-center ${
-                hasChanges() && !isLoading
-                  ? "bg-blue-500"
-                  : "bg-gray-300"
+                hasChanges() && !isLoading ? "bg-blue-500" : "bg-gray-300"
               }`}
               onPress={handleSave}
               disabled={!hasChanges() || isLoading}

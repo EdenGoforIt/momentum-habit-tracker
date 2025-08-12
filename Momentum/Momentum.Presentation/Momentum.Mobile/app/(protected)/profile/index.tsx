@@ -44,26 +44,6 @@ export default function ProfileScreen() {
     ]);
   };
 
-  const handleExportData = () => {
-    Alert.alert(
-      "Export Data",
-      "Export your Site Visit records, CPD records, and Self-Reflection records?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Export",
-          onPress: () => {
-            // TODO: Implement data export functionality
-            Alert.alert(
-              "Export Started",
-              "Your data export will be ready shortly. You will receive an email when complete."
-            );
-          },
-        },
-      ]
-    );
-  };
-
   const handleContactSupport = () => {
     router.push("/(protected)/profile/contact");
   };
@@ -118,7 +98,7 @@ export default function ProfileScreen() {
 
           {/* User Info */}
           <Text className="text-xl font-bold text-gray-900 mb-1">
-            {userData.displayName}
+            {userData.givenName} {userData.surname}
           </Text>
           <Text className="text-gray-600 mb-1">{userData.email}</Text>
         </View>
