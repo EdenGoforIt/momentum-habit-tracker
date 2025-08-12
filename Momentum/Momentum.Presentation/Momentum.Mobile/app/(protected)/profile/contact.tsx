@@ -131,7 +131,7 @@ ${user?.firstName || "User"}`;
 
           <View className="space-y-3">
             <View className="flex-row">
-              <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center mr-3 mt-1">
+              <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center mr-3 mt-0 mb-2">
                 <Text className="text-white text-xs font-bold">1</Text>
               </View>
               <Text className="flex-1 text-gray-700">
@@ -140,7 +140,7 @@ ${user?.firstName || "User"}`;
             </View>
 
             <View className="flex-row">
-              <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center mr-3 mt-1">
+              <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center mr-3 mt-0 mb-2">
                 <Text className="text-white text-xs font-bold">2</Text>
               </View>
               <Text className="flex-1 text-gray-700">
@@ -149,7 +149,7 @@ ${user?.firstName || "User"}`;
             </View>
 
             <View className="flex-row">
-              <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center mr-3 mt-1">
+              <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center mr-3 mt-0">
                 <Text className="text-white text-xs font-bold">3</Text>
               </View>
               <Text className="flex-1 text-gray-700">
