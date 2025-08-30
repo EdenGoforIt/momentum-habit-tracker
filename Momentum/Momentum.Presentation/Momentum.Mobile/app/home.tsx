@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   Text,
@@ -29,6 +30,8 @@ export default function Home() {
   const [quote, setQuote] = useState("");
   const [todaysDateString] = useState(new Date().toISOString().split("T")[0]);
   const [todaysTimestamp] = useState(new Date().getTime());
+  const [refreshing, setRefreshing] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [habitCompletions, setHabitCompletions] = useState<
     Record<number, boolean>
   >({});
@@ -55,7 +58,10 @@ export default function Home() {
   const todayHabits = useMemo(() => {
     if (!habitsData || !Array.isArray(habitsData)) return [];
 
-    return habitsData.map((habit: any) => {
+    // Only include active (non-archived) habits
+    const activeHabits = habitsData.filter((habit: any) => !habit.archivedAt);
+
+    return activeHabits.map((habit: any) => {
       return {
         id: habit.id,
         title: habit.name,
@@ -73,7 +79,12 @@ export default function Home() {
 
   // Calculate stats from habits data
   const stats = useMemo(() => {
-    const totalHabits = Array.isArray(habitsData) ? habitsData.length : 0;
+    // Filter out archived habits
+    const activeHabits = Array.isArray(habitsData)
+      ? habitsData.filter((habit: any) => !habit.archivedAt)
+      : [];
+
+    const totalHabits = activeHabits.length;
     const completedToday = todayHabits.filter(
       (habit: any) => habit.completed
     ).length;
@@ -81,12 +92,11 @@ export default function Home() {
       totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
 
     return {
-      streak: 0, // TODO: Calculate from habit entries
+      streak: currentStreak,
       completionRate,
-      totalCompletions: 0, // TODO: Calculate from habit entries
       habitsCreated: totalHabits,
     };
-  }, [habitsData, todayHabits]);
+  }, [habitsData, todayHabits, currentStreak]);
 
   useEffect(() => {
     // Set a random motivational quote
@@ -107,6 +117,63 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: ["userHabits"] });
     }, [queryClient])
   );
+
+  // Calculate current streak
+  const calculateStreak = useCallback(async () => {
+    if (!habitsData || !Array.isArray(habitsData) || habitsData.length === 0) {
+      setCurrentStreak(0);
+      return;
+    }
+
+    try {
+      let streak = 0;
+      const today = new Date();
+
+      // Start from today and go backwards
+      for (let i = 0; i < 30; i++) {
+        // Check up to 30 days back
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() - i);
+        const dateString = checkDate.toISOString().split("T")[0];
+
+        let hasCompletedHabit = false;
+
+        // Check if any habit was completed on this date
+        for (const habit of habitsData) {
+          try {
+            const response = await client.get(
+              `api/v1/habit-entries/habit/${habit.id}?startDate=${dateString}&endDate=${dateString}`
+            );
+            const entries = response.data;
+            if (entries.length > 0 && entries[0].completed) {
+              hasCompletedHabit = true;
+              break;
+            }
+          } catch (error) {
+            // Continue to next habit if this one fails
+            continue;
+          }
+        }
+
+        if (hasCompletedHabit) {
+          streak++;
+        } else {
+          // If no habit completed on this day, break the streak
+          // But if it's today and no habits completed yet, don't break streak
+          if (i === 0 && new Date().getHours() < 23) {
+            // It's still today and early, so don't count against streak yet
+            continue;
+          }
+          break;
+        }
+      }
+
+      setCurrentStreak(streak);
+    } catch (error) {
+      console.error("Failed to calculate streak:", error);
+      setCurrentStreak(0);
+    }
+  }, [habitsData]);
 
   // Fetch habit entries for today to determine completion status
   useEffect(() => {
@@ -135,7 +202,24 @@ export default function Home() {
     };
 
     fetchHabitEntries();
-  }, [habitsData, todaysDateString]);
+    calculateStreak(); // Calculate streak when habits data changes
+  }, [habitsData, todaysDateString, calculateStreak]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      // Invalidate and refetch habits data
+      await queryClient.invalidateQueries({ queryKey: ["userHabits"] });
+      // Set a new random quote
+      setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+      // Recalculate streak
+      await calculateStreak();
+    } catch (error) {
+      console.error("Failed to refresh data:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [queryClient, calculateStreak]);
 
   const toggleHabitCompletion = async (habitId: number) => {
     try {
@@ -155,6 +239,9 @@ export default function Home() {
         date: todaysDateString,
         completed: newCompletedStatus,
       });
+
+      // Recalculate streak after toggling habit
+      calculateStreak();
     } catch (error) {
       console.error("Failed to toggle habit completion:", error);
       // Revert local state on error
@@ -208,7 +295,12 @@ export default function Home() {
   return (
     <SafeAreaView className="bg-white flex-1">
       <Header title="Home" showMenu={true} />
-      <ScrollView className="flex-1">
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {/* Greeting section */}
         <View className="px-6 pt-4 pb-4">
           <Text className="text-2xl font-bold text-gray-800">Good Morning</Text>
@@ -317,25 +409,25 @@ export default function Home() {
           <Text className="text-xl font-bold text-gray-800 mb-4">
             Your Stats
           </Text>
-          <View className="flex-row flex-wrap">
-            <View className="w-1/2 pr-2 mb-4">
-              <View className="bg-green-50 p-4 rounded-xl">
-                <Text className="text-green-800 font-semibold mb-1">
-                  Current Streak
+          <View className="flex-row space-x-2">
+            <View className="flex-1 mr-2">
+              <View className="bg-green-50 p-4 rounded-xl h-20 justify-between">
+                <Text className="text-green-800 font-semibold text-sm">
+                  Streak
                 </Text>
                 <View className="flex-row items-center">
                   <Text className="text-2xl font-bold text-green-600">
                     {stats.streak}
                   </Text>
-                  <Text className="text-green-600 ml-1">days</Text>
+                  <Text className="text-green-600 ml-1 text-sm">days</Text>
                 </View>
               </View>
             </View>
 
-            <View className="w-1/2 pl-2 mb-4">
-              <View className="bg-orange-50 p-4 rounded-xl">
-                <Text className="text-orange-800 font-semibold mb-1">
-                  Completion Rate
+            <View className="flex-1 mr-2">
+              <View className="bg-orange-50 p-4 rounded-xl h-20 justify-between">
+                <Text className="text-orange-800 font-semibold text-sm">
+                  Completion
                 </Text>
                 <View className="flex-row items-center">
                   <Text className="text-2xl font-bold text-orange-600">
@@ -345,23 +437,10 @@ export default function Home() {
               </View>
             </View>
 
-            <View className="w-1/2 pr-2">
-              <View className="bg-purple-50 p-4 rounded-xl">
-                <Text className="text-purple-800 font-semibold mb-1">
-                  Total Completions
-                </Text>
-                <View className="flex-row items-center">
-                  <Text className="text-2xl font-bold text-purple-600">
-                    {stats.totalCompletions}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            <View className="w-1/2 pl-2">
-              <View className="bg-blue-50 p-4 rounded-xl">
-                <Text className="text-blue-800 font-semibold mb-1">
-                  Active Habits
+            <View className="flex-1">
+              <View className="bg-blue-50 p-4 rounded-xl h-20 justify-between">
+                <Text className="text-blue-800 font-semibold text-sm">
+                  Habits
                 </Text>
                 <View className="flex-row items-center">
                   <Text className="text-2xl font-bold text-blue-600">
